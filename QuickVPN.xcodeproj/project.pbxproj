@@ -1,0 +1,1161 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07BED6EAB0EB8F9E9D60583D /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB786636ECDEF690147D7C97 /* VPNProfile.swift */; };
+		09FFFB194CA46267E43F77F5 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793CFD69E45BC7324ED5865A /* KeychainStorage.swift */; };
+		0CF47E89B48D1769D6B91010 /* QuickVPNWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 470C102C66D5F5FC6B47D893 /* QuickVPNWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0D9EB3EBD2944649F2552F91 /* DNSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B22D30905D8445FC0AA19E /* DNSSettingsView.swift */; };
+		0E229661C48921E4F3BB85F5 /* GlobalServerDeviceIdentityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5FA92BF8A4B064B1677C51 /* GlobalServerDeviceIdentityStore.swift */; };
+		0FE1195D2B6F07A176B6D432 /* ImportProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF594D3E8C3373BF235D77D /* ImportProfileView.swift */; };
+		163BC7A3B93670CF19495EF7 /* ServersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218747B3F88500793FE13464 /* ServersView.swift */; };
+		179C57ACC53B6F246ADE7C50 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F95A3E9E476CF7ECBBF4E9 /* SplashScreenView.swift */; };
+		18FCFFDC6D61BA6CD036D946 /* VPNConnectionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CB9905A8CD88397CC4CFAB /* VPNConnectionStatus.swift */; };
+		1B6A949D85BEED31F2E52366 /* ConnectionLogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 440B996B078D4A8AE866D620 /* ConnectionLogsView.swift */; };
+		23C84A09D8210342FE4A8CE6 /* XrayConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB46F71A0C0CDAE75529903 /* XrayConfigBuilder.swift */; };
+		250A8DFF009711B8E4BEE528 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D434CC377D8EFCCD82C2F66F /* AppConstants.swift */; };
+		27EF302949A7571BCCBA8269 /* XrayConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB46F71A0C0CDAE75529903 /* XrayConfigBuilder.swift */; };
+		28AA5482295DA4FDD3E68FAB /* GlobalServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D67499DCEF3CA454F51F6F5D /* GlobalServerService.swift */; };
+		2A842ACEADE15DF62A9DEDDF /* VPNConfigurationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FFAD73A75FF0A2A8A8BD99 /* VPNConfigurationParser.swift */; };
+		2E60919C957ECD066B1B8C2C /* HomeConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BA0D2AA48ADC0B53D27259 /* HomeConnectView.swift */; };
+		3073DCF63E345BBBB2CA75F2 /* ToggleVPNConnectionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA384440D62426B4E9D896D /* ToggleVPNConnectionIntent.swift */; };
+		312DBF952D07B821D690270A /* QuickVPNTunnelExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D53F97D1B1573D24DA0968ED /* QuickVPNTunnelExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		31E98DD91365C69746A4BB35 /* GlobalVPNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C927A5AC5CA69736C3F4B2 /* GlobalVPNServer.swift */; };
+		427DBC84499519C8ADF80F27 /* NetworkPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDDDF4BD2AC493C317D80EB /* NetworkPreferences.swift */; };
+		43211D25C21AB602E1E2A604 /* NetworkPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDDDF4BD2AC493C317D80EB /* NetworkPreferences.swift */; };
+		43CF169A09D5E4AD706D3FFC /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A406E159A80C66C85AF4F4A /* AppLogger.swift */; };
+		46D1EE44AF367FE4E74A5BFF /* TunnelNetworkSettingsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7F0B22D5CE998B8C22730 /* TunnelNetworkSettingsBuilder.swift */; };
+		49173C2DA79F2C0A3B1E8493 /* QuickVPNTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200C33D0A62AC86E9287139 /* QuickVPNTab.swift */; };
+		49F6129D58E300C7C072FD8D /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793CFD69E45BC7324ED5865A /* KeychainStorage.swift */; };
+		4A5DA75EF6DF2601F50FDF17 /* NetworkPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8EAFBEE78C61DEACEE05C /* NetworkPreferencesStorage.swift */; };
+		4C713E4BED388EFB7BF8734D /* AppLogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9CD652850DD1B5FAF2C94B /* AppLogEvent.swift */; };
+		4C9D83132D08E845C054A7C7 /* AppLogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9CD652850DD1B5FAF2C94B /* AppLogEvent.swift */; };
+		50B277106750241954717353 /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D765250CC16797807293093 /* ConnectionDiagnostics.swift */; };
+		5169890C4779A21F585DDC5B /* VPNConfigurationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FFAD73A75FF0A2A8A8BD99 /* VPNConfigurationParser.swift */; };
+		528A49DFEFC75938F30EDD91 /* HomeConnectLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA4E6FBB5B57EFEE91FE699F /* HomeConnectLogicTests.swift */; };
+		571FC6D0723DB56D470A2C6F /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A406E159A80C66C85AF4F4A /* AppLogger.swift */; };
+		5A1AA7565D5E9CC242718516 /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D765250CC16797807293093 /* ConnectionDiagnostics.swift */; };
+		6106D779A42D64C52C7373A9 /* ProfileStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC49CB46833476E0C78595C /* ProfileStorage.swift */; };
+		64D8ED603D66FEAC5882CFF4 /* GlobalVPNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C927A5AC5CA69736C3F4B2 /* GlobalVPNServer.swift */; };
+		64E65F0A7346A67E2B62766D /* InMemorySecureValueStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB82E1065A09424DB1B26EA /* InMemorySecureValueStorage.swift */; };
+		64FA6A63C2315F44D5C45D7B /* QuickVPNApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891F2CFB9CCC4D55BB22252D /* QuickVPNApp.swift */; };
+		6C52DCE3F1025A4EED3C8EED /* ProtocolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC7B78DAEF53E8EFEAC6E3AA /* ProtocolsView.swift */; };
+		71DA0C5898695288ED4D901B /* VPNConnectionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CB9905A8CD88397CC4CFAB /* VPNConnectionStatus.swift */; };
+		74DCC8F296D304E7E04D8227 /* TunnelNetworkSettingsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7F0B22D5CE998B8C22730 /* TunnelNetworkSettingsBuilder.swift */; };
+		77041E502502527C2505E762 /* SessionInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84A2F30A61BB3DAF87941E5 /* SessionInfoView.swift */; };
+		7AAFA0045931960C60340BB6 /* NetworkPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF053931915AE33FFAE218B /* NetworkPreferencesTests.swift */; };
+		7E6E60710292C42552E51F4B /* AppGroupStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1035538FF61CDFAA0BDF33C2 /* AppGroupStorage.swift */; };
+		7FD69ADFD84781214B58CC4F /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95BA0B8C39066988D3E7D53 /* AppModel.swift */; };
+		82FD56C66181CDD807C6102B /* ProfileStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9182BC4D591BE4CC54FF5EDA /* ProfileStorageTests.swift */; };
+		8334783839D041EFB7A396FB /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB9E66A50F603014E4DA702 /* PacketTunnelProvider.swift */; };
+		8481B57B3A5A8D8E13413017 /* GlobalServerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 854A3EE966315CCEB3712175 /* GlobalServerIntegrationTests.swift */; };
+		8A49DD148EA84A829F4E10B3 /* GlobalVPNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C927A5AC5CA69736C3F4B2 /* GlobalVPNServer.swift */; };
+		8AB65454F3DB556518585D92 /* NetworkPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8EAFBEE78C61DEACEE05C /* NetworkPreferencesStorage.swift */; };
+		8B404240C084F71CD01D6DEC /* QuickVPNWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1309080FD77DC2525A5032B6 /* QuickVPNWidget.swift */; };
+		8C406FD832C82D948B09BD2F /* NetworkPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDDDF4BD2AC493C317D80EB /* NetworkPreferences.swift */; };
+		925601780DDBBAFBDCB75E58 /* SessionInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21517771187EAAA4280ED6DD /* SessionInfoService.swift */; };
+		92A45A59221EA7DD01412674 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D7B7F44B4E6D4B3E2DF7A90 /* Assets.xcassets */; };
+		95B80F86120C16B230C5C893 /* ProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DED784EBEFECF5F060BEAFC /* ProfileListView.swift */; };
+		9C4CE0F38AADC44CAD222B43 /* TunnelSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90150DDF00971248F4E9613B /* TunnelSettingsView.swift */; };
+		A0BB2A06ABD81E30BF80968D /* ProfileStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC49CB46833476E0C78595C /* ProfileStorage.swift */; };
+		A197141179E3109924EC30CB /* TunnelNetworkSettingsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7F0B22D5CE998B8C22730 /* TunnelNetworkSettingsBuilder.swift */; };
+		A61ED5004438874BF6D08404 /* WidgetVPNController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA41FF6C8C1A76EC928539A /* WidgetVPNController.swift */; };
+		A8F75872E3E913BCF357A793 /* QuickVPNTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942756D4BEB245F8E9261E69 /* QuickVPNTests.swift */; };
+		AA006D55743AAF0BF79CD608 /* AppLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A0408493B11B7A52ADD52BE /* AppLogStore.swift */; };
+		AEDA3AADE6BE6C85ED80FFBC /* AppGroupStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1035538FF61CDFAA0BDF33C2 /* AppGroupStorage.swift */; };
+		B60BF0A48444B08A9372192E /* AppLogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9CD652850DD1B5FAF2C94B /* AppLogEvent.swift */; };
+		B8171562C2741621FCD80545 /* ProfileFormData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FB1777BF43791D345CC830 /* ProfileFormData.swift */; };
+		BA33D2BB4D430F96A31FC63E /* VPNConnectionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CB9905A8CD88397CC4CFAB /* VPNConnectionStatus.swift */; };
+		BD69DEE1FEBDC94D39F7AA67 /* PremiumPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E52D013CDA3A93AEEC5E43 /* PremiumPaywallView.swift */; };
+		BE04BF8C23948EF1CE2D4525 /* QuickVPNUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D401A3B7E3DCFF006E841F /* QuickVPNUITestsLaunchTests.swift */; };
+		BE516F8B7ECBB3F1250618A6 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D434CC377D8EFCCD82C2F66F /* AppConstants.swift */; };
+		BEA923CDAA8A583632C5ECAB /* ConnectionDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040A0ED2AE55AD4DBF2D6F77 /* ConnectionDashboardView.swift */; };
+		C08075A6571FAB4E5C1DD1FF /* AppLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A0408493B11B7A52ADD52BE /* AppLogStore.swift */; };
+		C1838390E3CFC7BF4FDC8B71 /* SwiftyXrayKit in Frameworks */ = {isa = PBXBuildFile; productRef = BF075FA8E90B0EF7861C2C69 /* SwiftyXrayKit */; };
+		C3FFE4CE43A1F43B994E75E1 /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D765250CC16797807293093 /* ConnectionDiagnostics.swift */; };
+		C4C2876C6D5C86C5870EFA6F /* AppGroupStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1035538FF61CDFAA0BDF33C2 /* AppGroupStorage.swift */; };
+		C5F7332AEC87DEFD918E564F /* GlobalServerAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AED9D5CA297ACEBC43D428 /* GlobalServerAPIClient.swift */; };
+		C83E8A19964E59AD37E7C2CF /* QuickVPNTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8164736EE576EAD3AB44E92E /* QuickVPNTheme.swift */; };
+		CCA304169776D0762E99F79F /* XrayTunnelEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570818B18C7AABA46BB84FBC /* XrayTunnelEngine.swift */; };
+		D02DD688795DD6B3A12CDBC0 /* QRCodeImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FBC3C0EA5AC4AC556FF603 /* QRCodeImportView.swift */; };
+		D29046B77B6CEE067B368170 /* XrayConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB46F71A0C0CDAE75529903 /* XrayConfigBuilder.swift */; };
+		D56F0461A6485A568E9398B2 /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB786636ECDEF690147D7C97 /* VPNProfile.swift */; };
+		D9947DA942E5C2A41CAB474C /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB786636ECDEF690147D7C97 /* VPNProfile.swift */; };
+		E08CE1A735B4E29D477D77E7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CC4AF908A98F4F490F2FA3 /* SettingsView.swift */; };
+		E49234E22F2C27E7F62944DA /* SwiftyXrayKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8E00F24B714BC2C747743B72 /* SwiftyXrayKit */; };
+		EE4D9AB32619E6136A4AB45E /* VPNConfigurationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FFAD73A75FF0A2A8A8BD99 /* VPNConfigurationParser.swift */; };
+		EF3B2F96CFF3AB890E718259 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793CFD69E45BC7324ED5865A /* KeychainStorage.swift */; };
+		F4F992AB5D30B3E2F857C703 /* ProfileEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC7538950E2B6596E6D47D2 /* ProfileEditorView.swift */; };
+		F5A3E96494CD07DCBB712818 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A406E159A80C66C85AF4F4A /* AppLogger.swift */; };
+		F60F2D1FC270E130E2577BEF /* VPNManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53955C12A70C9582BF07291 /* VPNManager.swift */; };
+		F69316CE3A581253FC901597 /* ProfileStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC49CB46833476E0C78595C /* ProfileStorage.swift */; };
+		F95D4D7F78CCD2619413D4A3 /* AppLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A0408493B11B7A52ADD52BE /* AppLogStore.swift */; };
+		FB2DF034D0ABE5B7378D28DC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A3D0D085CBBBDB17F14192 /* ContentView.swift */; };
+		FB7B4F9BCA2CABB3131AF1D2 /* NetworkPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E8EAFBEE78C61DEACEE05C /* NetworkPreferencesStorage.swift */; };
+		FB90D08706463976FB09C422 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D434CC377D8EFCCD82C2F66F /* AppConstants.swift */; };
+		FC42E32D879C790CB8CF6360 /* QuickVPNUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 995DAC2BBB3A2B1DDCCE2C55 /* QuickVPNUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0EE83C40B7D25B2B49BEE80C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 15C184AA6109A58C1D62DAA6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0FB793397A024F17DB57D76;
+			remoteInfo = QuickVPN;
+		};
+		571FC60F00F97BBFD946E2E6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 15C184AA6109A58C1D62DAA6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0FB793397A024F17DB57D76;
+			remoteInfo = QuickVPN;
+		};
+		8E6A4B1042A88F8ADE9FEBCD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 15C184AA6109A58C1D62DAA6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF30E8988E9ABF7BEB1D1741;
+			remoteInfo = QuickVPNWidget;
+		};
+		8F6581C40CEC02DF31D92253 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 15C184AA6109A58C1D62DAA6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F0FB0F610A87BBBE778460A3;
+			remoteInfo = QuickVPNTunnelExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		145616015E8A1113B33E812E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				312DBF952D07B821D690270A /* QuickVPNTunnelExtension.appex in Embed Foundation Extensions */,
+				0CF47E89B48D1769D6B91010 /* QuickVPNWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		040A0ED2AE55AD4DBF2D6F77 /* ConnectionDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDashboardView.swift; sourceTree = "<group>"; };
+		07BA0D2AA48ADC0B53D27259 /* HomeConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeConnectView.swift; sourceTree = "<group>"; };
+		0AD7F0B22D5CE998B8C22730 /* TunnelNetworkSettingsBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelNetworkSettingsBuilder.swift; sourceTree = "<group>"; };
+		1035538FF61CDFAA0BDF33C2 /* AppGroupStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupStorage.swift; sourceTree = "<group>"; };
+		1309080FD77DC2525A5032B6 /* QuickVPNWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickVPNWidget.swift; sourceTree = "<group>"; };
+		1C1C1F2B60CCA426F4FD4907 /* QuickVPN.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = QuickVPN.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		21517771187EAAA4280ED6DD /* SessionInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionInfoService.swift; sourceTree = "<group>"; };
+		218747B3F88500793FE13464 /* ServersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServersView.swift; sourceTree = "<group>"; };
+		2A406E159A80C66C85AF4F4A /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		2D765250CC16797807293093 /* ConnectionDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDiagnostics.swift; sourceTree = "<group>"; };
+		32A3D0D085CBBBDB17F14192 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3FF053931915AE33FFAE218B /* NetworkPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPreferencesTests.swift; sourceTree = "<group>"; };
+		440B996B078D4A8AE866D620 /* ConnectionLogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionLogsView.swift; sourceTree = "<group>"; };
+		470C102C66D5F5FC6B47D893 /* QuickVPNWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = QuickVPNWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		47C7F25464D539C765BC1CB3 /* QuickVPNUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = QuickVPNUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4FA41FF6C8C1A76EC928539A /* WidgetVPNController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVPNController.swift; sourceTree = "<group>"; };
+		55CB9905A8CD88397CC4CFAB /* VPNConnectionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNConnectionStatus.swift; sourceTree = "<group>"; };
+		570818B18C7AABA46BB84FBC /* XrayTunnelEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrayTunnelEngine.swift; sourceTree = "<group>"; };
+		5CBFCDCB2FCCDA60F14B1DEA /* QuickVPN.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuickVPN.entitlements; sourceTree = "<group>"; };
+		5DED784EBEFECF5F060BEAFC /* ProfileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListView.swift; sourceTree = "<group>"; };
+		6A0408493B11B7A52ADD52BE /* AppLogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogStore.swift; sourceTree = "<group>"; };
+		6AF2ED890FDCA7452DA71D6C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		6CB9E66A50F603014E4DA702 /* PacketTunnelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProvider.swift; sourceTree = "<group>"; };
+		73D401A3B7E3DCFF006E841F /* QuickVPNUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickVPNUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		793CFD69E45BC7324ED5865A /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
+		7A9CD652850DD1B5FAF2C94B /* AppLogEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogEvent.swift; sourceTree = "<group>"; };
+		7CA1100DA9BF39BE6F739344 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8164736EE576EAD3AB44E92E /* QuickVPNTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickVPNTheme.swift; sourceTree = "<group>"; };
+		81C927A5AC5CA69736C3F4B2 /* GlobalVPNServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVPNServer.swift; sourceTree = "<group>"; };
+		854A3EE966315CCEB3712175 /* GlobalServerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerIntegrationTests.swift; sourceTree = "<group>"; };
+		891F2CFB9CCC4D55BB22252D /* QuickVPNApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickVPNApp.swift; sourceTree = "<group>"; };
+		90150DDF00971248F4E9613B /* TunnelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelSettingsView.swift; sourceTree = "<group>"; };
+		9182BC4D591BE4CC54FF5EDA /* ProfileStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStorageTests.swift; sourceTree = "<group>"; };
+		942756D4BEB245F8E9261E69 /* QuickVPNTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickVPNTests.swift; sourceTree = "<group>"; };
+		95164F5299B0CF403F381BF3 /* QuickVPNTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = QuickVPNTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		995DAC2BBB3A2B1DDCCE2C55 /* QuickVPNUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickVPNUITests.swift; sourceTree = "<group>"; };
+		9BC49CB46833476E0C78595C /* ProfileStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStorage.swift; sourceTree = "<group>"; };
+		9CB82E1065A09424DB1B26EA /* InMemorySecureValueStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemorySecureValueStorage.swift; sourceTree = "<group>"; };
+		9D7B7F44B4E6D4B3E2DF7A90 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9DB46F71A0C0CDAE75529903 /* XrayConfigBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrayConfigBuilder.swift; sourceTree = "<group>"; };
+		9E5FA92BF8A4B064B1677C51 /* GlobalServerDeviceIdentityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerDeviceIdentityStore.swift; sourceTree = "<group>"; };
+		A4F95A3E9E476CF7ECBBF4E9 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		ADF594D3E8C3373BF235D77D /* ImportProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportProfileView.swift; sourceTree = "<group>"; };
+		AFDDDF4BD2AC493C317D80EB /* NetworkPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPreferences.swift; sourceTree = "<group>"; };
+		B200C33D0A62AC86E9287139 /* QuickVPNTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickVPNTab.swift; sourceTree = "<group>"; };
+		B4E52D013CDA3A93AEEC5E43 /* PremiumPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumPaywallView.swift; sourceTree = "<group>"; };
+		B53955C12A70C9582BF07291 /* VPNManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNManager.swift; sourceTree = "<group>"; };
+		BC7B78DAEF53E8EFEAC6E3AA /* ProtocolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolsView.swift; sourceTree = "<group>"; };
+		C1FFAD73A75FF0A2A8A8BD99 /* VPNConfigurationParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNConfigurationParser.swift; sourceTree = "<group>"; };
+		C64C554F9DE81A6040AE265F /* QuickVPNWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuickVPNWidget.entitlements; sourceTree = "<group>"; };
+		C799F2CB3E0D7EE1BACADC47 /* QuickVPNTunnelExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuickVPNTunnelExtension.entitlements; sourceTree = "<group>"; };
+		C83A16B2AB7D83D3F833EB1C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C95BA0B8C39066988D3E7D53 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		CA4E6FBB5B57EFEE91FE699F /* HomeConnectLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeConnectLogicTests.swift; sourceTree = "<group>"; };
+		D2AED9D5CA297ACEBC43D428 /* GlobalServerAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerAPIClient.swift; sourceTree = "<group>"; };
+		D434CC377D8EFCCD82C2F66F /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
+		D53F97D1B1573D24DA0968ED /* QuickVPNTunnelExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = QuickVPNTunnelExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5B22D30905D8445FC0AA19E /* DNSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSSettingsView.swift; sourceTree = "<group>"; };
+		D67499DCEF3CA454F51F6F5D /* GlobalServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerService.swift; sourceTree = "<group>"; };
+		D7CC4AF908A98F4F490F2FA3 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		DBC7538950E2B6596E6D47D2 /* ProfileEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileEditorView.swift; sourceTree = "<group>"; };
+		E3FB1777BF43791D345CC830 /* ProfileFormData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFormData.swift; sourceTree = "<group>"; };
+		E5FBC3C0EA5AC4AC556FF603 /* QRCodeImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeImportView.swift; sourceTree = "<group>"; };
+		E84A2F30A61BB3DAF87941E5 /* SessionInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionInfoView.swift; sourceTree = "<group>"; };
+		E8E8EAFBEE78C61DEACEE05C /* NetworkPreferencesStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPreferencesStorage.swift; sourceTree = "<group>"; };
+		EAA384440D62426B4E9D896D /* ToggleVPNConnectionIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleVPNConnectionIntent.swift; sourceTree = "<group>"; };
+		FB786636ECDEF690147D7C97 /* VPNProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNProfile.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		723F56320BAEC139CFFA8A60 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E49234E22F2C27E7F62944DA /* SwiftyXrayKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7F0557FFEA454B15F4C29C5D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C1838390E3CFC7BF4FDC8B71 /* SwiftyXrayKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0CD772D87267578810F45D31 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				8164736EE576EAD3AB44E92E /* QuickVPNTheme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		0F02F165E139A950841B97C2 /* QuickVPNWidget */ = {
+			isa = PBXGroup;
+			children = (
+				7CA1100DA9BF39BE6F739344 /* Info.plist */,
+				C64C554F9DE81A6040AE265F /* QuickVPNWidget.entitlements */,
+				1309080FD77DC2525A5032B6 /* QuickVPNWidget.swift */,
+				EAA384440D62426B4E9D896D /* ToggleVPNConnectionIntent.swift */,
+				4FA41FF6C8C1A76EC928539A /* WidgetVPNController.swift */,
+			);
+			path = QuickVPNWidget;
+			sourceTree = "<group>";
+		};
+		175745FD5B0BAB25E529C23A /* Connection */ = {
+			isa = PBXGroup;
+			children = (
+				040A0ED2AE55AD4DBF2D6F77 /* ConnectionDashboardView.swift */,
+				07BA0D2AA48ADC0B53D27259 /* HomeConnectView.swift */,
+			);
+			path = Connection;
+			sourceTree = "<group>";
+		};
+		2124A56718AB58EB42FE550D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				D2AED9D5CA297ACEBC43D428 /* GlobalServerAPIClient.swift */,
+				9E5FA92BF8A4B064B1677C51 /* GlobalServerDeviceIdentityStore.swift */,
+				D67499DCEF3CA454F51F6F5D /* GlobalServerService.swift */,
+				B53955C12A70C9582BF07291 /* VPNManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		2981C387420E56531C878711 = {
+			isa = PBXGroup;
+			children = (
+				915B2723CD04BCB140945F23 /* QuickVPN */,
+				304A1CEDCD8AF4E891440380 /* QuickVPNShared */,
+				DF179F99BD5AE2850029453D /* QuickVPNTests */,
+				8238DA287EAB11832B703831 /* QuickVPNTunnelExtension */,
+				B82629D3F2844E05640DC391 /* QuickVPNUITests */,
+				0F02F165E139A950841B97C2 /* QuickVPNWidget */,
+				35F720B8761DB291728356CE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		304A1CEDCD8AF4E891440380 /* QuickVPNShared */ = {
+			isa = PBXGroup;
+			children = (
+				CA922D39620047CFB8524959 /* Models */,
+				7CD65B685560338FA3B0F79F /* Services */,
+			);
+			path = QuickVPNShared;
+			sourceTree = "<group>";
+		};
+		35F720B8761DB291728356CE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1C1C1F2B60CCA426F4FD4907 /* QuickVPN.app */,
+				95164F5299B0CF403F381BF3 /* QuickVPNTests.xctest */,
+				D53F97D1B1573D24DA0968ED /* QuickVPNTunnelExtension.appex */,
+				47C7F25464D539C765BC1CB3 /* QuickVPNUITests.xctest */,
+				470C102C66D5F5FC6B47D893 /* QuickVPNWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		547E068D24E2676939A69994 /* Servers */ = {
+			isa = PBXGroup;
+			children = (
+				218747B3F88500793FE13464 /* ServersView.swift */,
+			);
+			path = Servers;
+			sourceTree = "<group>";
+		};
+		5A1F115DF8B8E38DF984EF4C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				C95BA0B8C39066988D3E7D53 /* AppModel.swift */,
+				32A3D0D085CBBBDB17F14192 /* ContentView.swift */,
+				891F2CFB9CCC4D55BB22252D /* QuickVPNApp.swift */,
+				B200C33D0A62AC86E9287139 /* QuickVPNTab.swift */,
+				A4F95A3E9E476CF7ECBBF4E9 /* SplashScreenView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		5F8FC81AC7A0ADB1D7E31A65 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				440B996B078D4A8AE866D620 /* ConnectionLogsView.swift */,
+				D5B22D30905D8445FC0AA19E /* DNSSettingsView.swift */,
+				21517771187EAAA4280ED6DD /* SessionInfoService.swift */,
+				E84A2F30A61BB3DAF87941E5 /* SessionInfoView.swift */,
+				D7CC4AF908A98F4F490F2FA3 /* SettingsView.swift */,
+				90150DDF00971248F4E9613B /* TunnelSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		745A7B907AFE0F175593AA2E /* Profiles */ = {
+			isa = PBXGroup;
+			children = (
+				ADF594D3E8C3373BF235D77D /* ImportProfileView.swift */,
+				DBC7538950E2B6596E6D47D2 /* ProfileEditorView.swift */,
+				E3FB1777BF43791D345CC830 /* ProfileFormData.swift */,
+				5DED784EBEFECF5F060BEAFC /* ProfileListView.swift */,
+				E5FBC3C0EA5AC4AC556FF603 /* QRCodeImportView.swift */,
+			);
+			path = Profiles;
+			sourceTree = "<group>";
+		};
+		7CD65B685560338FA3B0F79F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1035538FF61CDFAA0BDF33C2 /* AppGroupStorage.swift */,
+				2A406E159A80C66C85AF4F4A /* AppLogger.swift */,
+				6A0408493B11B7A52ADD52BE /* AppLogStore.swift */,
+				2D765250CC16797807293093 /* ConnectionDiagnostics.swift */,
+				793CFD69E45BC7324ED5865A /* KeychainStorage.swift */,
+				E8E8EAFBEE78C61DEACEE05C /* NetworkPreferencesStorage.swift */,
+				9BC49CB46833476E0C78595C /* ProfileStorage.swift */,
+				0AD7F0B22D5CE998B8C22730 /* TunnelNetworkSettingsBuilder.swift */,
+				C1FFAD73A75FF0A2A8A8BD99 /* VPNConfigurationParser.swift */,
+				9DB46F71A0C0CDAE75529903 /* XrayConfigBuilder.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		8238DA287EAB11832B703831 /* QuickVPNTunnelExtension */ = {
+			isa = PBXGroup;
+			children = (
+				C83A16B2AB7D83D3F833EB1C /* Info.plist */,
+				6CB9E66A50F603014E4DA702 /* PacketTunnelProvider.swift */,
+				C799F2CB3E0D7EE1BACADC47 /* QuickVPNTunnelExtension.entitlements */,
+				570818B18C7AABA46BB84FBC /* XrayTunnelEngine.swift */,
+			);
+			path = QuickVPNTunnelExtension;
+			sourceTree = "<group>";
+		};
+		84C1E7ED9FA6A5AABF54D63A /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				BC7B78DAEF53E8EFEAC6E3AA /* ProtocolsView.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		8E1466DFDE254C0B7C7A24A2 /* Premium */ = {
+			isa = PBXGroup;
+			children = (
+				B4E52D013CDA3A93AEEC5E43 /* PremiumPaywallView.swift */,
+			);
+			path = Premium;
+			sourceTree = "<group>";
+		};
+		915B2723CD04BCB140945F23 /* QuickVPN */ = {
+			isa = PBXGroup;
+			children = (
+				9D7B7F44B4E6D4B3E2DF7A90 /* Assets.xcassets */,
+				6AF2ED890FDCA7452DA71D6C /* Info.plist */,
+				5CBFCDCB2FCCDA60F14B1DEA /* QuickVPN.entitlements */,
+				5A1F115DF8B8E38DF984EF4C /* App */,
+				0CD772D87267578810F45D31 /* Design */,
+				C8BC6EB85919866BEB8835CA /* Features */,
+				2124A56718AB58EB42FE550D /* Services */,
+			);
+			path = QuickVPN;
+			sourceTree = "<group>";
+		};
+		B82629D3F2844E05640DC391 /* QuickVPNUITests */ = {
+			isa = PBXGroup;
+			children = (
+				995DAC2BBB3A2B1DDCCE2C55 /* QuickVPNUITests.swift */,
+				73D401A3B7E3DCFF006E841F /* QuickVPNUITestsLaunchTests.swift */,
+			);
+			path = QuickVPNUITests;
+			sourceTree = "<group>";
+		};
+		C8BC6EB85919866BEB8835CA /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				175745FD5B0BAB25E529C23A /* Connection */,
+				8E1466DFDE254C0B7C7A24A2 /* Premium */,
+				745A7B907AFE0F175593AA2E /* Profiles */,
+				84C1E7ED9FA6A5AABF54D63A /* Protocols */,
+				547E068D24E2676939A69994 /* Servers */,
+				5F8FC81AC7A0ADB1D7E31A65 /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		CA922D39620047CFB8524959 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D434CC377D8EFCCD82C2F66F /* AppConstants.swift */,
+				7A9CD652850DD1B5FAF2C94B /* AppLogEvent.swift */,
+				81C927A5AC5CA69736C3F4B2 /* GlobalVPNServer.swift */,
+				AFDDDF4BD2AC493C317D80EB /* NetworkPreferences.swift */,
+				55CB9905A8CD88397CC4CFAB /* VPNConnectionStatus.swift */,
+				FB786636ECDEF690147D7C97 /* VPNProfile.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		DF179F99BD5AE2850029453D /* QuickVPNTests */ = {
+			isa = PBXGroup;
+			children = (
+				854A3EE966315CCEB3712175 /* GlobalServerIntegrationTests.swift */,
+				CA4E6FBB5B57EFEE91FE699F /* HomeConnectLogicTests.swift */,
+				9CB82E1065A09424DB1B26EA /* InMemorySecureValueStorage.swift */,
+				3FF053931915AE33FFAE218B /* NetworkPreferencesTests.swift */,
+				9182BC4D591BE4CC54FF5EDA /* ProfileStorageTests.swift */,
+				942756D4BEB245F8E9261E69 /* QuickVPNTests.swift */,
+			);
+			path = QuickVPNTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AF30E8988E9ABF7BEB1D1741 /* QuickVPNWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E17FB26C48578F62502D5B7A /* Build configuration list for PBXNativeTarget "QuickVPNWidget" */;
+			buildPhases = (
+				70E0A55711C9148C8F45407C /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QuickVPNWidget;
+			productName = QuickVPNWidget;
+			productReference = 470C102C66D5F5FC6B47D893 /* QuickVPNWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		C0FB793397A024F17DB57D76 /* QuickVPN */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 78383D83DA5F22F6829AA8F7 /* Build configuration list for PBXNativeTarget "QuickVPN" */;
+			buildPhases = (
+				4DFB55262BE1863911214D46 /* Sources */,
+				65E6975223E44F4AE6A6043C /* Resources */,
+				7F0557FFEA454B15F4C29C5D /* Frameworks */,
+				145616015E8A1113B33E812E /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A249ED16280F1661DDCE93B5 /* PBXTargetDependency */,
+				6B0F77FBC4B6BCBF488D27E6 /* PBXTargetDependency */,
+			);
+			name = QuickVPN;
+			packageProductDependencies = (
+				BF075FA8E90B0EF7861C2C69 /* SwiftyXrayKit */,
+			);
+			productName = QuickVPN;
+			productReference = 1C1C1F2B60CCA426F4FD4907 /* QuickVPN.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D26925C4AF1ED9B7AF477E21 /* QuickVPNTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4F62D032CBB08BC3AC02215 /* Build configuration list for PBXNativeTarget "QuickVPNTests" */;
+			buildPhases = (
+				12775BB0232015DF2335EB09 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				98DD5BA1C096643BB91A14E5 /* PBXTargetDependency */,
+			);
+			name = QuickVPNTests;
+			productName = QuickVPNTests;
+			productReference = 95164F5299B0CF403F381BF3 /* QuickVPNTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E7D420F835AC5797C4A7AECD /* QuickVPNUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE529AFF9021AB49F1A32A8B /* Build configuration list for PBXNativeTarget "QuickVPNUITests" */;
+			buildPhases = (
+				63696A73D098BA68CF797702 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F5FC96227879B44C3AB92944 /* PBXTargetDependency */,
+			);
+			name = QuickVPNUITests;
+			productName = QuickVPNUITests;
+			productReference = 47C7F25464D539C765BC1CB3 /* QuickVPNUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		F0FB0F610A87BBBE778460A3 /* QuickVPNTunnelExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CA5E550E16EB26CC524B955F /* Build configuration list for PBXNativeTarget "QuickVPNTunnelExtension" */;
+			buildPhases = (
+				C8590D48A5958CA152B56CB3 /* Sources */,
+				723F56320BAEC139CFFA8A60 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QuickVPNTunnelExtension;
+			packageProductDependencies = (
+				8E00F24B714BC2C747743B72 /* SwiftyXrayKit */,
+			);
+			productName = QuickVPNTunnelExtension;
+			productReference = D53F97D1B1573D24DA0968ED /* QuickVPNTunnelExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		15C184AA6109A58C1D62DAA6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					AF30E8988E9ABF7BEB1D1741 = {
+						DevelopmentTeam = 6659MLRZ5F;
+					};
+					C0FB793397A024F17DB57D76 = {
+						DevelopmentTeam = 6659MLRZ5F;
+					};
+					D26925C4AF1ED9B7AF477E21 = {
+						DevelopmentTeam = 6659MLRZ5F;
+					};
+					E7D420F835AC5797C4A7AECD = {
+						DevelopmentTeam = 6659MLRZ5F;
+						TestTargetID = C0FB793397A024F17DB57D76;
+					};
+					F0FB0F610A87BBBE778460A3 = {
+						DevelopmentTeam = 6659MLRZ5F;
+					};
+				};
+			};
+			buildConfigurationList = 3245EF5D635FC6B2E79D9144 /* Build configuration list for PBXProject "QuickVPN" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 2981C387420E56531C878711;
+			packageReferences = (
+				1A880257F164DB804680C8B2 /* XCRemoteSwiftPackageReference "SwiftyXrayKit" */,
+			);
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C0FB793397A024F17DB57D76 /* QuickVPN */,
+				D26925C4AF1ED9B7AF477E21 /* QuickVPNTests */,
+				F0FB0F610A87BBBE778460A3 /* QuickVPNTunnelExtension */,
+				E7D420F835AC5797C4A7AECD /* QuickVPNUITests */,
+				AF30E8988E9ABF7BEB1D1741 /* QuickVPNWidget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		65E6975223E44F4AE6A6043C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92A45A59221EA7DD01412674 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		12775BB0232015DF2335EB09 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8481B57B3A5A8D8E13413017 /* GlobalServerIntegrationTests.swift in Sources */,
+				528A49DFEFC75938F30EDD91 /* HomeConnectLogicTests.swift in Sources */,
+				64E65F0A7346A67E2B62766D /* InMemorySecureValueStorage.swift in Sources */,
+				7AAFA0045931960C60340BB6 /* NetworkPreferencesTests.swift in Sources */,
+				82FD56C66181CDD807C6102B /* ProfileStorageTests.swift in Sources */,
+				A8F75872E3E913BCF357A793 /* QuickVPNTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4DFB55262BE1863911214D46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FB90D08706463976FB09C422 /* AppConstants.swift in Sources */,
+				7E6E60710292C42552E51F4B /* AppGroupStorage.swift in Sources */,
+				4C9D83132D08E845C054A7C7 /* AppLogEvent.swift in Sources */,
+				F95D4D7F78CCD2619413D4A3 /* AppLogStore.swift in Sources */,
+				F5A3E96494CD07DCBB712818 /* AppLogger.swift in Sources */,
+				7FD69ADFD84781214B58CC4F /* AppModel.swift in Sources */,
+				BEA923CDAA8A583632C5ECAB /* ConnectionDashboardView.swift in Sources */,
+				C3FFE4CE43A1F43B994E75E1 /* ConnectionDiagnostics.swift in Sources */,
+				1B6A949D85BEED31F2E52366 /* ConnectionLogsView.swift in Sources */,
+				FB2DF034D0ABE5B7378D28DC /* ContentView.swift in Sources */,
+				0D9EB3EBD2944649F2552F91 /* DNSSettingsView.swift in Sources */,
+				C5F7332AEC87DEFD918E564F /* GlobalServerAPIClient.swift in Sources */,
+				0E229661C48921E4F3BB85F5 /* GlobalServerDeviceIdentityStore.swift in Sources */,
+				28AA5482295DA4FDD3E68FAB /* GlobalServerService.swift in Sources */,
+				31E98DD91365C69746A4BB35 /* GlobalVPNServer.swift in Sources */,
+				2E60919C957ECD066B1B8C2C /* HomeConnectView.swift in Sources */,
+				0FE1195D2B6F07A176B6D432 /* ImportProfileView.swift in Sources */,
+				49F6129D58E300C7C072FD8D /* KeychainStorage.swift in Sources */,
+				427DBC84499519C8ADF80F27 /* NetworkPreferences.swift in Sources */,
+				8AB65454F3DB556518585D92 /* NetworkPreferencesStorage.swift in Sources */,
+				BD69DEE1FEBDC94D39F7AA67 /* PremiumPaywallView.swift in Sources */,
+				F4F992AB5D30B3E2F857C703 /* ProfileEditorView.swift in Sources */,
+				B8171562C2741621FCD80545 /* ProfileFormData.swift in Sources */,
+				95B80F86120C16B230C5C893 /* ProfileListView.swift in Sources */,
+				F69316CE3A581253FC901597 /* ProfileStorage.swift in Sources */,
+				6C52DCE3F1025A4EED3C8EED /* ProtocolsView.swift in Sources */,
+				D02DD688795DD6B3A12CDBC0 /* QRCodeImportView.swift in Sources */,
+				64FA6A63C2315F44D5C45D7B /* QuickVPNApp.swift in Sources */,
+				49173C2DA79F2C0A3B1E8493 /* QuickVPNTab.swift in Sources */,
+				C83E8A19964E59AD37E7C2CF /* QuickVPNTheme.swift in Sources */,
+				163BC7A3B93670CF19495EF7 /* ServersView.swift in Sources */,
+				925601780DDBBAFBDCB75E58 /* SessionInfoService.swift in Sources */,
+				77041E502502527C2505E762 /* SessionInfoView.swift in Sources */,
+				E08CE1A735B4E29D477D77E7 /* SettingsView.swift in Sources */,
+				179C57ACC53B6F246ADE7C50 /* SplashScreenView.swift in Sources */,
+				74DCC8F296D304E7E04D8227 /* TunnelNetworkSettingsBuilder.swift in Sources */,
+				9C4CE0F38AADC44CAD222B43 /* TunnelSettingsView.swift in Sources */,
+				5169890C4779A21F585DDC5B /* VPNConfigurationParser.swift in Sources */,
+				71DA0C5898695288ED4D901B /* VPNConnectionStatus.swift in Sources */,
+				F60F2D1FC270E130E2577BEF /* VPNManager.swift in Sources */,
+				D9947DA942E5C2A41CAB474C /* VPNProfile.swift in Sources */,
+				23C84A09D8210342FE4A8CE6 /* XrayConfigBuilder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		63696A73D098BA68CF797702 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC42E32D879C790CB8CF6360 /* QuickVPNUITests.swift in Sources */,
+				BE04BF8C23948EF1CE2D4525 /* QuickVPNUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70E0A55711C9148C8F45407C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				250A8DFF009711B8E4BEE528 /* AppConstants.swift in Sources */,
+				C4C2876C6D5C86C5870EFA6F /* AppGroupStorage.swift in Sources */,
+				B60BF0A48444B08A9372192E /* AppLogEvent.swift in Sources */,
+				C08075A6571FAB4E5C1DD1FF /* AppLogStore.swift in Sources */,
+				571FC6D0723DB56D470A2C6F /* AppLogger.swift in Sources */,
+				50B277106750241954717353 /* ConnectionDiagnostics.swift in Sources */,
+				64D8ED603D66FEAC5882CFF4 /* GlobalVPNServer.swift in Sources */,
+				EF3B2F96CFF3AB890E718259 /* KeychainStorage.swift in Sources */,
+				43211D25C21AB602E1E2A604 /* NetworkPreferences.swift in Sources */,
+				FB7B4F9BCA2CABB3131AF1D2 /* NetworkPreferencesStorage.swift in Sources */,
+				6106D779A42D64C52C7373A9 /* ProfileStorage.swift in Sources */,
+				8B404240C084F71CD01D6DEC /* QuickVPNWidget.swift in Sources */,
+				3073DCF63E345BBBB2CA75F2 /* ToggleVPNConnectionIntent.swift in Sources */,
+				A197141179E3109924EC30CB /* TunnelNetworkSettingsBuilder.swift in Sources */,
+				2A842ACEADE15DF62A9DEDDF /* VPNConfigurationParser.swift in Sources */,
+				BA33D2BB4D430F96A31FC63E /* VPNConnectionStatus.swift in Sources */,
+				07BED6EAB0EB8F9E9D60583D /* VPNProfile.swift in Sources */,
+				A61ED5004438874BF6D08404 /* WidgetVPNController.swift in Sources */,
+				D29046B77B6CEE067B368170 /* XrayConfigBuilder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C8590D48A5958CA152B56CB3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE516F8B7ECBB3F1250618A6 /* AppConstants.swift in Sources */,
+				AEDA3AADE6BE6C85ED80FFBC /* AppGroupStorage.swift in Sources */,
+				4C713E4BED388EFB7BF8734D /* AppLogEvent.swift in Sources */,
+				AA006D55743AAF0BF79CD608 /* AppLogStore.swift in Sources */,
+				43CF169A09D5E4AD706D3FFC /* AppLogger.swift in Sources */,
+				5A1AA7565D5E9CC242718516 /* ConnectionDiagnostics.swift in Sources */,
+				8A49DD148EA84A829F4E10B3 /* GlobalVPNServer.swift in Sources */,
+				09FFFB194CA46267E43F77F5 /* KeychainStorage.swift in Sources */,
+				8C406FD832C82D948B09BD2F /* NetworkPreferences.swift in Sources */,
+				4A5DA75EF6DF2601F50FDF17 /* NetworkPreferencesStorage.swift in Sources */,
+				8334783839D041EFB7A396FB /* PacketTunnelProvider.swift in Sources */,
+				A0BB2A06ABD81E30BF80968D /* ProfileStorage.swift in Sources */,
+				46D1EE44AF367FE4E74A5BFF /* TunnelNetworkSettingsBuilder.swift in Sources */,
+				EE4D9AB32619E6136A4AB45E /* VPNConfigurationParser.swift in Sources */,
+				18FCFFDC6D61BA6CD036D946 /* VPNConnectionStatus.swift in Sources */,
+				D56F0461A6485A568E9398B2 /* VPNProfile.swift in Sources */,
+				27EF302949A7571BCCBA8269 /* XrayConfigBuilder.swift in Sources */,
+				CCA304169776D0762E99F79F /* XrayTunnelEngine.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6B0F77FBC4B6BCBF488D27E6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF30E8988E9ABF7BEB1D1741 /* QuickVPNWidget */;
+			targetProxy = 8E6A4B1042A88F8ADE9FEBCD /* PBXContainerItemProxy */;
+		};
+		98DD5BA1C096643BB91A14E5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0FB793397A024F17DB57D76 /* QuickVPN */;
+			targetProxy = 0EE83C40B7D25B2B49BEE80C /* PBXContainerItemProxy */;
+		};
+		A249ED16280F1661DDCE93B5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F0FB0F610A87BBBE778460A3 /* QuickVPNTunnelExtension */;
+			targetProxy = 8F6581C40CEC02DF31D92253 /* PBXContainerItemProxy */;
+		};
+		F5FC96227879B44C3AB92944 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0FB793397A024F17DB57D76 /* QuickVPN */;
+			targetProxy = 571FC60F00F97BBFD946E2E6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		02D108EB38A9DF203929B695 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6659MLRZ5F;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		218411BD4E5CF6A8B15C94A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = QuickVPNTunnelExtension/QuickVPNTunnelExtension.entitlements;
+				INFOPLIST_FILE = QuickVPNTunnelExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPN.PacketTunnel;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		34FBF03AA6472D5A73F5BB43 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPNUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = QuickVPN;
+			};
+			name = Debug;
+		};
+		3C7657A02F1DB166D5DD882E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPNTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickVPN.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickVPN";
+			};
+			name = Release;
+		};
+		50C4F3C604AC0E2949230A13 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = QuickVPNWidget/QuickVPNWidget.entitlements;
+				INFOPLIST_FILE = QuickVPNWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPN.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		614338F0ACF813B215BF909F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = QuickVPN/QuickVPN.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = QuickVPN/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPN;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		731BF440725F8939943ABA51 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = QuickVPNWidget/QuickVPNWidget.entitlements;
+				INFOPLIST_FILE = QuickVPNWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPN.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		81287E1DF64B79EA1FC385E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = QuickVPN/QuickVPN.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = QuickVPN/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPN;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		86C3E2D190C44856FC5342C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = QuickVPNTunnelExtension/QuickVPNTunnelExtension.entitlements;
+				INFOPLIST_FILE = QuickVPNTunnelExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPN.PacketTunnel;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		9128853B259B1BC93999A072 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPNTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickVPN.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickVPN";
+			};
+			name = Debug;
+		};
+		BC6EA272CD5A329617B3EE90 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.QuickVPNUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = QuickVPN;
+			};
+			name = Release;
+		};
+		EDB7858825B5F3536E30D21A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6659MLRZ5F;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3245EF5D635FC6B2E79D9144 /* Build configuration list for PBXProject "QuickVPN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EDB7858825B5F3536E30D21A /* Debug */,
+				02D108EB38A9DF203929B695 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		78383D83DA5F22F6829AA8F7 /* Build configuration list for PBXNativeTarget "QuickVPN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				81287E1DF64B79EA1FC385E4 /* Debug */,
+				614338F0ACF813B215BF909F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CA5E550E16EB26CC524B955F /* Build configuration list for PBXNativeTarget "QuickVPNTunnelExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				218411BD4E5CF6A8B15C94A3 /* Debug */,
+				86C3E2D190C44856FC5342C5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E17FB26C48578F62502D5B7A /* Build configuration list for PBXNativeTarget "QuickVPNWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				50C4F3C604AC0E2949230A13 /* Debug */,
+				731BF440725F8939943ABA51 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EE529AFF9021AB49F1A32A8B /* Build configuration list for PBXNativeTarget "QuickVPNUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				34FBF03AA6472D5A73F5BB43 /* Debug */,
+				BC6EA272CD5A329617B3EE90 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F4F62D032CBB08BC3AC02215 /* Build configuration list for PBXNativeTarget "QuickVPNTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9128853B259B1BC93999A072 /* Debug */,
+				3C7657A02F1DB166D5DD882E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1A880257F164DB804680C8B2 /* XCRemoteSwiftPackageReference "SwiftyXrayKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dima-u/SwiftyXrayKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8E00F24B714BC2C747743B72 /* SwiftyXrayKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A880257F164DB804680C8B2 /* XCRemoteSwiftPackageReference "SwiftyXrayKit" */;
+			productName = SwiftyXrayKit;
+		};
+		BF075FA8E90B0EF7861C2C69 /* SwiftyXrayKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A880257F164DB804680C8B2 /* XCRemoteSwiftPackageReference "SwiftyXrayKit" */;
+			productName = SwiftyXrayKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 15C184AA6109A58C1D62DAA6 /* Project object */;
+}

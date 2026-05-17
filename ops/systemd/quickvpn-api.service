@@ -1,0 +1,17 @@
+[Unit]
+Description=QuickVPN MVP API and Admin
+After=network.target xray.service
+Wants=xray.service
+
+[Service]
+User=quickvpn
+Group=quickvpn
+WorkingDirectory=/opt/quickvpn/app
+EnvironmentFile=/etc/quickvpn/quickvpn.env
+ExecStart=/opt/quickvpn/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000 --proxy-headers
+Restart=always
+RestartSec=3
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

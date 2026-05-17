@@ -1,0 +1,11 @@
+[Unit]
+Description=Collect QuickVPN Xray traffic counters
+After=xray.service quickvpn-api.service
+
+[Service]
+Type=oneshot
+User=quickvpn
+Group=quickvpn
+WorkingDirectory=/opt/quickvpn/app
+EnvironmentFile=/etc/quickvpn/quickvpn.env
+ExecStart=/opt/quickvpn/venv/bin/python /opt/quickvpn/app/app.py collect-stats
