@@ -45,27 +45,44 @@ extension GlobalServerDeviceIdentityStore: GlobalServerDeviceIdentifying {}
 struct GlobalServerAPIConfiguration: Equatable {
     var baseURL: URL
     var mobileClientKey: String
-    var pinnedCertificateSHA256Base64: String
+    var pinnedCertificateSHA256Base64: String?
+
+    init(baseURL: URL, mobileClientKey: String, pinnedCertificateSHA256Base64: String? = nil) {
+        self.baseURL = baseURL
+        self.mobileClientKey = mobileClientKey
+        self.pinnedCertificateSHA256Base64 = pinnedCertificateSHA256Base64
+    }
+
+    init(baseURL: URL, mobileClientKey: String, pinnedCertificateSHA256Base64: String) {
+        self.init(
+            baseURL: baseURL,
+            mobileClientKey: mobileClientKey,
+            pinnedCertificateSHA256Base64: Optional(pinnedCertificateSHA256Base64)
+        )
+    }
 
     static var production: GlobalServerAPIConfiguration {
         guard let baseURL = URL(string: AppConstants.Backend.mobileAPIBaseURL) else {
             preconditionFailure("Invalid backend URL")
         }
+        let pin = AppConstants.Backend.mobileTLSCertificateSHA256Base64
         return GlobalServerAPIConfiguration(
             baseURL: baseURL,
             mobileClientKey: AppConstants.Backend.mobileClientKey,
-            pinnedCertificateSHA256Base64: AppConstants.Backend.mobileTLSCertificateSHA256Base64
+            pinnedCertificateSHA256Base64: pin.isEmpty ? nil : pin
         )
     }
 }
 
-final class PinnedCertificateHTTPClient: NSObject, QuickVPNHTTPClient, URLSessionDelegate {
+final class PinnedCertificateHTTPClient: NSObject, QuickVPNHTTPClient, URLSessionDelegate, URLSessionTaskDelegate {
     private let allowedPins: Set<String>
+    private var pinningEnabled: Bool { !allowedPins.isEmpty }
     private lazy var session: URLSession = {
         let configuration = URLSessionConfiguration.ephemeral
-        configuration.timeoutIntervalForRequest = 12
-        configuration.timeoutIntervalForResource = 45
+        configuration.timeoutIntervalForRequest = 15
+        configuration.timeoutIntervalForResource = 20
         configuration.waitsForConnectivity = false
+        configuration.connectionProxyDictionary = [:]
         return URLSession(
             configuration: configuration,
             delegate: self,
@@ -78,35 +95,85 @@ final class PinnedCertificateHTTPClient: NSObject, QuickVPNHTTPClient, URLSessio
     }
 
     func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
-        let (data, response) = try await session.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalServerAPIError.invalidResponse
+        let host = request.url?.host ?? "unknown"
+        AppLogger.info("Global server request start host=\(host) path=\(request.url?.path ?? "")", category: .app)
+        let started = Date()
+        do {
+            let (data, response) = try await session.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw GlobalServerAPIError.invalidResponse
+            }
+            let elapsed = Int(Date().timeIntervalSince(started) * 1000)
+            AppLogger.info("Global server response status=\(httpResponse.statusCode) elapsed=\(elapsed)ms", category: .app)
+            return (data, httpResponse)
+        } catch {
+            let elapsed = Int(Date().timeIntervalSince(started) * 1000)
+            if let urlError = error as? URLError {
+                AppLogger.warning("Global server request failed code=\(urlError.code.rawValue) elapsed=\(elapsed)ms", category: .app)
+            } else {
+                AppLogger.warning("Global server request failed elapsed=\(elapsed)ms", category: .app)
+            }
+            throw error
         }
-        return (data, httpResponse)
     }
 
     func urlSession(
         _ session: URLSession,
-        didReceive challenge: URLAuthenticationChallenge
-    ) async -> (URLSession.AuthChallengeDisposition, URLCredential?) {
-        guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        guard pinningEnabled,
+              challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
               let serverTrust = challenge.protectionSpace.serverTrust else {
-            return (.performDefaultHandling, nil)
+            completionHandler(.performDefaultHandling, nil)
+            return
         }
 
         let certificates = SecTrustCopyCertificateChain(serverTrust) as? [SecCertificate] ?? []
-        let hasPinnedCertificate = certificates.contains { certificate in
-            let certificateData = SecCertificateCopyData(certificate) as Data
-            let digest = SHA256.hash(data: certificateData)
-            return allowedPins.contains(Data(digest).base64EncodedString())
+        guard let leafCertificate = certificates.first else {
+            AppLogger.warning("Global server TLS challenge missing leaf certificate", category: .app)
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
         }
 
-        guard hasPinnedCertificate else {
-            AppLogger.warning("Global server TLS pin mismatch", category: .app)
-            return (.cancelAuthenticationChallenge, nil)
+        let leafData = SecCertificateCopyData(leafCertificate) as Data
+        let leafDigest = Data(SHA256.hash(data: leafData)).base64EncodedString()
+        guard allowedPins.contains(leafDigest) else {
+            AppLogger.warning("Global server TLS pin mismatch got=\(leafDigest)", category: .app)
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
         }
 
-        return (.useCredential, URLCredential(trust: serverTrust))
+        SecTrustSetAnchorCertificates(serverTrust, [leafCertificate] as CFArray)
+        SecTrustSetAnchorCertificatesOnly(serverTrust, true)
+
+        var cfError: CFError?
+        if SecTrustEvaluateWithError(serverTrust, &cfError) {
+            completionHandler(.useCredential, URLCredential(trust: serverTrust))
+        } else {
+            let description = (cfError as Error?)?.localizedDescription ?? "unknown"
+            AppLogger.warning("Global server TLS trust evaluation failed: \(description)", category: .app)
+            completionHandler(.cancelAuthenticationChallenge, nil)
+        }
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {
+        guard let last = metrics.transactionMetrics.last else {
+            return
+        }
+        let dns = Self.duration(from: last.domainLookupStartDate, to: last.domainLookupEndDate)
+        let tcp = Self.duration(from: last.connectStartDate, to: last.connectEndDate)
+        let tls = Self.duration(from: last.secureConnectionStartDate, to: last.secureConnectionEndDate)
+        let request = Self.duration(from: last.requestStartDate, to: last.requestEndDate)
+        let response = Self.duration(from: last.responseStartDate, to: last.responseEndDate)
+        AppLogger.info("Global server timing dns=\(dns) tcp=\(tcp) tls=\(tls) req=\(request) resp=\(response) protocol=\(last.networkProtocolName ?? "?")", category: .app)
+    }
+
+    private static func duration(from start: Date?, to end: Date?) -> String {
+        guard let start, let end else {
+            return "-"
+        }
+        return "\(Int(end.timeIntervalSince(start) * 1000))ms"
     }
 }
 
@@ -121,25 +188,43 @@ struct GlobalServerAPIClient {
         deviceIdentityStore: GlobalServerDeviceIdentifying = GlobalServerDeviceIdentityStore()
     ) {
         self.configuration = configuration
-        self.httpClient = httpClient ?? PinnedCertificateHTTPClient(
-            allowedPins: [configuration.pinnedCertificateSHA256Base64]
-        )
+        let pins = configuration.pinnedCertificateSHA256Base64.map { Set([$0]) } ?? []
+        self.httpClient = httpClient ?? PinnedCertificateHTTPClient(allowedPins: pins)
         self.deviceIdentityStore = deviceIdentityStore
     }
 
     func fetchServers() async throws -> [GlobalVPNServer] {
         var request = URLRequest(url: endpoint("/api/v1/mobile/servers"))
         request.httpMethod = "GET"
-        request.timeoutInterval = 12
+        request.timeoutInterval = 20
         applyMobileHeaders(to: &request)
 
-        let (data, response) = try await httpClient.data(for: request)
+        let (data, response) = try await performWithRetry(request)
         try validate(response)
         let payload = try JSONDecoder().decode(ServerListResponse.self, from: data)
         guard payload.ok else {
             throw GlobalServerAPIError.invalidResponse
         }
         return payload.servers.filter(\.isAvailable)
+    }
+
+    private func performWithRetry(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        do {
+            return try await httpClient.data(for: request)
+        } catch let error as URLError where Self.isRetryable(error) {
+            AppLogger.warning("Global server request retrying after \(error.code.rawValue)", category: .app)
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            return try await httpClient.data(for: request)
+        }
+    }
+
+    private static func isRetryable(_ error: URLError) -> Bool {
+        switch error.code {
+        case .timedOut, .networkConnectionLost, .dnsLookupFailed:
+            true
+        default:
+            false
+        }
     }
 
     func issueProfile(for server: GlobalVPNServer) async throws -> GlobalServerProfileIssue {

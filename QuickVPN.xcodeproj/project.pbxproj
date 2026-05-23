@@ -26,6 +26,7 @@
 		3073DCF63E345BBBB2CA75F2 /* ToggleVPNConnectionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA384440D62426B4E9D896D /* ToggleVPNConnectionIntent.swift */; };
 		312DBF952D07B821D690270A /* QuickVPNTunnelExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D53F97D1B1573D24DA0968ED /* QuickVPNTunnelExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		31E98DD91365C69746A4BB35 /* GlobalVPNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C927A5AC5CA69736C3F4B2 /* GlobalVPNServer.swift */; };
+		3D12B881A54C87B68BDA741E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 541CA2FE0069F65F2E4ADA91 /* LaunchScreen.storyboard */; };
 		427DBC84499519C8ADF80F27 /* NetworkPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDDDF4BD2AC493C317D80EB /* NetworkPreferences.swift */; };
 		43211D25C21AB602E1E2A604 /* NetworkPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDDDF4BD2AC493C317D80EB /* NetworkPreferences.swift */; };
 		43CF169A09D5E4AD706D3FFC /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A406E159A80C66C85AF4F4A /* AppLogger.swift */; };
@@ -164,6 +165,7 @@
 		470C102C66D5F5FC6B47D893 /* QuickVPNWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = QuickVPNWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C7F25464D539C765BC1CB3 /* QuickVPNUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = QuickVPNUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FA41FF6C8C1A76EC928539A /* WidgetVPNController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVPNController.swift; sourceTree = "<group>"; };
+		541CA2FE0069F65F2E4ADA91 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		55CB9905A8CD88397CC4CFAB /* VPNConnectionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNConnectionStatus.swift; sourceTree = "<group>"; };
 		570818B18C7AABA46BB84FBC /* XrayTunnelEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrayTunnelEngine.swift; sourceTree = "<group>"; };
 		5CBFCDCB2FCCDA60F14B1DEA /* QuickVPN.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuickVPN.entitlements; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 			children = (
 				9D7B7F44B4E6D4B3E2DF7A90 /* Assets.xcassets */,
 				6AF2ED890FDCA7452DA71D6C /* Info.plist */,
+				541CA2FE0069F65F2E4ADA91 /* LaunchScreen.storyboard */,
 				5CBFCDCB2FCCDA60F14B1DEA /* QuickVPN.entitlements */,
 				5A1F115DF8B8E38DF984EF4C /* App */,
 				0CD772D87267578810F45D31 /* Design */,
@@ -611,6 +614,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92A45A59221EA7DD01412674 /* Assets.xcassets in Resources */,
+				3D12B881A54C87B68BDA741E /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

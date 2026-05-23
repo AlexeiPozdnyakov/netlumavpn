@@ -269,7 +269,13 @@ struct QuickVPNTests {
     }
 
     @Test func realTunnelNetworkSettingsInstallDefaultRoutesAndDNS() throws {
-        let settings = TunnelNetworkSettingsBuilder().makeSettings(routesDefaultTraffic: true)
+        let preferences = NetworkPreferences(
+            tunnel: TunnelPreferences(ipMode: .ipv4AndIPv6)
+        )
+        let settings = TunnelNetworkSettingsBuilder().makeSettings(
+            routesDefaultTraffic: true,
+            preferences: preferences
+        )
         let ipv4Settings = try #require(settings.ipv4Settings)
         let ipv6Settings = try #require(settings.ipv6Settings)
         let dnsSettings = try #require(settings.dnsSettings)
@@ -285,8 +291,22 @@ struct QuickVPNTests {
         #expect(dnsSettings.matchDomains == [""])
     }
 
+    @Test func defaultTunnelNetworkSettingsUseIPv4Only() throws {
+        let settings = TunnelNetworkSettingsBuilder().makeSettings(routesDefaultTraffic: true)
+        let ipv4Settings = try #require(settings.ipv4Settings)
+
+        #expect(ipv4Settings.includedRoutes?.isEmpty == false)
+        #expect(settings.ipv6Settings == nil)
+    }
+
     @Test func mockTunnelNetworkSettingsDoNotCaptureDefaultTraffic() throws {
-        let settings = TunnelNetworkSettingsBuilder().makeSettings(routesDefaultTraffic: false)
+        let preferences = NetworkPreferences(
+            tunnel: TunnelPreferences(ipMode: .ipv4AndIPv6)
+        )
+        let settings = TunnelNetworkSettingsBuilder().makeSettings(
+            routesDefaultTraffic: false,
+            preferences: preferences
+        )
         let ipv4Settings = try #require(settings.ipv4Settings)
         let ipv6Settings = try #require(settings.ipv6Settings)
 

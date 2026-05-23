@@ -46,7 +46,7 @@ final class AppModel {
 
     @ObservationIgnored private let profileStorage: ProfileStorage
     @ObservationIgnored private let networkPreferencesStorage: NetworkPreferencesStorage
-    @ObservationIgnored private let vpnManager: VPNManager
+    @ObservationIgnored private let vpnManager: any VPNManaging
     @ObservationIgnored private let sessionStateStorage: SessionStateStorage
     @ObservationIgnored private let displayStateStorage: ConnectionDisplayStateStorage
     @ObservationIgnored private let widgetActionStorage: WidgetActionStorage
@@ -58,7 +58,7 @@ final class AppModel {
     init(
         profileStorage: ProfileStorage = ProfileStorage(),
         networkPreferencesStorage: NetworkPreferencesStorage = NetworkPreferencesStorage(),
-        vpnManager: VPNManager? = nil,
+        vpnManager: (any VPNManaging)? = nil,
         sessionStateStorage: SessionStateStorage = SessionStateStorage(),
         displayStateStorage: ConnectionDisplayStateStorage = ConnectionDisplayStateStorage(),
         widgetActionStorage: WidgetActionStorage = WidgetActionStorage(),
@@ -176,6 +176,7 @@ final class AppModel {
             return
         }
 
+        applyPreferredIPMode(for: server)
         selectedGlobalServerID = server.id
         if let existingProfile = profiles.first(where: { $0.isQuickVPNManaged && $0.managedServerID == server.id }) {
             selectedProfileID = existingProfile.id
@@ -205,12 +206,7 @@ final class AppModel {
         }
 
         do {
-            if let existingProfile = profiles.first(where: { $0.isQuickVPNManaged && $0.managedServerID == server.id }) {
-                selectProfile(existingProfile)
-                await connect()
-                return
-            }
-
+            applyPreferredIPMode(for: server)
             var (profile, secret) = try await globalServerService.provisionProfile(for: server)
             if let existingProfile = profiles.first(where: { $0.isQuickVPNManaged && $0.managedServerID == server.id }) {
                 profile.id = existingProfile.id
@@ -353,6 +349,14 @@ final class AppModel {
 
     private func saveNetworkPreferences() {
         networkPreferencesStorage.save(networkPreferences)
+    }
+
+    private func applyPreferredIPMode(for server: GlobalVPNServer) {
+        guard networkPreferences.tunnel.ipMode != server.preferredIPMode else {
+            return
+        }
+        networkPreferences.tunnel.ipMode = server.preferredIPMode
+        saveNetworkPreferences()
     }
 
     private func reloadWidgets() {

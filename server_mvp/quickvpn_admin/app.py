@@ -4,6 +4,7 @@ import base64
 import hashlib
 import hmac
 import html
+import ipaddress
 import json
 import os
 import re
@@ -39,16 +40,44 @@ VPN_HOST = env("VPN_HOST", "192.0.2.10")
 VPN_PORT = int(env("VPN_PORT", "443"))
 XRAY_LISTEN_HOST = env("XRAY_LISTEN_HOST", "0.0.0.0")
 XRAY_LISTEN_PORT = int(env("XRAY_LISTEN_PORT", str(VPN_PORT)))
+TROJAN_HOST = env("TROJAN_HOST", "trojan.netlumavpn.example")
+TROJAN_LISTEN_HOST = env("TROJAN_LISTEN_HOST", "127.0.0.1")
+TROJAN_LISTEN_PORT = int(env("TROJAN_LISTEN_PORT", "2443"))
+TROJAN_CERT_FILE = env("TROJAN_CERT_FILE", "/etc/xray/certs/api.netlumavpn.example.fullchain.pem")
+TROJAN_KEY_FILE = env("TROJAN_KEY_FILE", "/etc/xray/certs/api.netlumavpn.example.privkey.pem")
+TROJAN_FINGERPRINT = env("TROJAN_FINGERPRINT", "chrome")
 REALITY_PRIVATE_KEY = env("REALITY_PRIVATE_KEY")
 REALITY_PUBLIC_KEY = env("REALITY_PUBLIC_KEY")
 REALITY_SHORT_ID = env("REALITY_SHORT_ID")
 REALITY_SERVER_NAME = env("REALITY_SERVER_NAME", "www.apple.com")
 REALITY_DEST = env("REALITY_DEST", f"{REALITY_SERVER_NAME}:443")
+REALITY_FINGERPRINT = env("REALITY_FINGERPRINT", "chrome")
+REALITY_SPIDER_X = env("REALITY_SPIDER_X", "/")
+VLESS_FLOW = env("VLESS_FLOW").strip()
+VLESS_COMPATIBILITY_FLOW = env("VLESS_COMPATIBILITY_FLOW").strip()
 ADMIN_USER = env("ADMIN_USER", "admin")
 ADMIN_PASSWORD_HASH = env("ADMIN_PASSWORD_HASH")
 SESSION_SECRET = env("SESSION_SECRET")
 API_KEY = env("API_KEY")
 MOBILE_API_KEY = env("MOBILE_API_KEY")
+WG_BIN = env("WG_BIN", "/usr/bin/wg")
+WIREGUARD_CONFIG_PATH = Path(env("WIREGUARD_CONFIG_PATH", "/etc/wireguard/wg0.conf"))
+WIREGUARD_SERVICE = env("WIREGUARD_SERVICE", "wg-quick@wg0")
+WIREGUARD_INTERFACE = env("WIREGUARD_INTERFACE", "wg0")
+WIREGUARD_PORT = int(env("WIREGUARD_PORT", "51820"))
+WIREGUARD_NETWORK = env("WIREGUARD_NETWORK", "10.8.0.0/24")
+WIREGUARD_SERVER_ADDRESS = env("WIREGUARD_SERVER_ADDRESS", "10.8.0.1/24")
+WIREGUARD_SERVER_PRIVATE_KEY = env("WIREGUARD_SERVER_PRIVATE_KEY")
+WIREGUARD_SERVER_PUBLIC_KEY = env("WIREGUARD_SERVER_PUBLIC_KEY")
+WIREGUARD_ALLOWED_IPS = env("WIREGUARD_ALLOWED_IPS", "0.0.0.0/0")
+WIREGUARD_PERSISTENT_KEEPALIVE = int(env("WIREGUARD_PERSISTENT_KEEPALIVE", "25"))
+WIREGUARD_MTU = int(env("WIREGUARD_MTU", "1280"))
+WIREGUARD_NAT_INTERFACE = env("WIREGUARD_NAT_INTERFACE", "eth0")
+
+VLESS_SERVER_ID = "quickvpn-mvp-eu-1"
+TROJAN_SERVER_ID = "quickvpn-mvp-eu-1-trojan"
+WIREGUARD_SERVER_ID = "quickvpn-mvp-eu-1-wireguard"
+SUPPORTED_PROTOCOLS = {"vless", "trojan", "wireguard"}
 
 
 app = FastAPI(title=APP_NAME)
@@ -87,6 +116,10 @@ def init_db() -> None:
                 email TEXT NOT NULL UNIQUE,
                 status TEXT NOT NULL DEFAULT 'active',
                 vless_url TEXT NOT NULL,
+                wireguard_private_key TEXT,
+                wireguard_public_key TEXT,
+                wireguard_preshared_key TEXT,
+                wireguard_address TEXT,
                 upload_bytes INTEGER NOT NULL DEFAULT 0,
                 download_bytes INTEGER NOT NULL DEFAULT 0,
                 last_seen_at TEXT,
@@ -114,6 +147,18 @@ def init_db() -> None:
             );
             """
         )
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(profiles)").fetchall()}
+        migrations = {
+            "protocol": "ALTER TABLE profiles ADD COLUMN protocol TEXT NOT NULL DEFAULT 'vless'",
+            "wireguard_private_key": "ALTER TABLE profiles ADD COLUMN wireguard_private_key TEXT",
+            "wireguard_public_key": "ALTER TABLE profiles ADD COLUMN wireguard_public_key TEXT",
+            "wireguard_preshared_key": "ALTER TABLE profiles ADD COLUMN wireguard_preshared_key TEXT",
+            "wireguard_address": "ALTER TABLE profiles ADD COLUMN wireguard_address TEXT",
+        }
+        for column, statement in migrations.items():
+            if column not in columns:
+                conn.execute(statement)
+        conn.execute("UPDATE profiles SET protocol='vless' WHERE protocol IS NULL OR protocol=''")
 
 
 def audit(actor: str, action: str, target: str = "", details: str = "") -> None:
@@ -220,13 +265,13 @@ def page(title: str, body: str) -> str:
     table {{ width:100%; border-collapse:collapse; font-size:14px; }}
     th, td {{ text-align:left; border-bottom:1px solid var(--line); padding:10px 8px; vertical-align:top; }}
     th {{ color:var(--muted); font-weight:600; }}
-    input {{ width:100%; border:1px solid var(--line); border-radius:6px; padding:10px 12px; font-size:14px; }}
+    input, select {{ width:100%; border:1px solid var(--line); border-radius:6px; padding:10px 12px; font-size:14px; background:white; }}
     textarea {{ width:100%; min-height:120px; border:1px solid var(--line); border-radius:6px; padding:10px 12px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; }}
     label {{ display:block; font-size:13px; color:var(--muted); margin:0 0 6px; }}
     button, .button {{ border:0; border-radius:6px; padding:10px 14px; background:var(--accent); color:white; font-weight:700; cursor:pointer; text-decoration:none; display:inline-block; }}
     button.danger {{ background:var(--bad); }}
     button.secondary, .button.secondary {{ background:#eef2f7; color:var(--text); }}
-    .row {{ display:grid; grid-template-columns:1fr 1fr auto; gap:12px; align-items:end; }}
+    .row {{ display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:12px; align-items:end; }}
     .badge {{ display:inline-flex; align-items:center; border-radius:999px; padding:3px 9px; font-size:12px; font-weight:700; background:#eef2f7; color:var(--muted); }}
     .badge.good {{ background:#dcfae6; color:var(--good); }}
     .badge.bad {{ background:#fee4e2; color:var(--bad); }}
@@ -265,13 +310,14 @@ def build_vless_url(profile_uuid: str, label: str) -> str:
         "security": "reality",
         "encryption": "none",
         "pbk": REALITY_PUBLIC_KEY,
-        "fp": "chrome",
+        "fp": REALITY_FINGERPRINT,
         "type": "tcp",
         "sni": REALITY_SERVER_NAME,
         "sid": REALITY_SHORT_ID,
-        "spx": "/",
-        "flow": "xtls-rprx-vision",
+        "spx": REALITY_SPIDER_X,
     }
+    if VLESS_FLOW:
+        query["flow"] = VLESS_FLOW
     return (
         f"vless://{profile_uuid}@{VPN_HOST}:{VPN_PORT}/?"
         + urllib.parse.urlencode(query, quote_via=urllib.parse.quote)
@@ -280,18 +326,125 @@ def build_vless_url(profile_uuid: str, label: str) -> str:
     )
 
 
+def build_trojan_url(password: str, label: str) -> str:
+    query = {
+        "security": "tls",
+        "type": "tcp",
+        "sni": TROJAN_HOST,
+        "fp": TROJAN_FINGERPRINT,
+    }
+    return (
+        f"trojan://{urllib.parse.quote(password, safe='')}@{TROJAN_HOST}:443/?"
+        + urllib.parse.urlencode(query, quote_via=urllib.parse.quote)
+        + "#"
+        + urllib.parse.quote(label)
+    )
+
+
+def build_wireguard_url(private_key: str, preshared_key: str | None, address: str, label: str) -> str:
+    if not WIREGUARD_SERVER_PUBLIC_KEY:
+        raise RuntimeError("WIREGUARD_SERVER_PUBLIC_KEY is not configured")
+    query = {
+        "privatekey": private_key,
+        "publickey": WIREGUARD_SERVER_PUBLIC_KEY,
+        "address": address,
+        "allowedips": WIREGUARD_ALLOWED_IPS,
+        "persistentkeepalive": str(WIREGUARD_PERSISTENT_KEEPALIVE),
+        "mtu": str(WIREGUARD_MTU),
+    }
+    if preshared_key:
+        query["presharedkey"] = preshared_key
+    return (
+        f"wireguard://{VPN_HOST}:{WIREGUARD_PORT}/?"
+        + urllib.parse.urlencode(query, quote_via=urllib.parse.quote)
+        + "#"
+        + urllib.parse.quote(label)
+    )
+
+
+def build_profile_url(row: sqlite3.Row, label: str) -> str:
+    protocol = str(row["protocol"] or "vless").lower()
+    if protocol == "vless":
+        return build_vless_url(row["credential_uuid"], label)
+    if protocol == "trojan":
+        return build_trojan_url(row["credential_uuid"], label)
+    if protocol == "wireguard":
+        return build_wireguard_url(
+            row["wireguard_private_key"],
+            row["wireguard_preshared_key"],
+            row["wireguard_address"],
+            label,
+        )
+    raise ValueError(f"unsupported protocol: {protocol}")
+
+
+def protocol_for_server_id(server_id: str) -> str | None:
+    return {
+        VLESS_SERVER_ID: "vless",
+        TROJAN_SERVER_ID: "trojan",
+        WIREGUARD_SERVER_ID: "wireguard",
+    }.get(server_id)
+
+
+def sync_profile_urls() -> int:
+    updated = 0
+    with db() as conn:
+        rows = conn.execute(
+            """
+            SELECT profiles.*, users.name AS user_name
+            FROM profiles
+            JOIN users ON users.id = profiles.user_id
+            """
+        ).fetchall()
+        for row in rows:
+            try:
+                expected_url = build_profile_url(row, f"{row['user_name']} - {row['device_name']}")
+            except RuntimeError:
+                continue
+            if row["vless_url"] == expected_url:
+                continue
+            conn.execute("UPDATE profiles SET vless_url=? WHERE id=?", (expected_url, row["id"]))
+            updated += 1
+    if updated:
+        audit("system", "profile.urls.sync", details=f"updated={updated}")
+    return updated
+
+
 def render_xray_config() -> dict[str, Any]:
     with db() as conn:
         rows = conn.execute("SELECT * FROM profiles WHERE status='active' ORDER BY created_at").fetchall()
-    clients = [
-        {
+    vless_clients = []
+    trojan_clients = []
+    for row in rows:
+        protocol = str(row["protocol"] or "vless").lower()
+        if protocol == "trojan":
+            trojan_clients.append(
+                {
+                    "password": row["credential_uuid"],
+                    "email": row["email"],
+                    "level": 0,
+                }
+            )
+            continue
+        if protocol != "vless":
+            continue
+        client = {
             "id": row["credential_uuid"],
-            "flow": "xtls-rprx-vision",
             "email": row["email"],
             "level": 0,
         }
-        for row in rows
-    ]
+        if VLESS_FLOW:
+            client["flow"] = VLESS_FLOW
+        vless_clients.append(client)
+        if VLESS_COMPATIBILITY_FLOW and VLESS_COMPATIBILITY_FLOW != VLESS_FLOW:
+            vless_clients.append(
+                {
+                    "id": row["credential_uuid"],
+                    "flow": VLESS_COMPATIBILITY_FLOW,
+                    "email": f"vision-{row['email']}",
+                    "level": 0,
+                }
+            )
     return {
         "log": {
             "access": "/var/log/xray/access.log",
@@ -317,7 +470,7 @@ def render_xray_config() -> dict[str, Any]:
                 "listen": XRAY_LISTEN_HOST,
                 "port": XRAY_LISTEN_PORT,
                 "protocol": "vless",
-                "settings": {"clients": clients, "decryption": "none"},
+                "settings": {"clients": vless_clients, "decryption": "none"},
                 "streamSettings": {
                     "network": "tcp",
                     "security": "reality",
@@ -331,15 +484,134 @@ def render_xray_config() -> dict[str, Any]:
                     },
                 },
             },
+            {
+                "tag": "trojan-tls",
+                "listen": TROJAN_LISTEN_HOST,
+                "port": TROJAN_LISTEN_PORT,
+                "protocol": "trojan",
+                "settings": {"clients": trojan_clients},
+                "streamSettings": {
+                    "network": "tcp",
+                    "security": "tls",
+                    "tlsSettings": {
+                        "certificates": [
+                            {
+                                "certificateFile": TROJAN_CERT_FILE,
+                                "keyFile": TROJAN_KEY_FILE,
+                            }
+                        ]
+                    },
+                },
+            },
         ],
         "outbounds": [
-            {"protocol": "freedom", "tag": "direct"},
+            {"protocol": "freedom", "tag": "direct", "settings": {"domainStrategy": "UseIPv4"}},
             {"protocol": "blackhole", "tag": "blocked"},
         ],
         "routing": {
             "rules": [{"type": "field", "inboundTag": ["api"], "outboundTag": "api"}]
         },
     }
+
+
+def wg_run(args: list[str], input_text: str | None = None) -> str:
+    result = subprocess.run(
+        [WG_BIN, *args],
+        input=input_text,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=8,
+    )
+    return result.stdout.strip()
+
+
+def generate_wireguard_key_pair() -> tuple[str, str]:
+    private_key = wg_run(["genkey"])
+    public_key = wg_run(["pubkey"], f"{private_key}\n")
+    return private_key, public_key
+
+
+def generate_wireguard_preshared_key() -> str:
+    return wg_run(["genpsk"])
+
+
+def next_wireguard_address(conn: sqlite3.Connection) -> str:
+    network = ipaddress.ip_network(WIREGUARD_NETWORK, strict=False)
+    server_ip = ipaddress.ip_interface(WIREGUARD_SERVER_ADDRESS).ip
+    used_ips = {server_ip}
+    rows = conn.execute(
+        """
+        SELECT wireguard_address
+        FROM profiles
+        WHERE protocol='wireguard' AND wireguard_address IS NOT NULL
+        """
+    ).fetchall()
+    for row in rows:
+        try:
+            used_ips.add(ipaddress.ip_interface(row["wireguard_address"]).ip)
+        except ValueError:
+            continue
+    for candidate in network.hosts():
+        if candidate not in used_ips:
+            return f"{candidate}/32"
+    raise RuntimeError(f"WireGuard network {WIREGUARD_NETWORK} has no free addresses")
+
+
+def render_wireguard_config() -> str:
+    if not WIREGUARD_SERVER_PRIVATE_KEY:
+        raise RuntimeError("WIREGUARD_SERVER_PRIVATE_KEY is not configured")
+    with db() as conn:
+        rows = conn.execute(
+            """
+            SELECT *
+            FROM profiles
+            WHERE protocol='wireguard' AND status='active'
+            ORDER BY created_at
+            """
+        ).fetchall()
+
+    lines = [
+        "[Interface]",
+        f"PrivateKey = {WIREGUARD_SERVER_PRIVATE_KEY}",
+        f"Address = {WIREGUARD_SERVER_ADDRESS}",
+        f"ListenPort = {WIREGUARD_PORT}",
+        f"MTU = {WIREGUARD_MTU}",
+        (
+            "PostUp = iptables -A FORWARD -i %i -j ACCEPT; "
+            "iptables -A FORWARD -o %i -j ACCEPT; "
+            f"iptables -t nat -A POSTROUTING -s {WIREGUARD_NETWORK} -o {WIREGUARD_NAT_INTERFACE} -j MASQUERADE"
+        ),
+        (
+            "PostDown = iptables -D FORWARD -i %i -j ACCEPT; "
+            "iptables -D FORWARD -o %i -j ACCEPT; "
+            f"iptables -t nat -D POSTROUTING -s {WIREGUARD_NETWORK} -o {WIREGUARD_NAT_INTERFACE} -j MASQUERADE || true"
+        ),
+        "",
+    ]
+    for row in rows:
+        lines.extend(
+            [
+                "[Peer]",
+                f"# {row['email']}",
+                f"PublicKey = {row['wireguard_public_key']}",
+                f"PresharedKey = {row['wireguard_preshared_key']}",
+                f"AllowedIPs = {row['wireguard_address']}",
+                "",
+            ]
+        )
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def write_wireguard_config() -> bool:
+    if not WIREGUARD_SERVER_PRIVATE_KEY or not WIREGUARD_SERVER_PUBLIC_KEY:
+        return False
+    WIREGUARD_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = WIREGUARD_CONFIG_PATH.with_name(f"{WIREGUARD_CONFIG_PATH.name}.tmp")
+    tmp_path.write_text(render_wireguard_config(), encoding="utf-8")
+    os.chmod(tmp_path, 0o600)
+    tmp_path.replace(WIREGUARD_CONFIG_PATH)
+    return True
 
 
 def write_xray_config() -> None:
@@ -360,47 +632,105 @@ def write_xray_config() -> None:
 def restart_xray() -> None:
     write_xray_config()
     subprocess.run(["sudo", "/bin/systemctl", "restart", XRAY_SERVICE], check=True, capture_output=True, text=True)
+    if write_wireguard_config():
+        subprocess.run(
+            ["sudo", "/bin/systemctl", "restart", WIREGUARD_SERVICE],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
 
-def create_profile(user_name: str, device_name: str, actor: str) -> sqlite3.Row:
+def create_profile(user_name: str, device_name: str, actor: str, protocol: str = "vless") -> sqlite3.Row:
     user_name = user_name.strip() or "MVP User"
     device_name = device_name.strip() or "iPhone"
+    protocol = (protocol or "vless").strip().lower()
+    if protocol not in SUPPORTED_PROTOCOLS:
+        raise ValueError("unsupported protocol")
     profile_id = str(uuid.uuid4())
     user_id = str(uuid.uuid4())
-    profile_uuid = str(uuid.uuid4())
+    credential = secrets.token_urlsafe(24) if protocol == "trojan" else str(uuid.uuid4())
     email = f"{profile_id}@quickvpn"
     label = f"{user_name} - {device_name}"
-    vless_url = build_vless_url(profile_uuid, label)
+    wireguard_private_key: str | None = None
+    wireguard_public_key: str | None = None
+    wireguard_preshared_key: str | None = None
+    wireguard_address: str | None = None
+    if protocol == "vless":
+        config_url = build_vless_url(credential, label)
+    elif protocol == "trojan":
+        config_url = build_trojan_url(credential, label)
+    else:
+        wireguard_private_key, wireguard_public_key = generate_wireguard_key_pair()
+        wireguard_preshared_key = generate_wireguard_preshared_key()
+        config_url = ""
     created_at = now_iso()
     with db() as conn:
+        if protocol == "wireguard":
+            wireguard_address = next_wireguard_address(conn)
+            config_url = build_wireguard_url(
+                wireguard_private_key or "",
+                wireguard_preshared_key,
+                wireguard_address,
+                label,
+            )
         conn.execute(
             "INSERT INTO users(id, name, status, created_at) VALUES (?, ?, 'active', ?)",
             (user_id, user_name, created_at),
         )
         conn.execute(
             """
-            INSERT INTO profiles(id, user_id, device_name, credential_uuid, email, status, vless_url, created_at)
-            VALUES (?, ?, ?, ?, ?, 'active', ?, ?)
+            INSERT INTO profiles(
+                id,
+                user_id,
+                device_name,
+                protocol,
+                credential_uuid,
+                email,
+                status,
+                vless_url,
+                wireguard_private_key,
+                wireguard_public_key,
+                wireguard_preshared_key,
+                wireguard_address,
+                created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?)
             """,
-            (profile_id, user_id, device_name, profile_uuid, email, vless_url, created_at),
+            (
+                profile_id,
+                user_id,
+                device_name,
+                protocol,
+                credential,
+                email,
+                config_url,
+                wireguard_private_key,
+                wireguard_public_key,
+                wireguard_preshared_key,
+                wireguard_address,
+                created_at,
+            ),
         )
         row = conn.execute("SELECT * FROM profiles WHERE id=?", (profile_id,)).fetchone()
     restart_xray()
-    audit(actor, "profile.create", profile_id, f"user={user_name}; device={device_name}")
+    audit(actor, "profile.create", profile_id, f"user={user_name}; device={device_name}; protocol={protocol}")
     return row
 
 
 def available_mobile_servers() -> list[dict[str, Any]]:
+    base = {
+        "name": "QuickVPN Global",
+        "country": "Germany",
+        "city": "Nuremberg",
+        "region": "Europe",
+        "is_available": True,
+        "ip_mode": "ipv4_only",
+    }
     return [
-        {
-            "id": "quickvpn-mvp-eu-1",
-            "name": "QuickVPN Global",
-            "country": "Germany",
-            "city": "Nuremberg",
-            "region": "Europe",
-            "protocol": "VLESS Reality",
-            "is_available": True,
-        }
+        {**base, "id": VLESS_SERVER_ID, "protocol": "VLESS Reality"},
+        {**base, "id": TROJAN_SERVER_ID, "protocol": "Trojan TLS"},
+        {**base, "id": WIREGUARD_SERVER_ID, "protocol": "WireGuard"},
     ]
 
 
@@ -410,8 +740,8 @@ def normalized_device_key(server_id: str, device_id: str) -> str:
 
 
 def issue_mobile_profile(server_id: str, device_id: str, device_name: str) -> sqlite3.Row:
-    server_ids = {server["id"] for server in available_mobile_servers()}
-    if server_id not in server_ids:
+    protocol = protocol_for_server_id(server_id)
+    if protocol is None:
         raise ValueError("unknown server")
 
     device_key = normalized_device_key(server_id, device_id)
@@ -428,6 +758,7 @@ def issue_mobile_profile(server_id: str, device_id: str, device_name: str) -> sq
         user_name=f"Mobile {hashlib.sha256(device_id.encode()).hexdigest()[:8]}",
         device_name=device_key,
         actor="mobile",
+        protocol=protocol,
     )
 
 
@@ -440,6 +771,22 @@ def set_profile_status(profile_id: str, status: str, actor: str) -> None:
         )
     restart_xray()
     audit(actor, f"profile.{status}", profile_id)
+
+
+def delete_profile(profile_id: str, actor: str) -> bool:
+    with db() as conn:
+        row = conn.execute("SELECT * FROM profiles WHERE id=?", (profile_id,)).fetchone()
+        if not row:
+            return False
+        user_id = row["user_id"]
+        conn.execute("DELETE FROM traffic_samples WHERE profile_id=?", (profile_id,))
+        conn.execute("DELETE FROM profiles WHERE id=?", (profile_id,))
+        remaining = conn.execute("SELECT COUNT(*) FROM profiles WHERE user_id=?", (user_id,)).fetchone()[0]
+        if remaining == 0:
+            conn.execute("DELETE FROM users WHERE id=?", (user_id,))
+    restart_xray()
+    audit(actor, "profile.delete", profile_id)
+    return True
 
 
 def collect_stats() -> dict[str, Any]:
@@ -474,6 +821,8 @@ def collect_stats() -> dict[str, Any]:
             up = values.get("uplink", 0)
             down = values.get("downlink", 0)
             row = conn.execute("SELECT * FROM profiles WHERE email=?", (email,)).fetchone()
+            if not row and email.startswith("vision-"):
+                row = conn.execute("SELECT * FROM profiles WHERE email=?", (email.removeprefix("vision-"),)).fetchone()
             if not row:
                 continue
             last_seen = sampled_at if up > 0 or down > 0 else row["last_seen_at"]
@@ -535,16 +884,24 @@ def dashboard_html() -> str:
       <form class="row" method="post" action="/admin/profiles">
         <p><label>User label</label><input name="user_name" placeholder="Alex"></p>
         <p><label>Device</label><input name="device_name" placeholder="iPhone 15"></p>
+        <p>
+          <label>Protocol</label>
+          <select name="protocol">
+            <option value="vless">VLESS Reality</option>
+            <option value="trojan">Trojan TLS</option>
+            <option value="wireguard">WireGuard</option>
+          </select>
+        </p>
         <p><button type="submit">Create profile</button></p>
       </form>
-      <p class="muted">The profile is generated once and can be revoked later. Keep one profile per user device.</p>
+      <p class="muted">The profile is generated once and can be revoked later. Keep one profile per user device and protocol.</p>
       {stat_note}
     </div>
     <div class="panel">
       <h2>Profiles</h2>
       <table>
-        <thead><tr><th>User</th><th>Device</th><th>Status</th><th>Session</th><th>Traffic</th><th>Created</th><th>Actions</th></tr></thead>
-        <tbody>{rows or '<tr><td colspan="7" class="muted">No profiles yet.</td></tr>'}</tbody>
+        <thead><tr><th>User</th><th>Device</th><th>Protocol</th><th>Status</th><th>Session</th><th>Traffic</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody>{rows or '<tr><td colspan="8" class="muted">No profiles yet.</td></tr>'}</tbody>
       </table>
     </div>
     """
@@ -568,15 +925,21 @@ def profile_row(row: sqlite3.Row) -> str:
           <button type="submit">Enable</button>
         </form>
         """
+    delete_action = f"""
+        <form method="post" action="/admin/profiles/{esc(row['id'])}/delete" onsubmit="return confirm('Delete this profile permanently?');">
+          <button class="danger" type="submit">Delete</button>
+        </form>
+        """
     return f"""
     <tr>
       <td>{esc(row["user_name"])}</td>
       <td>{esc(row["device_name"])}</td>
+      <td>{esc(row["protocol"])}</td>
       <td><span class="badge {status_class}">{esc(row["status"])}</span></td>
       <td>{session_badge}<br><span class="muted">{esc(row["last_seen_at"] or "never seen")}</span></td>
       <td>{traffic}</td>
       <td>{esc(row["created_at"])}</td>
-      <td><div class="actions"><a class="button secondary" href="/admin/profiles/{esc(row["id"])}">Open</a>{status_action}</div></td>
+      <td><div class="actions"><a class="button secondary" href="/admin/profiles/{esc(row["id"])}">Open</a>{status_action}{delete_action}</div></td>
     </tr>
     """
 
@@ -593,15 +956,31 @@ def profile_detail_html(profile_id: str) -> str:
         ).fetchone()
     if not row:
         return page("Not found", "<div class='panel'>Profile not found.</div>")
+    if row["status"] == "active":
+        status_action = f"""
+        <form method="post" action="/admin/profiles/{esc(row['id'])}/revoke">
+          <button class="danger" type="submit">Revoke</button>
+        </form>
+        """
+    else:
+        status_action = f"""
+        <form method="post" action="/admin/profiles/{esc(row['id'])}/enable">
+          <button type="submit">Enable</button>
+        </form>
+        """
     body = f"""
     <h1>{esc(row["user_name"])} / {esc(row["device_name"])}</h1>
     <div class="panel">
-      <p><span class="badge">{esc(row["status"])}</span></p>
-      <p class="muted">Use this VLESS Reality URL in QuickVPN import while the iOS app has no direct backend integration yet.</p>
+      <p><span class="badge">{esc(row["protocol"])}</span> <span class="badge">{esc(row["status"])}</span></p>
+      <p class="muted">Use this configuration URL in QuickVPN import.</p>
       <textarea readonly>{esc(row["vless_url"])}</textarea>
-      <p class="muted">UUID: {esc(row["credential_uuid"])}</p>
+      <p class="muted">Credential: {esc(row["credential_uuid"])}</p>
       <div class="actions">
         <a class="button secondary" href="/admin">Back</a>
+        {status_action}
+        <form method="post" action="/admin/profiles/{esc(row['id'])}/delete" onsubmit="return confirm('Delete this profile permanently?');">
+          <button class="danger" type="submit">Delete</button>
+        </form>
       </div>
     </div>
     """
@@ -611,6 +990,7 @@ def profile_detail_html(profile_id: str) -> str:
 @app.on_event("startup")
 def startup() -> None:
     init_db()
+    sync_profile_urls()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -660,7 +1040,7 @@ async def admin_create_profile(request: Request):
     if redirect:
         return redirect
     data = await form_data(request)
-    row = create_profile(data.get("user_name", ""), data.get("device_name", ""), ADMIN_USER)
+    row = create_profile(data.get("user_name", ""), data.get("device_name", ""), ADMIN_USER, data.get("protocol", "vless"))
     return RedirectResponse(f"/admin/profiles/{row['id']}", status_code=303)
 
 
@@ -691,6 +1071,15 @@ async def admin_enable(request: Request, profile_id: str):
     return RedirectResponse("/admin", status_code=303)
 
 
+@app.post("/admin/profiles/{profile_id}/delete")
+async def admin_delete(request: Request, profile_id: str):
+    redirect = require_admin(request)
+    if redirect:
+        return redirect
+    delete_profile(profile_id, ADMIN_USER)
+    return RedirectResponse("/admin", status_code=303)
+
+
 def check_api_key(request: Request) -> bool:
     return bool(API_KEY) and hmac.compare_digest(request.headers.get("x-quickvpn-api-key", ""), API_KEY)
 
@@ -709,12 +1098,20 @@ async def api_create_profile(request: Request):
     if not check_api_key(request):
         return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
     payload = await request.json()
-    row = create_profile(str(payload.get("user_name", "")), str(payload.get("device_name", "")), "api")
+    try:
+        row = create_profile(
+            str(payload.get("user_name", "")),
+            str(payload.get("device_name", "")),
+            "api",
+            str(payload.get("protocol", "vless")),
+        )
+    except ValueError:
+        return JSONResponse({"ok": False, "error": "unsupported_protocol"}, status_code=400)
     return JSONResponse(
         {
             "ok": True,
             "profile_id": row["id"],
-            "protocol": "vless",
+            "protocol": row["protocol"],
             "config_url": row["vless_url"],
         }
     )
@@ -755,7 +1152,7 @@ async def mobile_profile(request: Request, server_id: str):
             "ok": True,
             "profile_id": row["id"],
             "server_id": server_id,
-            "protocol": "vless",
+            "protocol": row["protocol"],
             "config_url": row["vless_url"],
         }
     )
@@ -771,5 +1168,12 @@ if __name__ == "__main__":
         init_db()
         write_xray_config()
         print(str(XRAY_CONFIG_PATH))
+    elif len(sys.argv) >= 2 and sys.argv[1] == "render-wireguard":
+        init_db()
+        if write_wireguard_config():
+            print(str(WIREGUARD_CONFIG_PATH))
+        else:
+            print("WireGuard server keys are not configured")
+            sys.exit(1)
     else:
-        print("Usage: app.py hash-password <password> | collect-stats | render-xray")
+        print("Usage: app.py hash-password <password> | collect-stats | render-xray | render-wireguard")

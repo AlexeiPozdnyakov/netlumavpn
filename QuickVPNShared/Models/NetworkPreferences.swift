@@ -6,6 +6,27 @@ enum TunnelIPMode: String, CaseIterable, Codable, Identifiable {
 
     var id: String { rawValue }
 
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let value = try container.decode(String.self)
+        switch value
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .replacingOccurrences(of: "-", with: "_") {
+        case "ipv4_and_ipv6", "ipv4andipv6", "dual_stack", "dualstack":
+            self = .ipv4AndIPv6
+        case "ipv4_only", "ipv4only", "ipv4":
+            self = .ipv4Only
+        default:
+            self = .ipv4Only
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
     var title: String {
         switch self {
         case .ipv4AndIPv6:
@@ -44,7 +65,7 @@ struct TunnelPreferences: Codable, Equatable {
 
     init(
         persistTunnel: Bool = false,
-        ipMode: TunnelIPMode = .ipv4AndIPv6,
+        ipMode: TunnelIPMode = .ipv4Only,
         onDemandMode: TunnelOnDemandMode = .disabled,
         includeAllNetworks: Bool = false
     ) {

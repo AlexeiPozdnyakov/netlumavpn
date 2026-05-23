@@ -16,6 +16,14 @@ enum VPNManagerError: LocalizedError {
 }
 
 @MainActor
+protocol VPNManaging: AnyObject {
+    func observeConnectionState(_ handler: @escaping @MainActor (VPNConnectionState) -> Void) -> NSObjectProtocol
+    func currentConnectionState() async -> VPNConnectionState
+    func connect(profile: VPNProfile) async throws -> VPNConnectionState
+    func disconnect() async throws -> VPNConnectionState
+}
+
+@MainActor
 final class VPNManager {
     private let profileStorage: ProfileStorage
     private let networkPreferencesStorage: NetworkPreferencesStorage
@@ -160,8 +168,17 @@ final class VPNManager {
                     AppLogger.error(error, message: "loadAllFromPreferences failed", category: .vpn)
                     continuation.resume(throwing: error)
                 } else {
-                    AppLogger.info("Loaded \(managers?.count ?? 0) VPN manager(s)", category: .vpn)
-                    continuation.resume(returning: managers ?? [])
+                    let list = managers ?? []
+                    AppLogger.info("Loaded \(list.count) VPN manager(s)", category: .vpn)
+                    for manager in list {
+                        let includeAll = manager.protocolConfiguration?.includeAllNetworks ?? false
+                        let excludeLocal = manager.protocolConfiguration?.excludeLocalNetworks ?? false
+                        AppLogger.info(
+                            "VPN manager state isEnabled=\(manager.isEnabled) onDemand=\(manager.isOnDemandEnabled) includeAll=\(includeAll) excludeLocal=\(excludeLocal) status=\(manager.connection.status.rawValue)",
+                            category: .vpn
+                        )
+                    }
+                    continuation.resume(returning: list)
                 }
             }
         }
@@ -195,6 +212,8 @@ final class VPNManager {
         }
     }
 }
+
+extension VPNManager: VPNManaging {}
 
 private extension NEVPNConnection {
     var quickVPNConnectionState: VPNConnectionState {

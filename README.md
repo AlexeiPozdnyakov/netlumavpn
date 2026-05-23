@@ -13,7 +13,7 @@ This project is intended only for legal connections to servers you own or are au
 - `NETunnelProviderManager` setup for a Packet Tunnel provider.
 - Packet Tunnel Extension with `NEPacketTunnelProvider`, DNS, IPv4/IPv6 settings, and default route setup.
 - `XrayConfigBuilder` that generates Xray-compatible JSON outbound config.
-- VLESS Reality metadata import and Xray config generation (`pbk`, `fp`, `sid`, `spx`, `flow`).
+- VLESS Reality metadata import and Xray config generation (`pbk`, `fp`, `sid`, `spx`, optional `flow`).
 - WireGuard `.conf` import plus Xray WireGuard outbound generation.
 - Real packet-flow integration through `SwiftyXrayKit` when the SPM dependency is available.
 - `MockXrayTunnelEngine` fallback for builds where the real engine is not linked.
@@ -85,7 +85,7 @@ The tunnel engine uses `SwiftyXrayKit` when the package is linked:
 
 - `XRayTunnel(packetFlow:)` reads packets from `NEPacketTunnelFlow`.
 - `XrayConfigBuilder` provides the Xray JSON.
-- Packet Tunnel installs IPv4 and IPv6 default routes only when the real engine is active.
+- Packet Tunnel installs IPv4 default routes only when the real engine is active; IPv6 routes are installed when the tunnel IP mode is set to dual-stack.
 - DNS is scoped to the tunnel with `matchDomains = [""]`.
 
 If `SwiftyXrayKit` is not linked, the project falls back to `MockXrayTunnelEngine`:
@@ -144,7 +144,7 @@ Those tests verify:
 
 - VLESS Reality URL parsing for the provided config.
 - Xray Reality JSON generation.
-- Packet Tunnel network settings include IPv4/IPv6 default routes and tunnel DNS when the real engine is active.
+- Packet Tunnel network settings include IPv4 default routes, optional IPv6 default routes, and tunnel DNS when the real engine is active.
 - TCP reachability to the provided VLESS Reality server.
 - Basic HTTPS internet reachability.
 - Public egress IP reachability through `api.ipify.org`.

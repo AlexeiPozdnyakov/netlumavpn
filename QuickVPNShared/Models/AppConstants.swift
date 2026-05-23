@@ -29,10 +29,10 @@ enum AppConstants {
     }
 
     enum Backend {
-        static let mobileAPIBaseURL = "https://vpn.netlumavpn.example"
+        static let mobileAPIBaseURL = "https://api.netlumavpn.example"
         // Least-privilege mobile key: can list mobile servers and issue/reuse one profile per device.
         // Never use the admin API key in the app binary.
         static let mobileClientKey = ""
-        static let mobileTLSCertificateSHA256Base64 = "toR9V8L9iruf0XRwOuYK6d8St0IB+KPMSOQc0e1y7Lw="
+        static let mobileTLSCertificateSHA256Base64 = ""
     }
 }
