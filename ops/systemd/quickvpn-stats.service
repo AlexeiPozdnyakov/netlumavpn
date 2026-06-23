@@ -1,5 +1,5 @@
 [Unit]
-Description=Collect QuickVPN Xray traffic counters
+Description=Collect NetlumaVPN Xray traffic counters
 After=xray.service quickvpn-api.service
 
 [Service]

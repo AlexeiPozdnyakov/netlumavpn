@@ -1,0 +1,17 @@
+[Unit]
+Description=NetlumaVPN sing-box sidecar admin
+After=network.target sing-box.service
+Wants=sing-box.service
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/opt/quickvpn-singbox-admin
+EnvironmentFile=/etc/quickvpn-singbox-admin.env
+ExecStart=/usr/bin/python3 /opt/quickvpn-singbox-admin/singbox_admin.py
+Restart=always
+RestartSec=3
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

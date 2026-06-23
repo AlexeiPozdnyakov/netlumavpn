@@ -1,4 +1,4 @@
-# QuickVPN agents, skills, and commands
+# NetlumaVPN agents, skills, and commands
 
 This is the index of project-level Claude Code helpers. They're loaded
 automatically by Claude Code when you run the CLI from this repo root (or
@@ -14,10 +14,10 @@ with a narrowed tool set. Use them by invoking the `Agent` tool with
 |-------|-------------|
 | [`ios-developer`](../.claude/agents/ios-developer.md) | SwiftUI views, `AppModel`, feature folders, app-side services, widget |
 | [`vpn-engineer`](../.claude/agents/vpn-engineer.md) | URL parsing (VLESS/VMess/Trojan/WireGuard), Xray JSON, Packet Tunnel extension |
-| [`backend-developer`](../.claude/agents/backend-developer.md) | `server_mvp/quickvpn_admin/app.py`, FastAPI endpoints, SQLite |
+| [`backend-developer`](../.claude/agents/backend-developer.md) | `server_mvp/quickvpn_singbox_admin/app.py`, FastAPI endpoints, SQLite |
 | [`ops-engineer`](../.claude/agents/ops-engineer.md) | `ops/` files — systemd, nginx, fail2ban, deploy workflow |
-| [`swift-tester`](../.claude/agents/swift-tester.md) | New Swift Testing unit tests in `QuickVPNTests/` |
-| [`ui-tester`](../.claude/agents/ui-tester.md) | XCUITest flow tests in `QuickVPNUITests/` |
+| [`swift-tester`](../.claude/agents/swift-tester.md) | New Swift Testing unit tests in `NetlumaVPNTests/` |
+| [`ui-tester`](../.claude/agents/ui-tester.md) | XCUITest flow tests in `NetlumaVPNUITests/` |
 | [`integration-tester`](../.claude/agents/integration-tester.md) | iOS ↔ backend cross-boundary verification, TLS pinning |
 | [`security-reviewer`](../.claude/agents/security-reviewer.md) | Pre-merge audit: secrets, pinning, entitlements, auth |
 
@@ -54,10 +54,10 @@ main session can pull in on demand — not commands.
 | Command | Effect |
 |---------|--------|
 | `/regen` | `xcodegen generate` |
-| `/build` | Build `QuickVPN` for iPhone 17 Pro simulator |
-| `/test` | Run `QuickVPNTests` (hermetic) |
+| `/build` | Build `NetlumaVPN` for iPhone 17 Pro simulator |
+| `/test` | Run `NetlumaVPNTests` (hermetic) |
 | `/test-network` | Run tests with `RUN_NETWORK_TESTS=1` |
-| `/ui-test` | Run `QuickVPNUITests` |
+| `/ui-test` | Run `NetlumaVPNUITests` |
 | `/health-check` | Probe live backend: TLS pin, mobile API, admin API |
 | `/server-logs` | Tail recent VPS logs (api / xray / nginx) |
 | `/deploy-server` | Surface deploy commands for `ops/` + `server_mvp/` (requires user confirmation to execute) |
@@ -119,4 +119,4 @@ docs/                           — long-form docs for humans
 - `.claude/settings.local.json` is per-checkout and not committed. It
   contains the user's pre-approved Bash commands.
 - Live secrets are NOT in any agent / skill / command file — they're only
-  in `QUICKVPN_MVP_SERVER.md` (also gitignored).
+  in `NETLUMAVPN_MVP_SERVER.md` (also gitignored).

@@ -1,5 +1,5 @@
 [Unit]
-Description=Run QuickVPN stats collection every minute
+Description=Run NetlumaVPN stats collection every minute
 
 [Timer]
 OnBootSec=90

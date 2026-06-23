@@ -1,8 +1,8 @@
-# ТЗ на сервер QuickVPN
+# ТЗ на сервер NetlumaVPN
 
 ## 1. Цель
 
-Настроить production-ready сервер для QuickVPN, который:
+Настроить production-ready сервер для NetlumaVPN, который:
 
 - выдает VPN-профили для мобильного приложения;
 - обслуживает админ-панель для управления профилями;
@@ -203,7 +203,7 @@ https://api.netlumavpn.example
 Авторизация:
 
 ```text
-X-QuickVPN-Client-Key: MOBILE_CLIENT_KEY
+X-NetlumaVPN-Client-Key: MOBILE_CLIENT_KEY
 ```
 
 Endpoints:
@@ -221,7 +221,7 @@ POST /api/v1/mobile/servers/{server_id}/profile
   "servers": [
     {
       "id": "quickvpn-mvp-eu-1",
-      "name": "QuickVPN Global",
+      "name": "NetlumaVPN Global",
       "country": "Germany",
       "city": "Nuremberg",
       "region": "Europe",
@@ -235,7 +235,7 @@ POST /api/v1/mobile/servers/{server_id}/profile
 
 `POST /profile`:
 
-- принимает `X-QuickVPN-Device-ID`;
+- принимает `X-NetlumaVPN-Device-ID`;
 - выдает один активный профиль на устройство;
 - переиспользует существующий активный профиль для того же устройства;
 - возвращает `config_url` без `flow`.
@@ -245,7 +245,7 @@ POST /api/v1/mobile/servers/{server_id}/profile
 Admin API защищается отдельным ключом:
 
 ```text
-X-QuickVPN-API-Key: ADMIN_API_KEY
+X-NetlumaVPN-API-Key: ADMIN_API_KEY
 ```
 
 Endpoints:
@@ -353,7 +353,7 @@ Mobile API:
 
 ```bash
 curl https://api.netlumavpn.example/api/v1/mobile/servers \
-  -H "X-QuickVPN-Client-Key: MOBILE_CLIENT_KEY"
+  -H "X-NetlumaVPN-Client-Key: MOBILE_CLIENT_KEY"
 ```
 
 Ожидается `ok: true` и `ip_mode: ipv4_only`.

@@ -5,6 +5,10 @@ description: Operational recipes for the QuickVPN production VPS — SSH, system
 
 # QuickVPN VPS ops cheat sheet
 
+For a freshly recreated empty VPS, use `docs/REDEPLOY_FRESH_SERVER.md` and
+`ops/deploy-fresh-server.sh`. The old `192.0.2.10` values below are legacy
+context only and may stop working after the server is recreated.
+
 ```
 Provider IP : 192.0.2.10
 Hostname    : quickvpn-mvp

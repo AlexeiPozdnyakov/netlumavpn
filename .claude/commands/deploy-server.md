@@ -1,11 +1,25 @@
 ---
-description: Show the steps to deploy `ops/` and `server_mvp/` to the production VPS
+description: Show the steps to deploy `ops/` and `server_mvp/` to the QuickVPN VPS
 allowed-tools: Bash, Read
 ---
 
 Do NOT execute production deploys without explicit user confirmation in the
-turn. This command surfaces the exact rsync + ssh sequence the user should
-review, then run themselves (or approve for execution).
+turn. For a freshly recreated empty VPS, use `docs/REDEPLOY_FRESH_SERVER.md`
+and `ops/deploy-fresh-server.sh`; the old `192.0.2.10` sequence below is
+only for legacy partial deploys while that server still exists.
+
+## Fresh empty VPS
+
+```bash
+NEW_SERVER_IP=<new-ipv4> \
+QUICKVPN_DOMAIN=netlumavpn.example \
+QUICKVPN_MOBILE_API_KEY='<AppConstants.Backend.mobileClientKey>' \
+QUICKVPN_CERTBOT_EMAIL='<email-for-letsencrypt>' \
+./ops/deploy-fresh-server.sh
+```
+
+Before running it, DNS A records for `api`, `admin`, `vpn`, and `trojan`
+must already point to the new IP.
 
 ## What gets deployed
 

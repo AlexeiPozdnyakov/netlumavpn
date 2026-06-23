@@ -1,4 +1,4 @@
-# QuickVPN Architecture
+# NetlumaVPN Architecture
 
 ## System overview
 
@@ -7,7 +7,7 @@
 │ iOS device                                                              │
 │                                                                         │
 │  ┌──────────────────────────┐     ┌──────────────────────────────────┐  │
-│  │ QuickVPN.app (main)      │     │ QuickVPNWidget (extension)       │  │
+│  │ NetlumaVPN.app (main)      │     │ NetlumaVPNWidget (extension)       │  │
 │  │  ┌────────────────────┐  │     │  WidgetKit + App Intents         │  │
 │  │  │ @Observable        │  │     │  ToggleVPNConnectionIntent       │  │
 │  │  │ AppModel           │  │     │  queues an action in App Group   │  │
@@ -28,7 +28,7 @@
 │           │  (shared access group)                                       │
 │           ▼          ▼                                                   │
 │  ┌──────────────────────────────────────────────┐                        │
-│  │ QuickVPNTunnelExtension (NEPacketTunnelProvider)                   │  │
+│  │ NetlumaVPNTunnelExtension (NEPacketTunnelProvider)                   │  │
 │  │  ├ reads VPNProfile (AppGroup) + secret (Keychain)                  │  │
 │  │  ├ XrayConfigBuilder → outbound JSON                                │  │
 │  │  ├ TunnelNetworkSettingsBuilder → routes + DNS                      │  │
@@ -39,11 +39,11 @@
                   │
                   ▼ encrypted tunnel (VLESS Reality / VMess / Trojan / WG)
         ┌──────────────────────────────────────────┐
-        │ VPS — 192.0.2.10 (Ubuntu 24.04)       │
+        │ VPS — new IPv4 behind netlumavpn.example     │
         │                                          │
         │  443/tcp  ── nginx stream (SNI router) ──┐
         │           ┌───────────────────────────┐  │
-        │           │ SNI = quickvpn-api.…sslip │  │
+        │           │ SNI = api/admin domain    │  │
         │           │ → 127.0.0.1:8443 (HTTPS)  │  │
         │           └─────────┬─────────────────┘  │
         │                     │ mobile API         │
@@ -54,6 +54,7 @@
         │           │   SQLite + audit_logs     │  │
         │           └───────────────────────────┘  │
         │                                          │
+        │   trojan.netlumavpn.example → 127.0.0.1:2443 │
         │   * (everything else) → 127.0.0.1:1443   │
         │                                          │
         │                     ▼                    │
@@ -75,13 +76,14 @@
 
 | Target | Type | Responsibility |
 |--------|------|----------------|
-| `QuickVPN` | iOS app | UI, state (`AppModel`), backend client, NEVPN configuration |
-| `QuickVPNTunnelExtension` | Packet Tunnel | Reads shared config, drives `XrayTunnelEngine`, owns packet flow |
-| `QuickVPNWidget` | Widget extension | Lock-screen toggle via App Intent (queues action through App Group) |
-| `QuickVPNShared` (folder, not a target) | Source root | Models + services shared across all three targets |
-| `QuickVPNTests` | Unit test bundle | Swift Testing (`@Test`) — parsing, storage, logic |
-| `QuickVPNUITests` | UI test bundle | XCUITest — flow tests |
-| `server_mvp/quickvpn_admin/app.py` | FastAPI app | Admin UI + admin API + mobile API + Xray reconfig |
+| `NetlumaVPN` | iOS app | UI, state (`AppModel`), backend client, NEVPN configuration |
+| `NetlumaVPNTunnelExtension` | Packet Tunnel | Reads shared config, drives `XrayTunnelEngine`, owns packet flow |
+| `NetlumaVPNWidget` | Widget extension | Lock-screen toggle via App Intent and direct `WidgetVPNController` calls |
+| `NetlumaVPNShared` (folder, not a target) | Source root | Models + services shared across all three targets |
+| `NetlumaVPNTests` | Unit test bundle | Swift Testing (`@Test`) — parsing, storage, logic |
+| `NetlumaVPNUITests` | UI test bundle | XCUITest — flow tests |
+| `server_mvp/quickvpn_singbox_admin/app.py` | FastAPI app | Admin UI + admin API + mobile API + sing-box JSON provisioning |
+| `archive/server_mvp/quickvpn_admin/app.py` | Archived FastAPI app | Legacy Xray/WireGuard MVP backend |
 
 ## Boundary contracts
 
@@ -90,7 +92,7 @@
 - `AppGroupStorage` writes JSON blobs under keys defined in
   `AppConstants.AppGroupKeys` (e.g. `profiles.v1`, `selectedProfileID.v1`,
   `networkPreferences.v1`, `connectionSessionState.v1`,
-  `connectionDisplayState.v1`, `pendingWidgetAction.v1`, `logs.v1`).
+  `connectionDisplayState.v1`, `logs.v1`).
 - `KeychainStorage` holds per-profile secrets under
   `AppConstants.Keychain.service`, scoped to
   `AppConstants.keychainAccessGroup`.
@@ -104,23 +106,24 @@
 
 - All requests through `GlobalServerAPIClient`.
 - Base URL: `AppConstants.Backend.mobileAPIBaseURL`.
-- Headers: `X-QuickVPN-Client-Key` and `X-QuickVPN-Device-ID`.
+- Headers: `X-NetlumaVPN-Client-Key` and `X-NetlumaVPN-Device-ID`.
 - TLS pin: `URLSessionDelegate` validates SPKI SHA256 against
   `AppConstants.Backend.mobileTLSCertificateSHA256Base64`.
 
-### App ↔ Widget (App Group)
+### App ↔ Widget (App Group + Keychain)
 
-- Widget writes a "pending action" (`connect` / `disconnect` / `toggle`)
-  under `AppConstants.AppGroupKeys.pendingWidgetAction`.
-- Main app picks it up on launch / foreground via
-  `WidgetActionStorage.consumePendingAction()` and applies it via
-  `VPNManager`.
+- Widget actions call `WidgetVPNController` directly to connect, disconnect,
+  or toggle the selected VPN profile.
+- The widget reads the same profile, display state, App Group, and Keychain
+  data as the main app. There is no pending action queue for the app to consume.
 
-### Backend ↔ Xray (filesystem + systemctl)
+### Backend ↔ sing-box (filesystem + systemctl)
 
-- Profile mutations rewrite `/usr/local/etc/xray/config.json`.
-- `subprocess.run(["systemctl", "restart", "xray"])` reloads Xray.
-- The service user has a sudoers entry for this exact command only.
+- Profile mutations update sing-box user entries and per-client JSON files.
+- The backend validates config with `sing-box check`, then reloads
+  `sing-box.service`.
+- The legacy Xray/WireGuard MVP backend is archived under
+  `archive/server_mvp/quickvpn_admin/`.
 
 ## State management
 
@@ -166,10 +169,9 @@ running.
 
 - No multi-region backend — the schema and mobile API support multiple
   `server_id`s but only `quickvpn-mvp-eu-1` is provisioned.
-- No paid tier — `QuickVPN/Features/Premium/PremiumPaywallView.swift` is a
+- No paid tier — `NetlumaVPN/Features/Premium/PremiumPaywallView.swift` is a
   stub.
-- No protocol-picker UI — `QuickVPN/Features/Protocols/ProtocolsView.swift`
-  is a stub.
+- No standalone protocol-picker tab.
 - No remote config / feature flags.
 - No push notifications for disconnect events.
 - No persistent traffic history graphs — only current-session counters.
@@ -179,11 +181,11 @@ running.
 
 | Question | Start here |
 |----------|------------|
-| What does the app do on launch? | `QuickVPN/App/QuickVPNApp.swift` → `AppModel.init` |
+| What does the app do on launch? | `NetlumaVPN/App/NetlumaVPNApp.swift` → `AppModel.init` |
 | How does a connection get established? | `VPNManager.swift` → `PacketTunnelProvider.startTunnel` |
-| How is a VLESS URL parsed? | `QuickVPNShared/Services/VPNConfigurationParser.swift` |
-| What does Xray see? | `QuickVPNShared/Services/XrayConfigBuilder.swift` |
-| How does the widget toggle the VPN? | `QuickVPNWidget/ToggleVPNConnectionIntent.swift` → `WidgetActionStorage` |
-| How are global servers fetched? | `QuickVPN/Services/GlobalServerService.swift` |
-| What does the backend serve? | `server_mvp/quickvpn_admin/app.py` (single file) |
+| How is a VLESS URL parsed? | `NetlumaVPNShared/Services/VPNConfigurationParser.swift` |
+| What does Xray see? | `NetlumaVPNShared/Services/XrayConfigBuilder.swift` |
+| How does the widget toggle the VPN? | `NetlumaVPNWidget/ToggleVPNConnectionIntent.swift` → `WidgetVPNController` |
+| How are global servers fetched? | `NetlumaVPN/Services/GlobalServerService.swift` |
+| What does the backend serve? | `server_mvp/quickvpn_singbox_admin/app.py` |
 | How is the VPS configured? | `ops/` (systemd + nginx + fail2ban) |

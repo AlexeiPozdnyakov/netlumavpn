@@ -1,5 +1,5 @@
 [Unit]
-Description=QuickVPN MVP API and Admin
+Description=NetlumaVPN MVP API and Admin
 After=network.target xray.service
 Wants=xray.service
 

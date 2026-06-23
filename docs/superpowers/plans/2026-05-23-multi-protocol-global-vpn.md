@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add VLESS Reality, Trojan TLS, and WireGuard as selectable QuickVPN Global options backed by the VPS.
+**Goal:** Add VLESS Reality, Trojan TLS, and WireGuard as selectable NetlumaVPN Global options backed by the VPS.
 
 **Architecture:** Keep VLESS Reality on the existing 443 Reality route. Add Trojan TLS behind `trojan.netlumavpn.example` on the same external 443 via nginx stream SNI routing. Run native WireGuard on UDP 51820 and issue one peer per mobile device.
 
@@ -33,9 +33,9 @@
 ### Task 3: iOS Client
 
 **Files:**
-- Modify: `QuickVPNShared/Models/GlobalVPNServer.swift`
-- Modify: `QuickVPNTests/GlobalServerIntegrationTests.swift`
-- Existing parser/builder: `QuickVPNShared/Services/VPNConfigurationParser.swift`, `QuickVPNShared/Services/XrayConfigBuilder.swift`
+- Modify: `NetlumaVPNShared/Models/GlobalVPNServer.swift`
+- Modify: `NetlumaVPNTests/GlobalServerIntegrationTests.swift`
+- Existing parser/builder: `NetlumaVPNShared/Services/VPNConfigurationParser.swift`, `NetlumaVPNShared/Services/XrayConfigBuilder.swift`
 
 - [ ] Decode three global server entries.
 - [ ] Preserve per-protocol server IDs in managed profiles.

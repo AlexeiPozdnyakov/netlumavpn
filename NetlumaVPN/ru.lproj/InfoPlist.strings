@@ -1,0 +1,2 @@
+"CFBundleDisplayName" = "NetlumaVPN";
+"NSCameraUsageDescription" = "NetlumaVPN использует камеру только для сканирования QR-кодов конфигурации VPN, которые вы выбираете для импорта.";

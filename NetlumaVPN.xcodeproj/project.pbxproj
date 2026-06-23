@@ -1,0 +1,1251 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		032849636A0ED743365BE3AE /* VPNConfigurationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8659D808211A50B8FC8ED9 /* VPNConfigurationParser.swift */; };
+		06781F2CBD880742659CBA41 /* NetworkPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2ED52E1AEDF61507E406C60 /* NetworkPreferencesStorage.swift */; };
+		08A3D29EBFE66DBB202090E6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A5B5FCB959F29D44E57E1BA9 /* InfoPlist.strings */; };
+		0D70F814865C39E43534984B /* NetlumaVPNTunnelExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 78C914E3D17529675D388E01 /* NetlumaVPNTunnelExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0F21C131C010F7F919CE7C3B /* ProfileStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BB3E8CC77DDE35E8051974 /* ProfileStorage.swift */; };
+		12F8929A719AE7CEA8CD9268 /* VPNManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027D9CB46EB751E20989AA9C /* VPNManager.swift */; };
+		1B26946D04B4EAF3DC15C27A /* ToggleVPNConnectionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76DC9C69BF1128D6869A2FE1 /* ToggleVPNConnectionIntent.swift */; };
+		1C81B33929640AFC0AF55E89 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFEC7C2CF08C0D6B675999C8 /* SplashScreenView.swift */; };
+		1CE4CC98116B931D6D9CD854 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09426F7BE692B0FE5EACF37E /* AppLogger.swift */; };
+		1D6889F8C333E6E7B350A29B /* TunnelNetworkSettingsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16012BC41445DB65914C74A0 /* TunnelNetworkSettingsBuilder.swift */; };
+		1EEBB825B91BBE766C036D17 /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FBDB2D041BC12B492417E7 /* ConnectionDiagnostics.swift */; };
+		1F72CCC2B0462F7309EA3DA5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE544C2B1CAF2EF9BC004CF /* ContentView.swift */; };
+		21BFCF0A3520879EEFEB5560 /* HomeConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C214C31F8B34AD15558A8842 /* HomeConnectView.swift */; };
+		237DEA40BA61DE804D530455 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A7F25498D0661416D18222 /* PacketTunnelProvider.swift */; };
+		25D00A18842B5E3680BE19EB /* TunnelNetworkSettingsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16012BC41445DB65914C74A0 /* TunnelNetworkSettingsBuilder.swift */; };
+		280A1F9959D690C5042DF412 /* NetlumaVPNApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CA97158D87F453ACF9A252 /* NetlumaVPNApp.swift */; };
+		281003572B8D0E8C6F0667E7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8DCC34573D5E5DD99F47BB13 /* Localizable.strings */; };
+		33DE00984AFECA4EECE3E995 /* PremiumSubscriptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C671BF30079378C7C970076A /* PremiumSubscriptionTests.swift */; };
+		359C7249A12C7A1480AFFB2D /* LocalizationResourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7475E226A2F2BD4B3525904C /* LocalizationResourceTests.swift */; };
+		36CBCE4E489BA52816A2F216 /* ProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBDC3DD348606995F21675 /* ProfileListView.swift */; };
+		395C09F3DAC709FC1B93E86C /* SessionInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735C7BEE827F4D044A16EEDE /* SessionInfoView.swift */; };
+		401F78C5A7456528C32AF328 /* ProfileFormData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 134B37FDC6BC87FCB913ED71 /* ProfileFormData.swift */; };
+		406092A55CC6A7D1AC94FD17 /* ImportProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0503534972D21345DD1881AC /* ImportProfileView.swift */; };
+		41715E2A9BA1EB4D99C7D2F4 /* NetworkPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3887D366940682AB4677A069 /* NetworkPreferences.swift */; };
+		44E252047EF619AA467F16A8 /* AppLogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D69FF41C5C723D7F6E82E2C0 /* AppLogEvent.swift */; };
+		479BFE74EF67753128EA0601 /* NetworkPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB10D7AF159A17B5EF9B7D14 /* NetworkPreferencesTests.swift */; };
+		4855D1FA196257B12A59B634 /* NetworkPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3887D366940682AB4677A069 /* NetworkPreferences.swift */; };
+		49A52C2BA05370EDF55DA322 /* AppLogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D69FF41C5C723D7F6E82E2C0 /* AppLogEvent.swift */; };
+		4A254B47D3EC56807C0ADD37 /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FBDB2D041BC12B492417E7 /* ConnectionDiagnostics.swift */; };
+		51302F463FCE3FC1A86B3873 /* NetlumaVPNTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1383CD939B541968D5D8D6DB /* NetlumaVPNTests.swift */; };
+		525723ADC99BE435D4B84962 /* ProfileEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A786596E176DD4AFEF7FC05 /* ProfileEditorView.swift */; };
+		5272783EE3F062245A998EBF /* PremiumPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC67F279FD360B785C478830 /* PremiumPaywallView.swift */; };
+		547D7B00A5668D02F3EA6033 /* VPNConnectionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B510E06DE60D6191AC39C17B /* VPNConnectionStatus.swift */; };
+		564398028B0E464C5DAEC97A /* XrayTunnelEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6AC3B9D191351F54F88847 /* XrayTunnelEngine.swift */; };
+		58C25AC4734A88D514E0C179 /* TunnelNetworkSettingsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16012BC41445DB65914C74A0 /* TunnelNetworkSettingsBuilder.swift */; };
+		5B0D4F57119C5EC9171582FB /* DNSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06797F60FC7FFB9112D107B4 /* DNSSettingsView.swift */; };
+		6020ED54280D9A662AEBA979 /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D254311EFCEAF65874CA7E4 /* VPNProfile.swift */; };
+		624727BFB874FE2BBB2E0044 /* AppLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0229FC69D156B334391B22 /* AppLogStore.swift */; };
+		66D7E895CD29F4EB82C14642 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5CF5ADE64FB85C670A275305 /* LaunchScreen.storyboard */; };
+		6713A70AEC6BD8409496CA4F /* XrayConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3334068028E4830090F325 /* XrayConfigBuilder.swift */; };
+		673F09332FEAD0D100368DBC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 673F09322FEAD0D100368DBC /* GoogleService-Info.plist */; };
+		69431B0850814F12E429B6F2 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70DFD7E6163E2D77576F4E3 /* AppConstants.swift */; };
+		6C340FAA423ADFABFD6682B5 /* NetlumaVPNUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D60BBAA6AC6934F5ED8C97 /* NetlumaVPNUITests.swift */; };
+		75C2DD1FBC6E67BA6DAEF0BE /* InMemorySecureValueStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFE616225B06027D2D493C7 /* InMemorySecureValueStorage.swift */; };
+		75D3AC8422FC6F5B142C7CDF /* NetlumaVPNTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E1EE4B6A5D19AFFF14A4B7 /* NetlumaVPNTab.swift */; };
+		7ACD29D3D8F483525F0DF575 /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D254311EFCEAF65874CA7E4 /* VPNProfile.swift */; };
+		7C7B4920DC4AD5741A2145FE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5FF55EB3CE67B74073B6F5AB /* InfoPlist.strings */; };
+		7EFE50FEB55C60D74B70D664 /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FBDB2D041BC12B492417E7 /* ConnectionDiagnostics.swift */; };
+		86B776DFAF5A3000815F91DD /* NetworkPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2ED52E1AEDF61507E406C60 /* NetworkPreferencesStorage.swift */; };
+		86CA2E88230DAC115C6D476E /* GlobalServerDeviceIdentityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAD2292D04BDACD61477022 /* GlobalServerDeviceIdentityStore.swift */; };
+		8D41BF79A896870722758147 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB30DDB79CBEE10526CE4E9 /* SettingsView.swift */; };
+		8F7419C10598EAC935BD8E1F /* AppLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0229FC69D156B334391B22 /* AppLogStore.swift */; };
+		95F7A0E4EFF2462E9373D3C1 /* PremiumSubscriptionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A65E603AAEAE51C3D883D4A /* PremiumSubscriptionModels.swift */; };
+		99C775CD28784B4DE97368B2 /* HomeConnectLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5756983BF80650E55C7CA5 /* HomeConnectLogicTests.swift */; };
+		9AF5DE1E4C272E0158826ED9 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70DFD7E6163E2D77576F4E3 /* AppConstants.swift */; };
+		9B4C7D1703DE1EB7C0F0AB93 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70DFD7E6163E2D77576F4E3 /* AppConstants.swift */; };
+		9BF5A7812CA35A9CB5F31475 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09426F7BE692B0FE5EACF37E /* AppLogger.swift */; };
+		9D8656344ADAF740D150BBC7 /* Terms.html in Resources */ = {isa = PBXBuildFile; fileRef = A1AE1719CCE7C62A851AC2D5 /* Terms.html */; };
+		A200BF5A4A18074E455E1B34 /* GlobalServerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F309BE6393A70CEA92F5E3 /* GlobalServerIntegrationTests.swift */; };
+		A315E69BF921666E17165250 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44E89425FE39DDF74A079AD /* Localization.swift */; };
+		A4A6EE5A61DAD8D6421A76B9 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09426F7BE692B0FE5EACF37E /* AppLogger.swift */; };
+		A6E53625880019814964D987 /* NetlumaVPNWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = EFEC12E09078585457CDB015 /* NetlumaVPNWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A8B06DCF07343E2041D4EB3F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8DCC34573D5E5DD99F47BB13 /* Localizable.strings */; };
+		AA91FA49D731AA6C31E8997D /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44E89425FE39DDF74A079AD /* Localization.swift */; };
+		AFDBCC7CEAB57FF17BCD82AD /* NetlumaVPNTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC4EAB5580FD9D18F22A5E4 /* NetlumaVPNTheme.swift */; };
+		B00E81E5C6D16185E09DE0EA /* VPNConnectionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B510E06DE60D6191AC39C17B /* VPNConnectionStatus.swift */; };
+		B1733180130049AFB497D1B6 /* ProfileStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BB3E8CC77DDE35E8051974 /* ProfileStorage.swift */; };
+		B243ADC337DEF257265ED9A1 /* GlobalVPNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9541B03FCE1C93254D26BCD /* GlobalVPNServer.swift */; };
+		B7B5082CFA36B7BF44315253 /* SwiftyXrayKit in Frameworks */ = {isa = PBXBuildFile; productRef = 25C27E6DB764DE23533238BC /* SwiftyXrayKit */; };
+		B7FA28040DD7545942BF1717 /* SwiftyXrayKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4DF4BCD4056162C28EEA0815 /* SwiftyXrayKit */; };
+		BA9A2E17987A81CE5E97E21F /* PremiumSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00EC08FABB1DFA4D5A3FAADC /* PremiumSubscriptionService.swift */; };
+		BBDE9EDC2CC46A9F034B4B58 /* VPNConfigurationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8659D808211A50B8FC8ED9 /* VPNConfigurationParser.swift */; };
+		C089937497A309C2822726E6 /* VPNConnectionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B510E06DE60D6191AC39C17B /* VPNConnectionStatus.swift */; };
+		C12D19A9CF0DBAD5BB51C731 /* GlobalServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCB5CB5B17B12EEA04AB973 /* GlobalServerService.swift */; };
+		C2041CA1E62A8A66D08A6C7D /* NetlumaVPNWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA044B8F269BA3E2A6C4F251 /* NetlumaVPNWidget.swift */; };
+		C770E4958E19AB718FB29868 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6EDCE7E42B3612495E8166BA /* Assets.xcassets */; };
+		C86A245D0EF187E4DD3B618B /* AppGroupStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689BA3310A8CF50C22988E50 /* AppGroupStorage.swift */; };
+		CA34108FD69687365E73AEAE /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7709811B58046A9ABF9196EE /* AppModel.swift */; };
+		CB67B3BA472483CEC91EED90 /* SessionInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49392DE93FA4C527716C1CAC /* SessionInfoService.swift */; };
+		CC76FFDF58C42AD34D621011 /* VPNConfigurationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8659D808211A50B8FC8ED9 /* VPNConfigurationParser.swift */; };
+		CEEE134467A27736DA05947F /* AppLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0229FC69D156B334391B22 /* AppLogStore.swift */; };
+		D00EE2B1C8CC8C805EC75506 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8DCC34573D5E5DD99F47BB13 /* Localizable.strings */; };
+		D1EA993EE6983C6BBB4C3843 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44E89425FE39DDF74A079AD /* Localization.swift */; };
+		D47B0091AAA81ED007E7C89C /* Privacy.html in Resources */ = {isa = PBXBuildFile; fileRef = 9C3A81CE3B36C755754D44F8 /* Privacy.html */; };
+		D4C2FB7D1BA289558C6A1495 /* ProfileStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BB3E8CC77DDE35E8051974 /* ProfileStorage.swift */; };
+		D6F9FD3BF34B9D7DD791C215 /* XrayConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3334068028E4830090F325 /* XrayConfigBuilder.swift */; };
+		DDD7399F90DE42CB952DF6F1 /* NetlumaVPNUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2126DE1BA4915E024A9C7D /* NetlumaVPNUITestsLaunchTests.swift */; };
+		DF056B18DBF8707EBF7FAEAB /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D254311EFCEAF65874CA7E4 /* VPNProfile.swift */; };
+		E0CA99608C332B6059144409 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647690C3AE8B49BF8423CA9E /* KeychainStorage.swift */; };
+		E37A721C8A1C8F11356C1B27 /* GlobalVPNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9541B03FCE1C93254D26BCD /* GlobalVPNServer.swift */; };
+		E495EBF8D3C5FC5B3B77ACC8 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647690C3AE8B49BF8423CA9E /* KeychainStorage.swift */; };
+		E7CFCC696AED0AB3C6FE35C0 /* QRCodeImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640659CB558B67D2A749512 /* QRCodeImportView.swift */; };
+		EF88975A05F0F49F4DD9F5D9 /* GlobalVPNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9541B03FCE1C93254D26BCD /* GlobalVPNServer.swift */; };
+		EF92F61CBF1B634E4C84DF76 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647690C3AE8B49BF8423CA9E /* KeychainStorage.swift */; };
+		F0491EDD20EF1CEED1769B4C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 64ECBA50C3080B4AEAA6DD77 /* InfoPlist.strings */; };
+		F32A6DA8D26AE8FA28D3176E /* TunnelSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50660D51C8843C38F934998D /* TunnelSettingsView.swift */; };
+		F4E7B387AD5B33A5C9247736 /* XrayConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3334068028E4830090F325 /* XrayConfigBuilder.swift */; };
+		F682A79D16F266D681AC5323 /* GlobalServerAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A44CDE4CFE59F907671D726 /* GlobalServerAPIClient.swift */; };
+		F6CB32543969E2108372D77F /* AppGroupStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689BA3310A8CF50C22988E50 /* AppGroupStorage.swift */; };
+		F731B2C223E17DB798C2DB43 /* NetworkPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2ED52E1AEDF61507E406C60 /* NetworkPreferencesStorage.swift */; };
+		F85BF39E37DD09E23F597A68 /* NetworkPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3887D366940682AB4677A069 /* NetworkPreferences.swift */; };
+		FC8C58EA4CDABAE8B35A6AE1 /* WidgetVPNController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D64D8A8012817059390F8AC /* WidgetVPNController.swift */; };
+		FCF44896CDE44B3E53600F62 /* AppGroupStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689BA3310A8CF50C22988E50 /* AppGroupStorage.swift */; };
+		FE74957D1889E62C05D82D25 /* AppLogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D69FF41C5C723D7F6E82E2C0 /* AppLogEvent.swift */; };
+		FFC7171E8065FB0418659D6F /* ProfileStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D87CC6539D9B0BC7323CE58 /* ProfileStorageTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		011920F1A0A9FF36793E6E34 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2197006BAABA17FEE183FEAC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 877807D85719C1EDE90C6C4D;
+			remoteInfo = NetlumaVPNWidget;
+		};
+		BF92A6D3AD21E9C9ACF2081B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2197006BAABA17FEE183FEAC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 28F5FBF4ED79E73717DA2921;
+			remoteInfo = NetlumaVPN;
+		};
+		C72C0512107619D054ECC9DE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2197006BAABA17FEE183FEAC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 19412589BBCFF34BBA89BFA7;
+			remoteInfo = NetlumaVPNTunnelExtension;
+		};
+		E4BC03CF66BE3802F355C1BE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2197006BAABA17FEE183FEAC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 28F5FBF4ED79E73717DA2921;
+			remoteInfo = NetlumaVPN;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5A13C346ADA348D145DFACFF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0D70F814865C39E43534984B /* NetlumaVPNTunnelExtension.appex in Embed Foundation Extensions */,
+				A6E53625880019814964D987 /* NetlumaVPNWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		00EC08FABB1DFA4D5A3FAADC /* PremiumSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumSubscriptionService.swift; sourceTree = "<group>"; };
+		027D9CB46EB751E20989AA9C /* VPNManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNManager.swift; sourceTree = "<group>"; };
+		02A1F73A3B7DD022B21BDF8E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		0503534972D21345DD1881AC /* ImportProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportProfileView.swift; sourceTree = "<group>"; };
+		06797F60FC7FFB9112D107B4 /* DNSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSSettingsView.swift; sourceTree = "<group>"; };
+		09426F7BE692B0FE5EACF37E /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		0C2126DE1BA4915E024A9C7D /* NetlumaVPNUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetlumaVPNUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		0CB30DDB79CBEE10526CE4E9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0CEBDC3DD348606995F21675 /* ProfileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListView.swift; sourceTree = "<group>"; };
+		134B37FDC6BC87FCB913ED71 /* ProfileFormData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFormData.swift; sourceTree = "<group>"; };
+		1383CD939B541968D5D8D6DB /* NetlumaVPNTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetlumaVPNTests.swift; sourceTree = "<group>"; };
+		16012BC41445DB65914C74A0 /* TunnelNetworkSettingsBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelNetworkSettingsBuilder.swift; sourceTree = "<group>"; };
+		1BC87B68243D3754BD4DA876 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1D254311EFCEAF65874CA7E4 /* VPNProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNProfile.swift; sourceTree = "<group>"; };
+		26A7F25498D0661416D18222 /* PacketTunnelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProvider.swift; sourceTree = "<group>"; };
+		26CA97158D87F453ACF9A252 /* NetlumaVPNApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetlumaVPNApp.swift; sourceTree = "<group>"; };
+		3887D366940682AB4677A069 /* NetworkPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPreferences.swift; sourceTree = "<group>"; };
+		3C8659D808211A50B8FC8ED9 /* VPNConfigurationParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNConfigurationParser.swift; sourceTree = "<group>"; };
+		46F309BE6393A70CEA92F5E3 /* GlobalServerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerIntegrationTests.swift; sourceTree = "<group>"; };
+		49392DE93FA4C527716C1CAC /* SessionInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionInfoService.swift; sourceTree = "<group>"; };
+		4A0A718EB40F2672B1F55DF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		4C6AC3B9D191351F54F88847 /* XrayTunnelEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrayTunnelEngine.swift; sourceTree = "<group>"; };
+		4D5756983BF80650E55C7CA5 /* HomeConnectLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeConnectLogicTests.swift; sourceTree = "<group>"; };
+		50660D51C8843C38F934998D /* TunnelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelSettingsView.swift; sourceTree = "<group>"; };
+		5A65E603AAEAE51C3D883D4A /* PremiumSubscriptionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumSubscriptionModels.swift; sourceTree = "<group>"; };
+		5CF5ADE64FB85C670A275305 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		647690C3AE8B49BF8423CA9E /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
+		6640659CB558B67D2A749512 /* QRCodeImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeImportView.swift; sourceTree = "<group>"; };
+		673F09322FEAD0D100368DBC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		689BA3310A8CF50C22988E50 /* AppGroupStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupStorage.swift; sourceTree = "<group>"; };
+		6EDCE7E42B3612495E8166BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6F7793A8E6AF9F60D0D4E4CC /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		735C7BEE827F4D044A16EEDE /* SessionInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionInfoView.swift; sourceTree = "<group>"; };
+		7475E226A2F2BD4B3525904C /* LocalizationResourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationResourceTests.swift; sourceTree = "<group>"; };
+		763A0366E9C75493F91C40BB /* NetlumaVPNWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetlumaVPNWidget.entitlements; sourceTree = "<group>"; };
+		76BB3E8CC77DDE35E8051974 /* ProfileStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStorage.swift; sourceTree = "<group>"; };
+		76DC9C69BF1128D6869A2FE1 /* ToggleVPNConnectionIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleVPNConnectionIntent.swift; sourceTree = "<group>"; };
+		7709811B58046A9ABF9196EE /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		78C914E3D17529675D388E01 /* NetlumaVPNTunnelExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = NetlumaVPNTunnelExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		7AD4186344D918691E974A4E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7CB1D6FE382D66FD762BDBF4 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7D87CC6539D9B0BC7323CE58 /* ProfileStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStorageTests.swift; sourceTree = "<group>"; };
+		819CB095C885C4B6705E7686 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		8A786596E176DD4AFEF7FC05 /* ProfileEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileEditorView.swift; sourceTree = "<group>"; };
+		8BEDA7A28BECDD4E9B1F670E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		978507ED6EAF2C3C0FE764CB /* NetlumaVPNTunnelExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetlumaVPNTunnelExtension.entitlements; sourceTree = "<group>"; };
+		9A44CDE4CFE59F907671D726 /* GlobalServerAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerAPIClient.swift; sourceTree = "<group>"; };
+		9C3A81CE3B36C755754D44F8 /* Privacy.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Privacy.html; path = ru.lproj/Privacy.html; sourceTree = "<group>"; };
+		9D64D8A8012817059390F8AC /* WidgetVPNController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVPNController.swift; sourceTree = "<group>"; };
+		A1AE1719CCE7C62A851AC2D5 /* Terms.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Terms.html; path = ru.lproj/Terms.html; sourceTree = "<group>"; };
+		A5217A58089B256C3E2FB0DD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		ADCB5CB5B17B12EEA04AB973 /* GlobalServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerService.swift; sourceTree = "<group>"; };
+		B510E06DE60D6191AC39C17B /* VPNConnectionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNConnectionStatus.swift; sourceTree = "<group>"; };
+		B70DFD7E6163E2D77576F4E3 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
+		B9541B03FCE1C93254D26BCD /* GlobalVPNServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVPNServer.swift; sourceTree = "<group>"; };
+		BA044B8F269BA3E2A6C4F251 /* NetlumaVPNWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetlumaVPNWidget.swift; sourceTree = "<group>"; };
+		BBDEDFB806B33523581973F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		BC3182A31745810A36B52854 /* NetlumaVPN.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetlumaVPN.entitlements; sourceTree = "<group>"; };
+		C214C31F8B34AD15558A8842 /* HomeConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeConnectView.swift; sourceTree = "<group>"; };
+		C2ED52E1AEDF61507E406C60 /* NetworkPreferencesStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPreferencesStorage.swift; sourceTree = "<group>"; };
+		C44E89425FE39DDF74A079AD /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
+		C671BF30079378C7C970076A /* PremiumSubscriptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumSubscriptionTests.swift; sourceTree = "<group>"; };
+		CAE544C2B1CAF2EF9BC004CF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		CB10D7AF159A17B5EF9B7D14 /* NetworkPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPreferencesTests.swift; sourceTree = "<group>"; };
+		CB3334068028E4830090F325 /* XrayConfigBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrayConfigBuilder.swift; sourceTree = "<group>"; };
+		CC67F279FD360B785C478830 /* PremiumPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumPaywallView.swift; sourceTree = "<group>"; };
+		CCA5C95E5416DB3572A3F276 /* NetlumaVPNTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = NetlumaVPNTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1FBDB2D041BC12B492417E7 /* ConnectionDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDiagnostics.swift; sourceTree = "<group>"; };
+		D237ECAD73A2F5BA0CB93184 /* NetlumaVPN.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NetlumaVPN.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D69FF41C5C723D7F6E82E2C0 /* AppLogEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogEvent.swift; sourceTree = "<group>"; };
+		D8D60BBAA6AC6934F5ED8C97 /* NetlumaVPNUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetlumaVPNUITests.swift; sourceTree = "<group>"; };
+		DA0229FC69D156B334391B22 /* AppLogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogStore.swift; sourceTree = "<group>"; };
+		DE37B63CCCDC17C0C1625B33 /* NetlumaVPNUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = NetlumaVPNUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DE4EE9D71E095FB53C2A587F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		DFEC7C2CF08C0D6B675999C8 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		EFAD2292D04BDACD61477022 /* GlobalServerDeviceIdentityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerDeviceIdentityStore.swift; sourceTree = "<group>"; };
+		EFC4EAB5580FD9D18F22A5E4 /* NetlumaVPNTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetlumaVPNTheme.swift; sourceTree = "<group>"; };
+		EFEC12E09078585457CDB015 /* NetlumaVPNWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = NetlumaVPNWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8E1EE4B6A5D19AFFF14A4B7 /* NetlumaVPNTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetlumaVPNTab.swift; sourceTree = "<group>"; };
+		FCFE616225B06027D2D493C7 /* InMemorySecureValueStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemorySecureValueStorage.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		103BCAFAC0CD7B160E65BD3A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B7FA28040DD7545942BF1717 /* SwiftyXrayKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		773606760EF1734BC964223B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B7B5082CFA36B7BF44315253 /* SwiftyXrayKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08B8491E45DB1CFCB70C1CA6 /* NetlumaVPNTunnelExtension */ = {
+			isa = PBXGroup;
+			children = (
+				4A0A718EB40F2672B1F55DF5 /* Info.plist */,
+				5FF55EB3CE67B74073B6F5AB /* InfoPlist.strings */,
+				978507ED6EAF2C3C0FE764CB /* NetlumaVPNTunnelExtension.entitlements */,
+				26A7F25498D0661416D18222 /* PacketTunnelProvider.swift */,
+				4C6AC3B9D191351F54F88847 /* XrayTunnelEngine.swift */,
+			);
+			path = NetlumaVPNTunnelExtension;
+			sourceTree = "<group>";
+		};
+		49E4DCDD5D6ADED4111EC938 /* NetlumaVPNShared */ = {
+			isa = PBXGroup;
+			children = (
+				8DCC34573D5E5DD99F47BB13 /* Localizable.strings */,
+				C44E89425FE39DDF74A079AD /* Localization.swift */,
+				88D7E5B9EB92EC52727027C6 /* Models */,
+				C1DD4D894F6EBBE88AD82EAF /* Services */,
+			);
+			path = NetlumaVPNShared;
+			sourceTree = "<group>";
+		};
+		772BE8E8056A2BD333D28B87 /* Connection */ = {
+			isa = PBXGroup;
+			children = (
+				C214C31F8B34AD15558A8842 /* HomeConnectView.swift */,
+			);
+			path = Connection;
+			sourceTree = "<group>";
+		};
+		776BA94822328F6D2E345985 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				772BE8E8056A2BD333D28B87 /* Connection */,
+				F80CFF5BD554B4DEC2DBF858 /* Premium */,
+				D69DDC3B08950E595ECDDABE /* Profiles */,
+				797093E39EE4D412E06F4649 /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		797093E39EE4D412E06F4649 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				06797F60FC7FFB9112D107B4 /* DNSSettingsView.swift */,
+				49392DE93FA4C527716C1CAC /* SessionInfoService.swift */,
+				735C7BEE827F4D044A16EEDE /* SessionInfoView.swift */,
+				0CB30DDB79CBEE10526CE4E9 /* SettingsView.swift */,
+				50660D51C8843C38F934998D /* TunnelSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		817F67F64EA2B01E0EA23B88 = {
+			isa = PBXGroup;
+			children = (
+				FC7992315C106E1116339F20 /* NetlumaVPN */,
+				49E4DCDD5D6ADED4111EC938 /* NetlumaVPNShared */,
+				D4C2DA2EA72BC1A2A7EF67B1 /* NetlumaVPNTests */,
+				08B8491E45DB1CFCB70C1CA6 /* NetlumaVPNTunnelExtension */,
+				83D3B55CCFB0CCE883066DC9 /* NetlumaVPNUITests */,
+				94B08A41E44403C4406724A8 /* NetlumaVPNWidget */,
+				A34E509CEFE20A9887518AE5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		83D3B55CCFB0CCE883066DC9 /* NetlumaVPNUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D8D60BBAA6AC6934F5ED8C97 /* NetlumaVPNUITests.swift */,
+				0C2126DE1BA4915E024A9C7D /* NetlumaVPNUITestsLaunchTests.swift */,
+			);
+			path = NetlumaVPNUITests;
+			sourceTree = "<group>";
+		};
+		88D7E5B9EB92EC52727027C6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B70DFD7E6163E2D77576F4E3 /* AppConstants.swift */,
+				D69FF41C5C723D7F6E82E2C0 /* AppLogEvent.swift */,
+				B9541B03FCE1C93254D26BCD /* GlobalVPNServer.swift */,
+				3887D366940682AB4677A069 /* NetworkPreferences.swift */,
+				B510E06DE60D6191AC39C17B /* VPNConnectionStatus.swift */,
+				1D254311EFCEAF65874CA7E4 /* VPNProfile.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		94B08A41E44403C4406724A8 /* NetlumaVPNWidget */ = {
+			isa = PBXGroup;
+			children = (
+				DE4EE9D71E095FB53C2A587F /* Info.plist */,
+				64ECBA50C3080B4AEAA6DD77 /* InfoPlist.strings */,
+				763A0366E9C75493F91C40BB /* NetlumaVPNWidget.entitlements */,
+				BA044B8F269BA3E2A6C4F251 /* NetlumaVPNWidget.swift */,
+				76DC9C69BF1128D6869A2FE1 /* ToggleVPNConnectionIntent.swift */,
+				9D64D8A8012817059390F8AC /* WidgetVPNController.swift */,
+			);
+			path = NetlumaVPNWidget;
+			sourceTree = "<group>";
+		};
+		A34E509CEFE20A9887518AE5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D237ECAD73A2F5BA0CB93184 /* NetlumaVPN.app */,
+				CCA5C95E5416DB3572A3F276 /* NetlumaVPNTests.xctest */,
+				78C914E3D17529675D388E01 /* NetlumaVPNTunnelExtension.appex */,
+				DE37B63CCCDC17C0C1625B33 /* NetlumaVPNUITests.xctest */,
+				EFEC12E09078585457CDB015 /* NetlumaVPNWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A3BEC7B8B1A4E248924956E6 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				9A44CDE4CFE59F907671D726 /* GlobalServerAPIClient.swift */,
+				EFAD2292D04BDACD61477022 /* GlobalServerDeviceIdentityStore.swift */,
+				ADCB5CB5B17B12EEA04AB973 /* GlobalServerService.swift */,
+				00EC08FABB1DFA4D5A3FAADC /* PremiumSubscriptionService.swift */,
+				027D9CB46EB751E20989AA9C /* VPNManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		B35CC3CB2A3647F535C78FB9 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				EFC4EAB5580FD9D18F22A5E4 /* NetlumaVPNTheme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		C1DD4D894F6EBBE88AD82EAF /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				689BA3310A8CF50C22988E50 /* AppGroupStorage.swift */,
+				09426F7BE692B0FE5EACF37E /* AppLogger.swift */,
+				DA0229FC69D156B334391B22 /* AppLogStore.swift */,
+				D1FBDB2D041BC12B492417E7 /* ConnectionDiagnostics.swift */,
+				647690C3AE8B49BF8423CA9E /* KeychainStorage.swift */,
+				C2ED52E1AEDF61507E406C60 /* NetworkPreferencesStorage.swift */,
+				76BB3E8CC77DDE35E8051974 /* ProfileStorage.swift */,
+				16012BC41445DB65914C74A0 /* TunnelNetworkSettingsBuilder.swift */,
+				3C8659D808211A50B8FC8ED9 /* VPNConfigurationParser.swift */,
+				CB3334068028E4830090F325 /* XrayConfigBuilder.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		D4C2DA2EA72BC1A2A7EF67B1 /* NetlumaVPNTests */ = {
+			isa = PBXGroup;
+			children = (
+				46F309BE6393A70CEA92F5E3 /* GlobalServerIntegrationTests.swift */,
+				4D5756983BF80650E55C7CA5 /* HomeConnectLogicTests.swift */,
+				FCFE616225B06027D2D493C7 /* InMemorySecureValueStorage.swift */,
+				7475E226A2F2BD4B3525904C /* LocalizationResourceTests.swift */,
+				1383CD939B541968D5D8D6DB /* NetlumaVPNTests.swift */,
+				CB10D7AF159A17B5EF9B7D14 /* NetworkPreferencesTests.swift */,
+				C671BF30079378C7C970076A /* PremiumSubscriptionTests.swift */,
+				7D87CC6539D9B0BC7323CE58 /* ProfileStorageTests.swift */,
+			);
+			path = NetlumaVPNTests;
+			sourceTree = "<group>";
+		};
+		D69DDC3B08950E595ECDDABE /* Profiles */ = {
+			isa = PBXGroup;
+			children = (
+				0503534972D21345DD1881AC /* ImportProfileView.swift */,
+				8A786596E176DD4AFEF7FC05 /* ProfileEditorView.swift */,
+				134B37FDC6BC87FCB913ED71 /* ProfileFormData.swift */,
+				0CEBDC3DD348606995F21675 /* ProfileListView.swift */,
+				6640659CB558B67D2A749512 /* QRCodeImportView.swift */,
+			);
+			path = Profiles;
+			sourceTree = "<group>";
+		};
+		ECFCCE4EC30603D802DA0B23 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				7709811B58046A9ABF9196EE /* AppModel.swift */,
+				CAE544C2B1CAF2EF9BC004CF /* ContentView.swift */,
+				26CA97158D87F453ACF9A252 /* NetlumaVPNApp.swift */,
+				F8E1EE4B6A5D19AFFF14A4B7 /* NetlumaVPNTab.swift */,
+				DFEC7C2CF08C0D6B675999C8 /* SplashScreenView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		F80CFF5BD554B4DEC2DBF858 /* Premium */ = {
+			isa = PBXGroup;
+			children = (
+				CC67F279FD360B785C478830 /* PremiumPaywallView.swift */,
+				5A65E603AAEAE51C3D883D4A /* PremiumSubscriptionModels.swift */,
+			);
+			path = Premium;
+			sourceTree = "<group>";
+		};
+		FC7992315C106E1116339F20 /* NetlumaVPN */ = {
+			isa = PBXGroup;
+			children = (
+				6EDCE7E42B3612495E8166BA /* Assets.xcassets */,
+				BBDEDFB806B33523581973F0 /* Info.plist */,
+				A5B5FCB959F29D44E57E1BA9 /* InfoPlist.strings */,
+				5CF5ADE64FB85C670A275305 /* LaunchScreen.storyboard */,
+				BC3182A31745810A36B52854 /* NetlumaVPN.entitlements */,
+				9C3A81CE3B36C755754D44F8 /* Privacy.html */,
+				A1AE1719CCE7C62A851AC2D5 /* Terms.html */,
+				ECFCCE4EC30603D802DA0B23 /* App */,
+				B35CC3CB2A3647F535C78FB9 /* Design */,
+				776BA94822328F6D2E345985 /* Features */,
+				A3BEC7B8B1A4E248924956E6 /* Services */,
+				673F09322FEAD0D100368DBC /* GoogleService-Info.plist */,
+			);
+			path = NetlumaVPN;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0B55E24C38B76AA46167A1CF /* NetlumaVPNTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A2F39EA37D3B1A63F8B7DC91 /* Build configuration list for PBXNativeTarget "NetlumaVPNTests" */;
+			buildPhases = (
+				5A827F0552D3FB16D0B9F05C /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				810D3CF55AF86C50AE5E44EE /* PBXTargetDependency */,
+			);
+			name = NetlumaVPNTests;
+			productName = NetlumaVPNTests;
+			productReference = CCA5C95E5416DB3572A3F276 /* NetlumaVPNTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		19412589BBCFF34BBA89BFA7 /* NetlumaVPNTunnelExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 30CEABC8F05234CE94B025B5 /* Build configuration list for PBXNativeTarget "NetlumaVPNTunnelExtension" */;
+			buildPhases = (
+				B84F49609A7B3C48D816A2D6 /* Sources */,
+				645BE9C157F4978E404394E1 /* Resources */,
+				773606760EF1734BC964223B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NetlumaVPNTunnelExtension;
+			packageProductDependencies = (
+				25C27E6DB764DE23533238BC /* SwiftyXrayKit */,
+			);
+			productName = NetlumaVPNTunnelExtension;
+			productReference = 78C914E3D17529675D388E01 /* NetlumaVPNTunnelExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		28F5FBF4ED79E73717DA2921 /* NetlumaVPN */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FB8779CD52BF43AFEBADC92D /* Build configuration list for PBXNativeTarget "NetlumaVPN" */;
+			buildPhases = (
+				3EA8EEFE11C4A4E3A34872CC /* Sources */,
+				BB5E3894379846B14075AA61 /* Resources */,
+				103BCAFAC0CD7B160E65BD3A /* Frameworks */,
+				5A13C346ADA348D145DFACFF /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6437FD26BA2898BA2153A047 /* PBXTargetDependency */,
+				C8CF9104E110633C636F17BA /* PBXTargetDependency */,
+			);
+			name = NetlumaVPN;
+			packageProductDependencies = (
+				4DF4BCD4056162C28EEA0815 /* SwiftyXrayKit */,
+			);
+			productName = NetlumaVPN;
+			productReference = D237ECAD73A2F5BA0CB93184 /* NetlumaVPN.app */;
+			productType = "com.apple.product-type.application";
+		};
+		43DE1589D2D80841367597E9 /* NetlumaVPNUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6FAC75C5A2D06DCDE87CC1F7 /* Build configuration list for PBXNativeTarget "NetlumaVPNUITests" */;
+			buildPhases = (
+				069FB359218561244E047275 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B02EF23856D271531B8D54AD /* PBXTargetDependency */,
+			);
+			name = NetlumaVPNUITests;
+			productName = NetlumaVPNUITests;
+			productReference = DE37B63CCCDC17C0C1625B33 /* NetlumaVPNUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		877807D85719C1EDE90C6C4D /* NetlumaVPNWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 55BE4508BE05073D06F571B6 /* Build configuration list for PBXNativeTarget "NetlumaVPNWidget" */;
+			buildPhases = (
+				646000BF3505981C2BB39304 /* Sources */,
+				F2049073E48067306E90FB2E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NetlumaVPNWidget;
+			productName = NetlumaVPNWidget;
+			productReference = EFEC12E09078585457CDB015 /* NetlumaVPNWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2197006BAABA17FEE183FEAC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					0B55E24C38B76AA46167A1CF = {
+						DevelopmentTeam = 6659MLRZ5F;
+					};
+					19412589BBCFF34BBA89BFA7 = {
+						DevelopmentTeam = 6659MLRZ5F;
+					};
+					28F5FBF4ED79E73717DA2921 = {
+						DevelopmentTeam = 6659MLRZ5F;
+					};
+					43DE1589D2D80841367597E9 = {
+						DevelopmentTeam = 6659MLRZ5F;
+						TestTargetID = 28F5FBF4ED79E73717DA2921;
+					};
+					877807D85719C1EDE90C6C4D = {
+						DevelopmentTeam = 6659MLRZ5F;
+					};
+				};
+			};
+			buildConfigurationList = F9F0BAE01B4626D514056669 /* Build configuration list for PBXProject "NetlumaVPN" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				ru,
+			);
+			mainGroup = 817F67F64EA2B01E0EA23B88;
+			packageReferences = (
+				1077FE09CBFB5A25A8ADEC70 /* XCRemoteSwiftPackageReference "SwiftyXrayKit" */,
+			);
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				28F5FBF4ED79E73717DA2921 /* NetlumaVPN */,
+				0B55E24C38B76AA46167A1CF /* NetlumaVPNTests */,
+				19412589BBCFF34BBA89BFA7 /* NetlumaVPNTunnelExtension */,
+				43DE1589D2D80841367597E9 /* NetlumaVPNUITests */,
+				877807D85719C1EDE90C6C4D /* NetlumaVPNWidget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		645BE9C157F4978E404394E1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C7B4920DC4AD5741A2145FE /* InfoPlist.strings in Resources */,
+				281003572B8D0E8C6F0667E7 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB5E3894379846B14075AA61 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C770E4958E19AB718FB29868 /* Assets.xcassets in Resources */,
+				08A3D29EBFE66DBB202090E6 /* InfoPlist.strings in Resources */,
+				66D7E895CD29F4EB82C14642 /* LaunchScreen.storyboard in Resources */,
+				D00EE2B1C8CC8C805EC75506 /* Localizable.strings in Resources */,
+				D47B0091AAA81ED007E7C89C /* Privacy.html in Resources */,
+				9D8656344ADAF740D150BBC7 /* Terms.html in Resources */,
+				673F09332FEAD0D100368DBC /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F2049073E48067306E90FB2E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0491EDD20EF1CEED1769B4C /* InfoPlist.strings in Resources */,
+				A8B06DCF07343E2041D4EB3F /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		069FB359218561244E047275 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6C340FAA423ADFABFD6682B5 /* NetlumaVPNUITests.swift in Sources */,
+				DDD7399F90DE42CB952DF6F1 /* NetlumaVPNUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3EA8EEFE11C4A4E3A34872CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9B4C7D1703DE1EB7C0F0AB93 /* AppConstants.swift in Sources */,
+				C86A245D0EF187E4DD3B618B /* AppGroupStorage.swift in Sources */,
+				44E252047EF619AA467F16A8 /* AppLogEvent.swift in Sources */,
+				624727BFB874FE2BBB2E0044 /* AppLogStore.swift in Sources */,
+				1CE4CC98116B931D6D9CD854 /* AppLogger.swift in Sources */,
+				CA34108FD69687365E73AEAE /* AppModel.swift in Sources */,
+				1EEBB825B91BBE766C036D17 /* ConnectionDiagnostics.swift in Sources */,
+				1F72CCC2B0462F7309EA3DA5 /* ContentView.swift in Sources */,
+				5B0D4F57119C5EC9171582FB /* DNSSettingsView.swift in Sources */,
+				F682A79D16F266D681AC5323 /* GlobalServerAPIClient.swift in Sources */,
+				86CA2E88230DAC115C6D476E /* GlobalServerDeviceIdentityStore.swift in Sources */,
+				C12D19A9CF0DBAD5BB51C731 /* GlobalServerService.swift in Sources */,
+				E37A721C8A1C8F11356C1B27 /* GlobalVPNServer.swift in Sources */,
+				21BFCF0A3520879EEFEB5560 /* HomeConnectView.swift in Sources */,
+				406092A55CC6A7D1AC94FD17 /* ImportProfileView.swift in Sources */,
+				E495EBF8D3C5FC5B3B77ACC8 /* KeychainStorage.swift in Sources */,
+				AA91FA49D731AA6C31E8997D /* Localization.swift in Sources */,
+				280A1F9959D690C5042DF412 /* NetlumaVPNApp.swift in Sources */,
+				75D3AC8422FC6F5B142C7CDF /* NetlumaVPNTab.swift in Sources */,
+				AFDBCC7CEAB57FF17BCD82AD /* NetlumaVPNTheme.swift in Sources */,
+				41715E2A9BA1EB4D99C7D2F4 /* NetworkPreferences.swift in Sources */,
+				06781F2CBD880742659CBA41 /* NetworkPreferencesStorage.swift in Sources */,
+				5272783EE3F062245A998EBF /* PremiumPaywallView.swift in Sources */,
+				95F7A0E4EFF2462E9373D3C1 /* PremiumSubscriptionModels.swift in Sources */,
+				BA9A2E17987A81CE5E97E21F /* PremiumSubscriptionService.swift in Sources */,
+				525723ADC99BE435D4B84962 /* ProfileEditorView.swift in Sources */,
+				401F78C5A7456528C32AF328 /* ProfileFormData.swift in Sources */,
+				36CBCE4E489BA52816A2F216 /* ProfileListView.swift in Sources */,
+				D4C2FB7D1BA289558C6A1495 /* ProfileStorage.swift in Sources */,
+				E7CFCC696AED0AB3C6FE35C0 /* QRCodeImportView.swift in Sources */,
+				CB67B3BA472483CEC91EED90 /* SessionInfoService.swift in Sources */,
+				395C09F3DAC709FC1B93E86C /* SessionInfoView.swift in Sources */,
+				8D41BF79A896870722758147 /* SettingsView.swift in Sources */,
+				1C81B33929640AFC0AF55E89 /* SplashScreenView.swift in Sources */,
+				25D00A18842B5E3680BE19EB /* TunnelNetworkSettingsBuilder.swift in Sources */,
+				F32A6DA8D26AE8FA28D3176E /* TunnelSettingsView.swift in Sources */,
+				BBDE9EDC2CC46A9F034B4B58 /* VPNConfigurationParser.swift in Sources */,
+				547D7B00A5668D02F3EA6033 /* VPNConnectionStatus.swift in Sources */,
+				12F8929A719AE7CEA8CD9268 /* VPNManager.swift in Sources */,
+				7ACD29D3D8F483525F0DF575 /* VPNProfile.swift in Sources */,
+				F4E7B387AD5B33A5C9247736 /* XrayConfigBuilder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5A827F0552D3FB16D0B9F05C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A200BF5A4A18074E455E1B34 /* GlobalServerIntegrationTests.swift in Sources */,
+				99C775CD28784B4DE97368B2 /* HomeConnectLogicTests.swift in Sources */,
+				75C2DD1FBC6E67BA6DAEF0BE /* InMemorySecureValueStorage.swift in Sources */,
+				359C7249A12C7A1480AFFB2D /* LocalizationResourceTests.swift in Sources */,
+				51302F463FCE3FC1A86B3873 /* NetlumaVPNTests.swift in Sources */,
+				479BFE74EF67753128EA0601 /* NetworkPreferencesTests.swift in Sources */,
+				33DE00984AFECA4EECE3E995 /* PremiumSubscriptionTests.swift in Sources */,
+				FFC7171E8065FB0418659D6F /* ProfileStorageTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		646000BF3505981C2BB39304 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9AF5DE1E4C272E0158826ED9 /* AppConstants.swift in Sources */,
+				FCF44896CDE44B3E53600F62 /* AppGroupStorage.swift in Sources */,
+				FE74957D1889E62C05D82D25 /* AppLogEvent.swift in Sources */,
+				8F7419C10598EAC935BD8E1F /* AppLogStore.swift in Sources */,
+				9BF5A7812CA35A9CB5F31475 /* AppLogger.swift in Sources */,
+				4A254B47D3EC56807C0ADD37 /* ConnectionDiagnostics.swift in Sources */,
+				B243ADC337DEF257265ED9A1 /* GlobalVPNServer.swift in Sources */,
+				E0CA99608C332B6059144409 /* KeychainStorage.swift in Sources */,
+				D1EA993EE6983C6BBB4C3843 /* Localization.swift in Sources */,
+				C2041CA1E62A8A66D08A6C7D /* NetlumaVPNWidget.swift in Sources */,
+				F85BF39E37DD09E23F597A68 /* NetworkPreferences.swift in Sources */,
+				F731B2C223E17DB798C2DB43 /* NetworkPreferencesStorage.swift in Sources */,
+				B1733180130049AFB497D1B6 /* ProfileStorage.swift in Sources */,
+				1B26946D04B4EAF3DC15C27A /* ToggleVPNConnectionIntent.swift in Sources */,
+				58C25AC4734A88D514E0C179 /* TunnelNetworkSettingsBuilder.swift in Sources */,
+				032849636A0ED743365BE3AE /* VPNConfigurationParser.swift in Sources */,
+				B00E81E5C6D16185E09DE0EA /* VPNConnectionStatus.swift in Sources */,
+				6020ED54280D9A662AEBA979 /* VPNProfile.swift in Sources */,
+				FC8C58EA4CDABAE8B35A6AE1 /* WidgetVPNController.swift in Sources */,
+				D6F9FD3BF34B9D7DD791C215 /* XrayConfigBuilder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B84F49609A7B3C48D816A2D6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69431B0850814F12E429B6F2 /* AppConstants.swift in Sources */,
+				F6CB32543969E2108372D77F /* AppGroupStorage.swift in Sources */,
+				49A52C2BA05370EDF55DA322 /* AppLogEvent.swift in Sources */,
+				CEEE134467A27736DA05947F /* AppLogStore.swift in Sources */,
+				A4A6EE5A61DAD8D6421A76B9 /* AppLogger.swift in Sources */,
+				7EFE50FEB55C60D74B70D664 /* ConnectionDiagnostics.swift in Sources */,
+				EF88975A05F0F49F4DD9F5D9 /* GlobalVPNServer.swift in Sources */,
+				EF92F61CBF1B634E4C84DF76 /* KeychainStorage.swift in Sources */,
+				A315E69BF921666E17165250 /* Localization.swift in Sources */,
+				4855D1FA196257B12A59B634 /* NetworkPreferences.swift in Sources */,
+				86B776DFAF5A3000815F91DD /* NetworkPreferencesStorage.swift in Sources */,
+				237DEA40BA61DE804D530455 /* PacketTunnelProvider.swift in Sources */,
+				0F21C131C010F7F919CE7C3B /* ProfileStorage.swift in Sources */,
+				1D6889F8C333E6E7B350A29B /* TunnelNetworkSettingsBuilder.swift in Sources */,
+				CC76FFDF58C42AD34D621011 /* VPNConfigurationParser.swift in Sources */,
+				C089937497A309C2822726E6 /* VPNConnectionStatus.swift in Sources */,
+				DF056B18DBF8707EBF7FAEAB /* VPNProfile.swift in Sources */,
+				6713A70AEC6BD8409496CA4F /* XrayConfigBuilder.swift in Sources */,
+				564398028B0E464C5DAEC97A /* XrayTunnelEngine.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6437FD26BA2898BA2153A047 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 19412589BBCFF34BBA89BFA7 /* NetlumaVPNTunnelExtension */;
+			targetProxy = C72C0512107619D054ECC9DE /* PBXContainerItemProxy */;
+		};
+		810D3CF55AF86C50AE5E44EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 28F5FBF4ED79E73717DA2921 /* NetlumaVPN */;
+			targetProxy = E4BC03CF66BE3802F355C1BE /* PBXContainerItemProxy */;
+		};
+		B02EF23856D271531B8D54AD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 28F5FBF4ED79E73717DA2921 /* NetlumaVPN */;
+			targetProxy = BF92A6D3AD21E9C9ACF2081B /* PBXContainerItemProxy */;
+		};
+		C8CF9104E110633C636F17BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 877807D85719C1EDE90C6C4D /* NetlumaVPNWidget */;
+			targetProxy = 011920F1A0A9FF36793E6E34 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		5FF55EB3CE67B74073B6F5AB /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				02A1F73A3B7DD022B21BDF8E /* en */,
+				6F7793A8E6AF9F60D0D4E4CC /* ru */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		64ECBA50C3080B4AEAA6DD77 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7AD4186344D918691E974A4E /* en */,
+				1BC87B68243D3754BD4DA876 /* ru */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		8DCC34573D5E5DD99F47BB13 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8BEDA7A28BECDD4E9B1F670E /* en */,
+				819CB095C885C4B6705E7686 /* ru */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		A5B5FCB959F29D44E57E1BA9 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A5217A58089B256C3E2FB0DD /* en */,
+				7CB1D6FE382D66FD762BDBF4 /* ru */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		026D7A370328333F8024FAA6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPNTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NetlumaVPN.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/NetlumaVPN";
+			};
+			name = Release;
+		};
+		13CEE22FA24418A8BB0AE95D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = NetlumaVPN/NetlumaVPN.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = NetlumaVPN/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPN;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		26F52C7B80F2B561515E5217 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = NetlumaVPNTunnelExtension/NetlumaVPNTunnelExtension.entitlements;
+				INFOPLIST_FILE = NetlumaVPNTunnelExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPN.PacketTunnel;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		270B02B5AF4C4A4798975583 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPNUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = NetlumaVPN;
+			};
+			name = Debug;
+		};
+		53A1FCBC849623B2093A3B26 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = NetlumaVPNWidget/NetlumaVPNWidget.entitlements;
+				INFOPLIST_FILE = NetlumaVPNWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPN.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		74FFA5E12952390EDF809AB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_LANGUAGE = en;
+				DEVELOPMENT_TEAM = 6659MLRZ5F;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		789C0F7F3586CA9E94BFE17F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_LANGUAGE = en;
+				DEVELOPMENT_TEAM = 6659MLRZ5F;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8E0D803674C9AEDB11B72974 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = NetlumaVPN/NetlumaVPN.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = NetlumaVPN/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPN;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		94594D04010C56AD0D675E65 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPNUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = NetlumaVPN;
+			};
+			name = Release;
+		};
+		AED770BCEAA1E3A207A36FC3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = NetlumaVPNWidget/NetlumaVPNWidget.entitlements;
+				INFOPLIST_FILE = NetlumaVPNWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPN.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B86FCE34B481E107740E3CB3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = NetlumaVPNTunnelExtension/NetlumaVPNTunnelExtension.entitlements;
+				INFOPLIST_FILE = NetlumaVPNTunnelExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPN.PacketTunnel;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EA2BBEF58A0273F0698BB5AA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alekseipozdiakov.NetlumaVPNTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NetlumaVPN.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/NetlumaVPN";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		30CEABC8F05234CE94B025B5 /* Build configuration list for PBXNativeTarget "NetlumaVPNTunnelExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B86FCE34B481E107740E3CB3 /* Debug */,
+				26F52C7B80F2B561515E5217 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		55BE4508BE05073D06F571B6 /* Build configuration list for PBXNativeTarget "NetlumaVPNWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AED770BCEAA1E3A207A36FC3 /* Debug */,
+				53A1FCBC849623B2093A3B26 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6FAC75C5A2D06DCDE87CC1F7 /* Build configuration list for PBXNativeTarget "NetlumaVPNUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				270B02B5AF4C4A4798975583 /* Debug */,
+				94594D04010C56AD0D675E65 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A2F39EA37D3B1A63F8B7DC91 /* Build configuration list for PBXNativeTarget "NetlumaVPNTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA2BBEF58A0273F0698BB5AA /* Debug */,
+				026D7A370328333F8024FAA6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F9F0BAE01B4626D514056669 /* Build configuration list for PBXProject "NetlumaVPN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				789C0F7F3586CA9E94BFE17F /* Debug */,
+				74FFA5E12952390EDF809AB4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FB8779CD52BF43AFEBADC92D /* Build configuration list for PBXNativeTarget "NetlumaVPN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8E0D803674C9AEDB11B72974 /* Debug */,
+				13CEE22FA24418A8BB0AE95D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1077FE09CBFB5A25A8ADEC70 /* XCRemoteSwiftPackageReference "SwiftyXrayKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dima-u/SwiftyXrayKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		25C27E6DB764DE23533238BC /* SwiftyXrayKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1077FE09CBFB5A25A8ADEC70 /* XCRemoteSwiftPackageReference "SwiftyXrayKit" */;
+			productName = SwiftyXrayKit;
+		};
+		4DF4BCD4056162C28EEA0815 /* SwiftyXrayKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1077FE09CBFB5A25A8ADEC70 /* XCRemoteSwiftPackageReference "SwiftyXrayKit" */;
+			productName = SwiftyXrayKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 2197006BAABA17FEE183FEAC /* Project object */;
+}

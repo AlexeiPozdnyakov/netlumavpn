@@ -1,0 +1,17 @@
+[Unit]
+Description=NetlumaVPN sing-box API and Admin
+After=network.target sing-box.service
+Wants=sing-box.service
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/opt/quickvpn-singbox-api/app
+EnvironmentFile=/etc/quickvpn-singbox-api.env
+ExecStart=/opt/quickvpn-singbox-api/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8020 --proxy-headers
+Restart=always
+RestartSec=3
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

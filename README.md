@@ -1,4 +1,4 @@
-# QuickVPN
+# NetlumaVPN
 
 MVP iOS VPN client built with SwiftUI, NetworkExtension, Packet Tunnel Extension, App Groups, Keychain storage, and an Xray/tun2socks-backed packet tunnel integration.
 
@@ -23,11 +23,11 @@ This project is intended only for legal connections to servers you own or are au
 ## Project Structure
 
 ```text
-QuickVPN/
+NetlumaVPN/
   App/
     AppModel.swift
     ContentView.swift
-    QuickVPNApp.swift
+    NetlumaVPNApp.swift
   Features/
     Connection/
     Profiles/
@@ -36,19 +36,19 @@ QuickVPN/
     VPNManager.swift
   Assets.xcassets/
   Info.plist
-  QuickVPN.entitlements
+  NetlumaVPN.entitlements
 
-QuickVPNShared/
+NetlumaVPNShared/
   Models/
   Services/
 
-QuickVPNTunnelExtension/
+NetlumaVPNTunnelExtension/
   PacketTunnelProvider.swift
   XrayTunnelEngine.swift
   Info.plist
-  QuickVPNTunnelExtension.entitlements
+  NetlumaVPNTunnelExtension.entitlements
 
-QuickVPNTests/
+NetlumaVPNTests/
 project.yml
 ```
 
@@ -56,8 +56,8 @@ project.yml
 
 1. Install XcodeGen if needed: `brew install xcodegen`.
 2. Generate the Xcode project: `xcodegen generate`.
-3. Open `QuickVPN.xcodeproj`.
-4. Select the `QuickVPN` scheme.
+3. Open `NetlumaVPN.xcodeproj`.
+4. Select the `NetlumaVPN` scheme.
 5. Use a real Apple Developer team with Network Extension support enabled.
 6. Build and run on a physical device for actual VPN permission behavior.
 
@@ -68,16 +68,16 @@ The simulator can compile the project, but Packet Tunnel VPN behavior is limited
 Enable these for both the app ID and the Packet Tunnel extension app ID where applicable:
 
 - Network Extensions: Packet Tunnel Provider.
-- App Groups: `group.com.alekseipozdiakov.QuickVPN`.
-- Keychain Sharing: `$(AppIdentifierPrefix)com.alekseipozdiakov.QuickVPN.shared`.
+- App Groups: `group.com.alekseipozdiakov.NetlumaVPN`.
+- Keychain Sharing: `$(AppIdentifierPrefix)com.alekseipozdiakov.NetlumaVPN.shared`.
 - Camera usage description for QR import: `NSCameraUsageDescription`.
 
 If you change the bundle ID or Apple Team ID, update:
 
 - `project.yml`
-- `QuickVPN/QuickVPN.entitlements`
-- `QuickVPNTunnelExtension/QuickVPNTunnelExtension.entitlements`
-- `QuickVPNShared/Models/AppConstants.swift`
+- `NetlumaVPN/NetlumaVPN.entitlements`
+- `NetlumaVPNTunnelExtension/NetlumaVPNTunnelExtension.entitlements`
+- `NetlumaVPNShared/Models/AppConstants.swift`
 
 ## Real Xray-Core Integration Points
 
@@ -90,13 +90,13 @@ The tunnel engine uses `SwiftyXrayKit` when the package is linked:
 
 If `SwiftyXrayKit` is not linked, the project falls back to `MockXrayTunnelEngine`:
 
-- Replace `MockXrayTunnelEngine` in `QuickVPNTunnelExtension/XrayTunnelEngine.swift`.
+- Replace `MockXrayTunnelEngine` in `NetlumaVPNTunnelExtension/XrayTunnelEngine.swift`.
 - Keep the `XrayTunnelEngine` protocol as the app-facing abstraction.
 - Use `XrayConfigBuilder` as the JSON config source, or replace it with a stricter model if your Xray iOS bridge requires it.
 - Wire the real engine from `PacketTunnelProvider.startTunnel`.
 - Add the required packet/TUN adapter. Xray-core alone does not automatically consume `NEPacketTunnelFlow` packets.
 
-While `MockXrayTunnelEngine` is active, QuickVPN does not install the default route. The tunnel can connect for lifecycle testing without breaking normal internet, but no traffic is proxied until a real engine is linked.
+While `MockXrayTunnelEngine` is active, NetlumaVPN does not install the default route. The tunnel can connect for lifecycle testing without breaking normal internet, but no traffic is proxied until a real engine is linked.
 
 For a real full-tunnel connection, the logs should include:
 
@@ -110,7 +110,7 @@ Do not log generated configs in production because they may contain user IDs or 
 
 ## Logs
 
-Open **Settings -> Connection Logs** in the app to see sanitized events from the main app and Packet Tunnel Extension. The same events are also written with `os.Logger` under subsystem `com.alekseipozdiakov.QuickVPN`.
+Open **Settings -> Connection Logs** in the app to see sanitized events from the main app and Packet Tunnel Extension. The same events are also written with `os.Logger` under subsystem `com.alekseipozdiakov.NetlumaVPN`.
 
 The log messages intentionally do not include passwords, user IDs, generated Xray JSON, or full server endpoints.
 
@@ -125,17 +125,17 @@ The log messages intentionally do not include passwords, user IDs, generated Xra
 
 Current local checks:
 
-- `QuickVPN` builds successfully for iOS Simulator.
-- `QuickVPNTests` passes.
+- `NetlumaVPN` builds successfully for iOS Simulator.
+- `NetlumaVPNTests` passes.
 
 Optional network diagnostics are gated so normal test runs stay deterministic:
 
 ```sh
 RUN_NETWORK_TESTS=1 xcodebuild test \
-  -project QuickVPN.xcodeproj \
-  -scheme QuickVPN \
+  -project NetlumaVPN.xcodeproj \
+  -scheme NetlumaVPN \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
-  -only-testing:QuickVPNTests
+  -only-testing:NetlumaVPNTests
 ```
 
 If the command-line environment does not reach the simulator test runner, set `RUN_NETWORK_TESTS=1` in **Scheme -> Test -> Arguments -> Environment Variables**. In Codex/XcodeBuildMCP, pass it through `testRunnerEnv`; the tests also accept the prefixed `TEST_RUNNER_RUN_NETWORK_TESTS=1` form.
@@ -149,14 +149,14 @@ Those tests verify:
 - Basic HTTPS internet reachability.
 - Public egress IP reachability through `api.ipify.org`.
 
-To assert that traffic is exiting through a known VPN IP, connect QuickVPN on a physical device, then run the network tests with:
+To assert that traffic is exiting through a known VPN IP, connect NetlumaVPN on a physical device, then run the network tests with:
 
 ```sh
-RUN_NETWORK_TESTS=1 QUICKVPN_EXPECTED_EGRESS_IP=<expected-ip> xcodebuild test \
-  -project QuickVPN.xcodeproj \
-  -scheme QuickVPN \
+RUN_NETWORK_TESTS=1 NETLUMAVPN_EXPECTED_EGRESS_IP=<expected-ip> xcodebuild test \
+  -project NetlumaVPN.xcodeproj \
+  -scheme NetlumaVPN \
   -destination 'platform=iOS,name=<device-name>' \
-  -only-testing:QuickVPNTests
+  -only-testing:NetlumaVPNTests
 ```
 
 Full VPN egress validation still needs a physical device because iOS Packet Tunnel permission and routing are device-level behavior.
