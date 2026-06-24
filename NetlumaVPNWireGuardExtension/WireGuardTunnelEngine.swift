@@ -16,13 +16,11 @@ enum WireGuardTunnelEngineError: LocalizedError {
     }
 }
 
-/// ⚠️ DO NOT link WireGuardKit/wireguard-go into this extension. It already statically links
-/// **Xray (Go)** via SwiftyXrayKit, and adding **wireguard-go (Go)** puts *two Go runtimes* in one
-/// process — they conflict and the extension crashes at launch with `NEVPNConnectionError.pluginFailed`
-/// for **every** protocol (VLESS/Trojan included), not just WireGuard. Verified 2026-06-24, then
-/// reverted. The viable path for native WireGuard is a **single** Go engine that handles all protocols
-/// (e.g. sing-box, which the backend already uses) instead of Xray. Until then `canImport(WireGuardKit)`
-/// is false and this returns the clear-error engine below. See docs/VPN_TUNNEL.md + KNOWN_ISSUES.md #14.
+/// ⚠️ This file belongs to **NetlumaVPNWireGuardExtension** — a dedicated packet-tunnel extension
+/// whose ONLY Go dependency is wireguard-go (via WireGuardKit). It must **never** link SwiftyXrayKit
+/// (Xray, also Go): two Go runtimes in one extension process crash it for every protocol
+/// (NEVPNConnectionError.pluginFailed). Proxy protocols run in the separate `NetlumaVPNTunnelExtension`
+/// (Xray) process. See docs/VPN_TUNNEL.md + KNOWN_ISSUES.md #14.
 enum WireGuardTunnelEngineFactory {
     static func make(provider: NEPacketTunnelProvider) -> any PacketTunnelEngine {
         #if canImport(WireGuardKit)
@@ -37,13 +35,9 @@ enum WireGuardTunnelEngineFactory {
 
 #if canImport(WireGuardKit)
 /// Runs a WireGuard profile through Apple's native userspace WireGuard (wireguard-go via
-/// WireGuardKit). Unlike the Xray path, the `WireGuardAdapter` builds and installs the
-/// `NEPacketTunnelNetworkSettings` itself (addresses / DNS / routes from the config), so the
-/// provider must **not** call `setTunnelNetworkSettings` for WireGuard.
-///
-/// This is the fix for the "connects then dies with NEVPNConnectionError 12 (pluginFailed)"
-/// crash: routing WireGuard through Xray + tun2socks ran two userspace netstacks and blew the
-/// packet-tunnel memory limit. A single native stack stays within budget.
+/// WireGuardKit). The `WireGuardAdapter` builds and installs the `NEPacketTunnelNetworkSettings`
+/// itself (addresses / DNS / routes from the config), so the provider must **not** call
+/// `setTunnelNetworkSettings`.
 final class WireGuardTunnelEngine: PacketTunnelEngine {
     private let adapter: WireGuardAdapter
 
@@ -138,8 +132,8 @@ final class WireGuardTunnelEngine: PacketTunnelEngine {
 }
 #endif
 
-/// Fallback used when WireGuardKit is not linked. Fails fast with a clear message instead of
-/// silently routing nothing (or falling back to the crashing Xray path).
+/// Fallback used when WireGuardKit is not linked (e.g. a misconfigured build). Fails fast with a
+/// clear message instead of silently doing nothing.
 final class UnavailableWireGuardTunnelEngine: PacketTunnelEngine {
     func start(with resolvedProfile: ResolvedVPNProfile) async throws {
         throw WireGuardTunnelEngineError.engineUnavailable

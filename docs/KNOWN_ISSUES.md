@@ -121,40 +121,36 @@ from any user-supplied `http(s)` link. Two scope notes:
   or base64-encoded sets) are **not** supported — the parser will take the first proxy outbound
   / fail. (`APP.md` → `RemoteConfigDownloader`.)
 
-## 🔴 14. WireGuard does not work; native WG can't coexist with the Xray (Go) engine
+## 🟠 14. WireGuard runs in a separate extension (build-verified; device runtime pending)
 
-**Symptom:** a WireGuard profile reached `connected`, carried no traffic, then the extension was
-killed → `NEVPNConnectionError.pluginFailed` (code 12), repeating. **Root cause:** routing WG
-through Xray's `wireguard` outbound (a gVisor netstack) on top of SwiftyXrayKit's tun2socks
-(a second netstack) ran **two userspace stacks** in the packet-tunnel extension and exceeded the
-~50 MB NE memory limit → jetsam. VLESS/Trojan were unaffected (plain TCP/TLS outbound).
+**History.** WG never worked through Xray: its `wireguard` outbound (a gVisor netstack) on top of
+SwiftyXrayKit's tun2socks (a second netstack) blew the ~50 MB NE memory limit → `connected`, no traffic,
+then `pluginFailed`. The first native fix linked WireGuardKit/wireguard-go **into the Xray extension** —
+that put **two Go runtimes in one process** and crashed **all** protocols (VLESS/Trojan too). Reverted.
 
-**Fix (code landed 2026-06-24):** WireGuard profiles now use a **native** engine
-(`WireGuardTunnelEngine` → WireGuardKit / wireguard-go, one stack). `PacketTunnelProvider` branches
-by protocol; the native adapter installs its own network settings (honoring the config's DNS and
-`AllowedIPs`). The Swift code is dormant behind `#if canImport(WireGuardKit)`.
+**Fix (2026-06-24): process isolation.** WireGuard now runs in its **own** extension
+`NetlumaVPNWireGuardExtension` (bundle id `com.alekseipozdiakov.NetlumaVPN.WireGuard`) that links **only**
+WireGuardKit/wireguard-go — one Go runtime, like the official WG app. The Xray extension
+(`NetlumaVPNTunnelExtension`) is untouched (Xray only). `VPNManager`/`WidgetVPNController` route each
+profile to the right extension by `providerBundleIdentifier` and enforce the single-active-tunnel rule
+(stop + disable on-demand for the other extension before starting). `PacketTunnelEngine` was extracted to
+`NetlumaVPNShared` so both extensions share it without either importing the other's Go dependency.
 
-**Native WG attempted (vendored WireGuardKit) and reverted — two Go runtimes (2026-06-24):** Vendoring
-`wireguard-apple` and linking it compiled and linked fine (after patching its manifest `5.3`→`5.5` and
-`WireGuardKitC.h` for Xcode 26), but on device it **broke every protocol**: VLESS, Trojan **and** WG all
-died with `pluginFailed`. Cause: the extension already statically links **Xray (Go)** via SwiftyXrayKit,
-and wireguard-go is **also Go** → **two Go runtimes in one process**, which conflict and crash the
-extension at launch. All WireGuardKit wiring (package, `WireGuardGoBridgeiOS` target, `Vendor/`, the
-`ops/build-wireguard-go.sh` wrapper) was removed; `project.yml` is back to its known-good state and
-VLESS/Trojan build/work again.
+**Verified here:** simulator `xcodebuild build` + the 99-test suite pass; the WG extension binary contains
+wireguard-go and **zero** Xray symbols and links no SwiftyXrayCore (one Go runtime per process, confirmed
+via `strings`/`otool`).
 
-**Current state:** WG routes to `UnavailableWireGuardTunnelEngine` → fails fast with "The WireGuard engine
-is not linked into this build." (clear error, no crash). The dormant `WireGuardTunnelEngine` +
-`WireGuardQuickConfigBuilder` + the `wireGuardDNSServers` parsing stay in-tree (tested) but **must not** be
-re-activated by re-adding WireGuardKit (see the ⚠️ banner in `WireGuardTunnelEngine.swift`).
+**Caveats / still device-only:**
+- **Go (`brew install go`) is now a build prerequisite** (wireguard-go bridge); CI too. The simulator slice
+  uses `WireGuardSimulatorShims.c` no-op stubs (the vendored Makefile doesn't map `iphonesimulator`).
+- **On-device runtime not yet confirmed:** the actual WG handshake/traffic, protocol switching
+  (Xray↔WG, single active tunnel), and **provisioning the new App ID** (Network Extensions + the shared App
+  Group + Keychain group on Team `6659MLRZ5F`) can only be verified on a physical device. Auto-signing
+  should register it; manual portal setup may be needed if it doesn't.
+- `wireGuardReserved` (Xray/AmneziaWG obfuscation) is unsupported natively.
+- **Invariant:** never add SwiftyXrayKit to the WG extension or WireGuardKit to the Xray extension/app.
+- `Vendor/wireguard-apple` (with its two patches) must be committed so it persists.
 
-**Real path forward:** native WG requires a **single Go engine serving all protocols** (VLESS/VMess/Trojan/
-WireGuard) in place of Xray — e.g. **sing-box** (which the backend already runs). That's a wholesale engine
-replacement, not an add-on. (`VPN_TUNNEL.md` → "WireGuard engine — currently unsupported".)
-
-The earlier DNS work (2026-06-24) — parsing `DNS =` into `wireGuardDNSServers` and the
-`TunnelNetworkSettingsBuilder.dnsOverrideServers` override — was a correct but secondary fix; with
-the native engine the WG config's DNS is applied directly, so that builder override is currently
-unused by production (kept, with tests, as a generic capability).
+(`VPN_TUNNEL.md` → "WireGuard extension (native, process-isolated)".)
 
 _Last full analysis: 2026-06-24._

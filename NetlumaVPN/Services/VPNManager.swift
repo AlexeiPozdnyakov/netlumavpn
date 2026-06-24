@@ -73,8 +73,10 @@ final class VPNManager {
 
     func currentConnectionState() async -> VPNConnectionState {
         do {
-            let manager = try await loadExistingManager()
-            return manager?.connection.netlumaVPNConnectionState ?? VPNConnectionState(status: .disconnected)
+            let managers = try await loadAllManagers()
+            // Either extension's manager may be the live one; report whichever isn't disconnected.
+            let active = managers.first { $0.connection.status != .disconnected && $0.connection.status != .invalid }
+            return active?.connection.netlumaVPNConnectionState ?? VPNConnectionState(status: .disconnected)
         } catch {
             AppLogger.warning("Could not load VPN status, treating as disconnected", category: .vpn)
             return VPNConnectionState(status: .disconnected)
@@ -95,9 +97,19 @@ final class VPNManager {
             TunnelStartPayload(resolvedProfile: resolvedProfile)
         )
 
-        let manager = try await loadOrCreateManager()
+        // WireGuard runs in its own extension; proxy protocols in the Xray extension.
+        let targetBundleID = AppConstants.providerBundleIdentifier(for: profile.protocolType)
+        let managers = try await loadAllManagers()
+
+        // iOS allows only ONE active packet tunnel. Neutralize the OTHER extension's manager (stop it
+        // and disable on-demand) so it can't fight or auto-reconnect against the tunnel we're starting.
+        for other in managers where providerBundleIdentifier(of: other) != targetBundleID {
+            try await deactivate(other)
+        }
+
+        let manager = managers.first { providerBundleIdentifier(of: $0) == targetBundleID } ?? NETunnelProviderManager()
         let tunnelProtocol = NETunnelProviderProtocol()
-        tunnelProtocol.providerBundleIdentifier = AppConstants.tunnelProviderBundleIdentifier
+        tunnelProtocol.providerBundleIdentifier = targetBundleID
         tunnelProtocol.serverAddress = profile.displayEndpoint
         tunnelProtocol.providerConfiguration = [
             AppConstants.AppGroupKeys.selectedProfileID: profile.id.uuidString
@@ -133,8 +145,13 @@ final class VPNManager {
 
     func disconnect() async throws -> VPNConnectionState {
         AppLogger.info("Disconnect requested", category: .vpn)
-        guard let manager = try await loadExistingManager() else {
+        let managers = try await loadAllManagers()
+        guard managers.isEmpty == false else {
             throw VPNManagerError.managerNotConfigured
+        }
+        // Stop whichever extension's tunnel is actually live (there is at most one).
+        guard let manager = managers.first(where: { $0.connection.status != .disconnected && $0.connection.status != .invalid }) else {
+            return VPNConnectionState(status: .disconnected)
         }
         manager.connection.stopVPNTunnel()
         AppLogger.info("stopVPNTunnel sent", category: .vpn)
@@ -143,21 +160,23 @@ final class VPNManager {
         return VPNConnectionState(status: reportedStatus, connectedDate: state.connectedDate)
     }
 
-    private func loadOrCreateManager() async throws -> NETunnelProviderManager {
-        if let existing = try await loadExistingManager() {
-            return existing
-        }
-        return NETunnelProviderManager()
+    private func providerBundleIdentifier(of manager: NETunnelProviderManager) -> String? {
+        (manager.protocolConfiguration as? NETunnelProviderProtocol)?.providerBundleIdentifier
     }
 
-    private func loadExistingManager() async throws -> NETunnelProviderManager? {
-        let managers = try await loadAllManagers()
-        return managers.first { manager in
-            guard let tunnelProtocol = manager.protocolConfiguration as? NETunnelProviderProtocol else {
-                return false
-            }
-            return tunnelProtocol.providerBundleIdentifier == AppConstants.tunnelProviderBundleIdentifier
-                || manager.localizedDescription == AppConstants.appName
+    /// Stops a manager belonging to the OTHER extension and disables its on-demand rules so iOS
+    /// won't auto-reconnect it while a different protocol's tunnel is starting. (Both managers share
+    /// `localizedDescription`, so they must be told apart strictly by `providerBundleIdentifier`.)
+    private func deactivate(_ manager: NETunnelProviderManager) async throws {
+        let status = manager.connection.status
+        if status != .disconnected && status != .invalid {
+            manager.connection.stopVPNTunnel()
+            AppLogger.info("Stopped other tunnel \(providerBundleIdentifier(of: manager) ?? "?") before switching protocol", category: .vpn)
+        }
+        if manager.isOnDemandEnabled || manager.isEnabled {
+            manager.isOnDemandEnabled = false
+            manager.isEnabled = false
+            try await saveToPreferences(manager)
         }
     }
 

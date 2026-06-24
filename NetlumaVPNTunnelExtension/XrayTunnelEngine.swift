@@ -22,14 +22,8 @@ enum XrayTunnelEngineError: LocalizedError {
     }
 }
 
-/// A startable/stoppable tunnel backend. The provider holds one of these regardless
-/// of protocol: `XrayTunnelEngine` (proxy protocols, via SwiftyXrayKit) or the native
-/// `WireGuardTunnelEngine` (WireGuard, via WireGuardKit).
-protocol PacketTunnelEngine: AnyObject {
-    func start(with resolvedProfile: ResolvedVPNProfile) async throws
-    func stop() async
-}
-
+// `PacketTunnelEngine` is defined in NetlumaVPNShared (so the WireGuard extension can use it
+// without importing SwiftyXrayKit). This extension only ever runs Xray-based proxy protocols.
 protocol XrayTunnelEngine: PacketTunnelEngine {
     /// When true the provider installs a default route + DNS via `TunnelNetworkSettingsBuilder`.
     /// (The WireGuard engine sets its own network settings, so it is not an `XrayTunnelEngine`.)

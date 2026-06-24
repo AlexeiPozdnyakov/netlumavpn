@@ -20,6 +20,11 @@ packages:
   SwiftyXrayKit:
     url: https://github.com/dima-u/SwiftyXrayKit
     from: 1.1.0
+  # Native WireGuard, vendored locally (patched manifest 5.3->5.5 + sys/types.h in WireGuardKitC.h).
+  # Linked ONLY into NetlumaVPNWireGuardExtension — never the Xray extension or the app (two Go
+  # runtimes in one process crash the extension; see docs/KNOWN_ISSUES.md #14). Needs Go to build.
+  WireGuardKit:
+    path: Vendor/wireguard-apple
 targets:
   NetlumaVPN:
     type: application
@@ -39,6 +44,8 @@ targets:
       - package: SwiftyXrayKit
         product: SwiftyXrayKit
       - target: NetlumaVPNTunnelExtension
+        embed: true
+      - target: NetlumaVPNWireGuardExtension
         embed: true
       - target: NetlumaVPNWidget
         embed: true
@@ -117,6 +124,42 @@ targets:
           - "$(inherited)"
           - "@executable_path/Frameworks"
           - "@executable_path/../../Frameworks"
+  # External-build target: compiles wireguard-go-bridge (libwg-go.a) from the vendored package via
+  # its Makefile (which the WireGuardKit SPM target links with -lwg-go). Requires Go on PATH — the
+  # wrapper script adds Homebrew's bin. Only NetlumaVPNWireGuardExtension depends on it.
+  WireGuardGoBridgeiOS:
+    type: ""
+    platform: iOS
+    legacy:
+      toolPath: $(SRCROOT)/ops/build-wireguard-go.sh
+      passSettings: true
+      workingDirectory: $(SRCROOT)/Vendor/wireguard-apple/Sources/WireGuardKitGo
+  # Dedicated WireGuard packet-tunnel extension: links WireGuardKit/wireguard-go ONLY (NOT
+  # SwiftyXrayKit), so its process has a single Go runtime. Proxy protocols stay in
+  # NetlumaVPNTunnelExtension. Shares the App Group + Keychain group so it can read the profile.
+  NetlumaVPNWireGuardExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: NetlumaVPNWireGuardExtension
+      - path: NetlumaVPNShared
+    dependencies:
+      - package: WireGuardKit
+        product: WireGuardKit
+      - target: WireGuardGoBridgeiOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.alekseipozdiakov.NetlumaVPN.WireGuard
+        PRODUCT_NAME: "$(TARGET_NAME)"
+        INFOPLIST_FILE: NetlumaVPNWireGuardExtension/Info.plist
+        CODE_SIGN_ENTITLEMENTS: NetlumaVPNWireGuardExtension/NetlumaVPNWireGuardExtension.entitlements
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+          - "@executable_path/../../Frameworks"
   NetlumaVPNTests:
     type: bundle.unit-test
     platform: iOS
@@ -148,6 +191,7 @@ schemes:
       targets:
         NetlumaVPN: all
         NetlumaVPNTunnelExtension: all
+        NetlumaVPNWireGuardExtension: all
         NetlumaVPNWidget: all
     run:
       config: Debug

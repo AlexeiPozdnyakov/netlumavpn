@@ -62,7 +62,7 @@ struct WidgetVPNController {
         }
 
         do {
-            let manager = try await loadExistingManager()
+            let manager = try await activeManager()
             let connectionState = manager?.connection.netlumaVPNWidgetConnectionState
                 ?? VPNConnectionState(status: .disconnected)
             return resolvedConnectionState(
@@ -154,6 +154,8 @@ struct WidgetVPNController {
                 TunnelStartPayload(resolvedProfile: resolvedProfile)
             )
 
+            // Single active tunnel: stop the OTHER extension's manager before starting this one.
+            try await deactivateOtherTunnels(keeping: AppConstants.providerBundleIdentifier(for: profile.protocolType))
             let manager = try await preparedManager(for: profile)
             let currentStatus = manager.connection.status.netlumaVPNWidgetStatus
             if currentStatus == .connected || currentStatus == .connecting || currentStatus == .disconnecting {
@@ -193,7 +195,8 @@ struct WidgetVPNController {
     }
 
     private func preparedManager(for profile: VPNProfile) async throws -> NETunnelProviderManager {
-        let manager = try await loadExistingManager() ?? NETunnelProviderManager()
+        let bundleID = AppConstants.providerBundleIdentifier(for: profile.protocolType)
+        let manager = try await loadExistingManager(bundleID: bundleID) ?? NETunnelProviderManager()
         let networkPreferences = networkPreferencesStorage.load()
         guard manager.needsWidgetConfigurationUpdate(
             profile: profile,
@@ -215,7 +218,7 @@ struct WidgetVPNController {
         networkPreferences: NetworkPreferences
     ) {
         let tunnelProtocol = NETunnelProviderProtocol()
-        tunnelProtocol.providerBundleIdentifier = AppConstants.tunnelProviderBundleIdentifier
+        tunnelProtocol.providerBundleIdentifier = AppConstants.providerBundleIdentifier(for: profile.protocolType)
         tunnelProtocol.serverAddress = profile.displayEndpoint
         tunnelProtocol.providerConfiguration = [
             AppConstants.AppGroupKeys.selectedProfileID: profile.id.uuidString
@@ -238,7 +241,7 @@ struct WidgetVPNController {
 
         let manager: NETunnelProviderManager?
         do {
-            manager = try await loadExistingManager()
+            manager = try await activeManager()
         } catch {
             displayStateStorage.save(status: .failed)
             WidgetCenter.shared.reloadAllTimelines()
@@ -299,14 +302,35 @@ struct WidgetVPNController {
         }
     }
 
-    private func loadExistingManager() async throws -> NETunnelProviderManager? {
+    private func loadExistingManager(bundleID: String) async throws -> NETunnelProviderManager? {
         let managers = try await loadAllManagers()
-        return managers.first { manager in
-            guard let tunnelProtocol = manager.protocolConfiguration as? NETunnelProviderProtocol else {
-                return false
+        return managers.first { providerBundleIdentifier(of: $0) == bundleID }
+    }
+
+    /// The manager whose tunnel is currently live (at most one across both extensions).
+    private func activeManager() async throws -> NETunnelProviderManager? {
+        let managers = try await loadAllManagers()
+        return managers.first { $0.connection.status != .disconnected && $0.connection.status != .invalid }
+    }
+
+    private func providerBundleIdentifier(of manager: NETunnelProviderManager) -> String? {
+        (manager.protocolConfiguration as? NETunnelProviderProtocol)?.providerBundleIdentifier
+    }
+
+    /// Stops and disables on-demand for any manager that is NOT the one we're about to start, so iOS
+    /// won't keep or auto-reconnect a different protocol's tunnel (only one packet tunnel may be active).
+    private func deactivateOtherTunnels(keeping targetBundleID: String) async throws {
+        let managers = try await loadAllManagers()
+        for manager in managers where providerBundleIdentifier(of: manager) != targetBundleID {
+            let status = manager.connection.status
+            if status != .disconnected && status != .invalid {
+                manager.connection.stopVPNTunnel()
             }
-            return tunnelProtocol.providerBundleIdentifier == AppConstants.tunnelProviderBundleIdentifier
-                || manager.localizedDescription == AppConstants.appName
+            if manager.isOnDemandEnabled || manager.isEnabled {
+                manager.isOnDemandEnabled = false
+                manager.isEnabled = false
+                try await saveToPreferences(manager)
+            }
         }
     }
 
@@ -362,7 +386,7 @@ private extension NETunnelProviderManager {
         if localizedDescription != AppConstants.appName {
             return true
         }
-        if tunnelProtocol.providerBundleIdentifier != AppConstants.tunnelProviderBundleIdentifier {
+        if tunnelProtocol.providerBundleIdentifier != AppConstants.providerBundleIdentifier(for: profile.protocolType) {
             return true
         }
         if tunnelProtocol.serverAddress != profile.displayEndpoint {

@@ -10,9 +10,10 @@
 | Thing | Value | Defined in |
 |-------|-------|------------|
 | App bundle ID | `com.alekseipozdiakov.NetlumaVPN` | `project.yml` |
-| Tunnel bundle ID | `com.alekseipozdiakov.NetlumaVPN.PacketTunnel` | `project.yml`, `AppConstants.tunnelProviderBundleIdentifier` |
+| Tunnel bundle ID (Xray) | `com.alekseipozdiakov.NetlumaVPN.PacketTunnel` | `project.yml`, `AppConstants.tunnelProviderBundleIdentifier` |
+| WireGuard tunnel bundle ID | `com.alekseipozdiakov.NetlumaVPN.WireGuard` | `project.yml`, `AppConstants.wireGuardTunnelProviderBundleIdentifier` (separate NE extension, own Go runtime) |
 | Widget bundle ID | `com.alekseipozdiakov.NetlumaVPN.Widget` | `project.yml` |
-| App Group | `group.com.alekseipozdiakov.NetlumaVPN` | `AppConstants.appGroupIdentifier`, all 3 `.entitlements` |
+| App Group | `group.com.alekseipozdiakov.NetlumaVPN` | `AppConstants.appGroupIdentifier`, all 4 `.entitlements` (app, Xray ext, WireGuard ext, widget) |
 | Keychain access group | `6659MLRZ5F.com.alekseipozdiakov.NetlumaVPN.shared` | `AppConstants.keychainAccessGroup` (entitlements use `$(AppIdentifierPrefix)…`) |
 | Keychain service | `com.alekseipozdiakov.NetlumaVPN.profiles` | `AppConstants.Keychain.service` |
 | Apple Team ID | `6659MLRZ5F` | `project.yml` (`DEVELOPMENT_TEAM`) |

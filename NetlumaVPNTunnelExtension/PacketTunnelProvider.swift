@@ -19,28 +19,28 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
                 let resolvedProfile = try resolvedProfile(from: options)
                 AppLogger.info("Resolved selected profile \(AppLogger.safeProfileLabel(resolvedProfile.profile))", category: .tunnel)
 
-                if resolvedProfile.profile.protocolType == .wireguard {
-                    // Native WireGuard (WireGuardKit) builds and installs its own network
-                    // settings from the config, so we do NOT call setTunnelNetworkSettings here.
-                    let engine = WireGuardTunnelEngineFactory.make(provider: self)
-                    self.activeEngine = engine
-                    try await engine.start(with: resolvedProfile)
-                    AppLogger.info("Tunnel network settings applied by WireGuard adapter", category: .tunnel)
-                } else {
-                    let engine = XrayTunnelEngineFactory.make(packetFlow: packetFlow)
-                    let networkPreferences = networkPreferencesStorage.load()
-                    AppLogger.info("Tunnel engine default-route mode \(engine.routesDefaultTraffic ? "enabled" : "disabled")", category: .tunnel)
-
-                    let networkSettings = TunnelNetworkSettingsBuilder().makeSettings(
-                        routesDefaultTraffic: engine.routesDefaultTraffic,
-                        preferences: networkPreferences
-                    )
-                    try await setTunnelNetworkSettings(networkSettings)
-                    AppLogger.info("Tunnel network settings applied", category: .tunnel)
-
-                    self.activeEngine = engine
-                    try await engine.start(with: resolvedProfile)
+                // This extension runs Xray-based proxy protocols only. WireGuard is handled by a
+                // separate extension (NetlumaVPNWireGuardExtension) so wireguard-go's Go runtime
+                // never shares this Xray (Go) process (two Go runtimes crash the extension — see
+                // KNOWN_ISSUES #14). The app routes WG profiles to the WG extension; reaching here
+                // with WG would be a routing bug, so fail clearly.
+                guard resolvedProfile.profile.protocolType != .wireguard else {
+                    throw XrayTunnelEngineError.engineUnavailable
                 }
+
+                let engine = XrayTunnelEngineFactory.make(packetFlow: packetFlow)
+                let networkPreferences = networkPreferencesStorage.load()
+                AppLogger.info("Tunnel engine default-route mode \(engine.routesDefaultTraffic ? "enabled" : "disabled")", category: .tunnel)
+
+                let networkSettings = TunnelNetworkSettingsBuilder().makeSettings(
+                    routesDefaultTraffic: engine.routesDefaultTraffic,
+                    preferences: networkPreferences
+                )
+                try await setTunnelNetworkSettings(networkSettings)
+                AppLogger.info("Tunnel network settings applied", category: .tunnel)
+
+                self.activeEngine = engine
+                try await engine.start(with: resolvedProfile)
                 sessionStateStorage.markConnectionStarted()
                 WidgetCenter.shared.reloadAllTimelines()
 

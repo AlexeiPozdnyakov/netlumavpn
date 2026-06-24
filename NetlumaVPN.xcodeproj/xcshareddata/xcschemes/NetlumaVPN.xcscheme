@@ -49,6 +49,20 @@
                ReferencedContainer = "container:NetlumaVPN.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CE39E3479E2C61F950E4A888"
+               BuildableName = "NetlumaVPNWireGuardExtension.appex"
+               BlueprintName = "NetlumaVPNWireGuardExtension"
+               ReferencedContainer = "container:NetlumaVPN.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

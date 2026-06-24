@@ -226,6 +226,18 @@ struct NetlumaVPNTests {
         #expect(reparsedSecret.wireGuardPreSharedKey == "PRESHAREDKEY=")
     }
 
+    @Test func providerBundleIdentifierRoutesWireGuardToItsOwnExtension() {
+        // WireGuard runs in a separate extension (own Go runtime); proxy protocols use the Xray one.
+        #expect(AppConstants.providerBundleIdentifier(for: .wireguard) == AppConstants.wireGuardTunnelProviderBundleIdentifier)
+        #expect(AppConstants.providerBundleIdentifier(for: .vless) == AppConstants.tunnelProviderBundleIdentifier)
+        #expect(AppConstants.providerBundleIdentifier(for: .trojan) == AppConstants.tunnelProviderBundleIdentifier)
+        #expect(AppConstants.providerBundleIdentifier(for: .vmess) == AppConstants.tunnelProviderBundleIdentifier)
+        // The two extensions MUST have different bundle ids (separate processes / Go runtimes).
+        #expect(AppConstants.wireGuardTunnelProviderBundleIdentifier != AppConstants.tunnelProviderBundleIdentifier)
+        // The misspelled "alekseipozdiakov" stem is load-bearing (docs/IDENTIFIERS.md) — lock it.
+        #expect(AppConstants.wireGuardTunnelProviderBundleIdentifier == "com.alekseipozdiakov.NetlumaVPN.WireGuard")
+    }
+
     @Test func parsesSingBoxVLESSWebSocketJSONConfiguration() throws {
         let config = """
         {

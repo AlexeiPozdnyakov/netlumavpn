@@ -5,6 +5,16 @@ enum AppConstants {
     static let loggingSubsystem = "com.alekseipozdiakov.NetlumaVPN"
     static let appGroupIdentifier = "group.com.alekseipozdiakov.NetlumaVPN"
     static let tunnelProviderBundleIdentifier = "com.alekseipozdiakov.NetlumaVPN.PacketTunnel"
+    // WireGuard runs in a SEPARATE packet-tunnel extension so its Go runtime (wireguard-go) never
+    // shares the Xray (Go) process. (The "alekseipozdiakov" stem is intentionally misspelled — see
+    // docs/IDENTIFIERS.md — do not "fix" it.)
+    static let wireGuardTunnelProviderBundleIdentifier = "com.alekseipozdiakov.NetlumaVPN.WireGuard"
+
+    /// The packet-tunnel extension that should run a given protocol: WireGuard → the dedicated WG
+    /// extension; everything else → the Xray extension.
+    static func providerBundleIdentifier(for protocolType: VPNProtocolType) -> String {
+        protocolType == .wireguard ? wireGuardTunnelProviderBundleIdentifier : tunnelProviderBundleIdentifier
+    }
 
     // Keep this aligned with the Apple Developer Team ID and keychain-access-groups entitlement.
     static let keychainAccessGroup = "6659MLRZ5F.com.alekseipozdiakov.NetlumaVPN.shared"
