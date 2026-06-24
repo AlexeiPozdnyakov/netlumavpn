@@ -93,10 +93,26 @@ CLAUDE.md                       — project context auto-loaded every session
     deploy-server.md
   settings.local.json           — per-checkout permissions (not committed)
 
-docs/                           — long-form docs for humans
+docs/                           — long-form docs (source of truth; read before any task)
+  README.md                     — doc index + the mandatory per-task workflow
   ARCHITECTURE.md               — system diagram + boundary contracts
-  AGENTS.md                     — this file
+  IDENTIFIERS.md                — bundle IDs, App Group, headers, the QuickVPN→NetlumaVPN rename
+  APP.md                        — iOS app: AppModel, UI, app-side services
+  SHARED.md                     — NetlumaVPNShared: models, storage, logging
+  VPN_TUNNEL.md                 — tunnel extension, parsing, Xray config, network settings
+  WIDGET.md                     — widget + App Intents
+  BACKEND.md                    — the two FastAPI backends
+  OPS.md                        — nginx/systemd/fail2ban, ports, deploy
+  TESTING.md                    — test inventory, commands, coverage gaps, the test rule
+  KNOWN_ISSUES.md               — live discrepancies & risks
+  REDEPLOY_FRESH_SERVER.md      — fresh-server runbook
+  AGENTS.md                     — this file (Claude Code helper index)
 ```
+
+> The repo-root [`/AGENTS.md`](../AGENTS.md) is the **operating protocol for Codex
+> and other agents**; the repo-root [`/CLAUDE.md`](../CLAUDE.md) carries the same
+> rules for Claude Code. Both require: read `docs/` first → do the work → write &
+> run tests → update `docs/`.
 
 ## Conventions for adding more agents / skills / commands
 

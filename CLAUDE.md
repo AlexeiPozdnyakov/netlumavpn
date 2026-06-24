@@ -3,6 +3,31 @@
 This file is auto-loaded by Claude Code at the start of every session.
 It documents conventions, layout, and guardrails that all agents must follow.
 
+## Mandatory workflow for every task (read this first)
+
+Apply this to **every** task, **no matter how small** — a one-line fix follows the
+same loop as a feature. This is not optional.
+
+1. **Read the docs before touching code.** Open [`docs/README.md`](docs/README.md),
+   then the document(s) that own the area you're about to change (the ownership map
+   is in `docs/README.md`). The `docs/` folder — not this file, not memory — is the
+   source of truth for how the system actually works.
+2. **Do the work** following the conventions and guardrails below and in the docs.
+3. **Write/extend tests and run them**, then run the **full** test suite to confirm
+   nothing else broke. Commands and the per-area test rule are in
+   [`docs/TESTING.md`](docs/TESTING.md). A task is not done until its tests exist and
+   the suite is green.
+4. **Update the docs** in the same task — reflect your change in the owning doc, and
+   add/update [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md) if you found or fixed a
+   discrepancy. Stale docs are a bug.
+
+Codex and other non-Claude agents follow the same loop via [`AGENTS.md`](AGENTS.md).
+
+> ⚠️ Some statements in the sections below were written earlier and are partially
+> stale (the project is mid-rename from QuickVPN→NetlumaVPN and has two backends).
+> Where this file and `docs/` disagree, **`docs/` wins**. See
+> [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md).
+
 ## What is NetlumaVPN
 
 A multi-protocol iOS VPN client (VLESS Reality, VMess, Trojan, WireGuard) with a
@@ -10,10 +35,13 @@ Packet Tunnel Extension, Lock Screen widget, and a Python FastAPI backend that
 issues per-device profiles. The repo also contains the `ops/` files used to
 provision the production VPS.
 
-The mobile app talks to the backend with **TLS certificate pinning** (SHA256 base64
-pin in `AppConstants.Backend.mobileTLSCertificateSHA256Base64`). The tunnel
-extension proxies real traffic through `SwiftyXrayKit` and falls back to
-`MockXrayTunnelEngine` when the package is not linked.
+The mobile app has **TLS certificate-pinning** machinery
+(`AppConstants.Backend.mobileTLSCertificateSHA256Base64`, a leaf-cert SHA256), but that
+constant is **currently empty, so pinning is inert** — see
+[`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md). The client sends both
+`X-NetlumaVPN-*` and legacy `X-QuickVPN-*` headers. The tunnel extension proxies real
+traffic through `SwiftyXrayKit` and falls back to `MockXrayTunnelEngine` (which routes
+**nothing**) when the package is not linked. Full detail: [`docs/`](docs/README.md).
 
 ## Repository layout
 

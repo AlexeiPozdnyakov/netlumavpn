@@ -120,6 +120,81 @@ struct GlobalServerIntegrationTests {
         #expect(attempts == 1)
     }
 
+    @Test func fetchServersReportsFinalTransportFailureAsNetworkNonFatal() async throws {
+        let httpClient = MockNetlumaVPNHTTPClient(
+            statusCode: 200,
+            body: "",
+            transientErrors: [URLError(.timedOut), URLError(.cannotFindHost)]
+        )
+        let reporter = MockNetworkErrorReporter()
+        let client = GlobalServerAPIClient(
+            configuration: Self.testConfiguration,
+            httpClient: httpClient,
+            deviceIdentityStore: FixedDeviceIdentityStore(deviceID: "device-12345678901234567890"),
+            networkErrorReporter: reporter
+        )
+
+        await #expect(throws: URLError.self) {
+            _ = try await client.fetchServers()
+        }
+
+        let reports = await reporter.recordedReports()
+        let report = try #require(reports.first)
+        #expect(reports.count == 1)
+        #expect((report.error as? URLError)?.code == .cannotFindHost)
+        #expect(report.context.method == "GET")
+        #expect(report.context.host == "netlumavpn.test")
+        #expect(report.context.path == "/api/v1/mobile/servers")
+        #expect(report.context.statusCode == nil)
+        #expect(report.context.attemptCount == 2)
+    }
+
+    @Test func fetchServersReportsHTTPFailureAsNetworkNonFatal() async throws {
+        let httpClient = MockNetlumaVPNHTTPClient(
+            statusCode: 503,
+            body: #"{"ok": false}"#
+        )
+        let reporter = MockNetworkErrorReporter()
+        let client = GlobalServerAPIClient(
+            configuration: Self.testConfiguration,
+            httpClient: httpClient,
+            deviceIdentityStore: FixedDeviceIdentityStore(deviceID: "device-12345678901234567890"),
+            networkErrorReporter: reporter
+        )
+
+        await #expect(throws: GlobalServerAPIError.self) {
+            _ = try await client.fetchServers()
+        }
+
+        let reports = await reporter.recordedReports()
+        let report = try #require(reports.first)
+        #expect(reports.count == 1)
+        #expect(report.context.statusCode == 503)
+        #expect(report.context.attemptCount == 1)
+    }
+
+    @Test func fetchServersDoesNotReportTransientFailureWhenRetrySucceeds() async throws {
+        let httpClient = MockNetlumaVPNHTTPClient(
+            statusCode: 200,
+            body: """
+            {"ok": true, "servers": [{"id":"netlumavpn-mvp-eu-1","name":"NetlumaVPN Global","country":"Germany","city":"Nuremberg","region":"Europe","protocol":"VLESS Reality","is_available":true}]}
+            """,
+            transientErrors: [URLError(.timedOut)]
+        )
+        let reporter = MockNetworkErrorReporter()
+        let client = GlobalServerAPIClient(
+            configuration: Self.testConfiguration,
+            httpClient: httpClient,
+            deviceIdentityStore: FixedDeviceIdentityStore(deviceID: "device-12345678901234567890"),
+            networkErrorReporter: reporter
+        )
+
+        _ = try await client.fetchServers()
+
+        let reports = await reporter.recordedReports()
+        #expect(reports.isEmpty)
+    }
+
     @Test func issueProfileAddsDeviceHeaderAndReturnsConfigURL() async throws {
         let httpClient = MockNetlumaVPNHTTPClient(
             responses: [
@@ -777,6 +852,18 @@ private actor MockNetlumaVPNHTTPClient: NetlumaVPNHTTPClient {
 private struct MockNetlumaVPNHTTPResponse {
     let statusCode: Int
     let body: String
+}
+
+private actor MockNetworkErrorReporter: NetworkErrorReporting {
+    private var reports: [(error: Error, context: NetworkErrorContext)] = []
+
+    func recordNetworkError(_ error: Error, context: NetworkErrorContext) async {
+        reports.append((error, context))
+    }
+
+    func recordedReports() -> [(error: Error, context: NetworkErrorContext)] {
+        reports
+    }
 }
 
 private struct FixedDeviceIdentityStore: GlobalServerDeviceIdentifying {

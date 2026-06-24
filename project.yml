@@ -14,6 +14,9 @@ settings:
     DEVELOPMENT_LANGUAGE: en
     CLANG_ENABLE_MODULES: YES
 packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk.git
+    from: 12.15.0
   SwiftyXrayKit:
     url: https://github.com/dima-u/SwiftyXrayKit
     from: 1.1.0
@@ -27,6 +30,12 @@ targets:
           - Subscriptions.storekit
       - path: NetlumaVPNShared
     dependencies:
+      - package: Firebase
+        product: FirebaseAnalytics
+      - package: Firebase
+        product: FirebaseCore
+      - package: Firebase
+        product: FirebaseCrashlytics
       - package: SwiftyXrayKit
         product: SwiftyXrayKit
       - target: NetlumaVPNTunnelExtension
@@ -43,9 +52,30 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         TARGETED_DEVICE_FAMILY: "1,2"
         ENABLE_PREVIEWS: YES
+        DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+        OTHER_LDFLAGS:
+          - "$(inherited)"
+          - "-ObjC"
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/Frameworks"
+    postBuildScripts:
+      - name: Upload Firebase Crashlytics dSYMs
+        basedOnDependencyAnalysis: false
+        script: |
+          FIREBASE_CRASHLYTICS_RUN_SCRIPT="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+          if [ -f "$FIREBASE_CRASHLYTICS_RUN_SCRIPT" ]; then
+            "$FIREBASE_CRASHLYTICS_RUN_SCRIPT"
+          else
+            echo "warning: Firebase Crashlytics run script not found; resolve Swift packages before archiving."
+          fi
+        inputFiles:
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}.debug.dylib
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist
+          - $(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)
   NetlumaVPNWidget:
     type: app-extension
     platform: iOS

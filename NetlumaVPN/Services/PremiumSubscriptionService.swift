@@ -40,6 +40,13 @@ protocol PremiumSubscriptionServicing: AnyObject {
 final class StoreKitPremiumSubscriptionService: PremiumSubscriptionServicing {
     private var productsByID: [String: Product] = [:]
     private let productIDs = Set(PremiumProductKind.allCases.map(\.productID))
+    private let purchaseAnalyticsReporter: PremiumPurchaseAnalyticsReporting
+
+    init(
+        purchaseAnalyticsReporter: PremiumPurchaseAnalyticsReporting = FirebaseTelemetryReporter.shared
+    ) {
+        self.purchaseAnalyticsReporter = purchaseAnalyticsReporter
+    }
 
     func loadProducts() async throws -> [PremiumSubscriptionPlan] {
         let requestedIDs = PremiumProductKind.allCases.map(\.productID)
@@ -93,22 +100,33 @@ final class StoreKitPremiumSubscriptionService: PremiumSubscriptionServicing {
     }
 
     func purchase(productID: String) async throws -> PremiumPurchaseOutcome {
-        guard AppStore.canMakePayments else {
-            throw PremiumSubscriptionError.purchasesUnavailable
-        }
+        purchaseAnalyticsReporter.logPremiumPurchaseStarted(productID: productID)
 
-        let product = try await product(for: productID)
-        switch try await product.purchase() {
-        case .success(let verification):
-            let transaction = try verifiedTransaction(from: verification)
-            await transaction.finish()
-            return .purchased
-        case .userCancelled:
-            return .cancelled
-        case .pending:
-            return .pending
-        @unknown default:
-            return .pending
+        do {
+            guard AppStore.canMakePayments else {
+                throw PremiumSubscriptionError.purchasesUnavailable
+            }
+
+            let product = try await product(for: productID)
+            switch try await product.purchase() {
+            case .success(let verification):
+                let transaction = try verifiedTransaction(from: verification)
+                purchaseAnalyticsReporter.logPremiumPurchase(transaction: transaction)
+                await transaction.finish()
+                return .purchased
+            case .userCancelled:
+                purchaseAnalyticsReporter.logPremiumPurchaseCancelled(productID: productID)
+                return .cancelled
+            case .pending:
+                purchaseAnalyticsReporter.logPremiumPurchasePending(productID: productID)
+                return .pending
+            @unknown default:
+                purchaseAnalyticsReporter.logPremiumPurchasePending(productID: productID)
+                return .pending
+            }
+        } catch {
+            purchaseAnalyticsReporter.logPremiumPurchaseFailed(productID: productID, error: error)
+            throw error
         }
     }
 

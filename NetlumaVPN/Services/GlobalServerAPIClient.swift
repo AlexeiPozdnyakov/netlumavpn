@@ -181,16 +181,19 @@ struct GlobalServerAPIClient {
     private let configuration: GlobalServerAPIConfiguration
     private let httpClient: NetlumaVPNHTTPClient
     private let deviceIdentityStore: GlobalServerDeviceIdentifying
+    private let networkErrorReporter: NetworkErrorReporting
 
     init(
         configuration: GlobalServerAPIConfiguration = .production,
         httpClient: NetlumaVPNHTTPClient? = nil,
-        deviceIdentityStore: GlobalServerDeviceIdentifying = GlobalServerDeviceIdentityStore()
+        deviceIdentityStore: GlobalServerDeviceIdentifying = GlobalServerDeviceIdentityStore(),
+        networkErrorReporter: NetworkErrorReporting = FirebaseTelemetryReporter.shared
     ) {
         self.configuration = configuration
         let pins = configuration.pinnedCertificateSHA256Base64.map { Set([$0]) } ?? []
         self.httpClient = httpClient ?? PinnedCertificateHTTPClient(allowedPins: pins)
         self.deviceIdentityStore = deviceIdentityStore
+        self.networkErrorReporter = networkErrorReporter
     }
 
     func fetchServers() async throws -> [GlobalVPNServer] {
@@ -199,8 +202,7 @@ struct GlobalServerAPIClient {
         request.timeoutInterval = 20
         applyMobileHeaders(to: &request)
 
-        let (data, response) = try await performWithRetry(request)
-        try validate(response)
+        let (data, _) = try await execute(request, retryingTransientErrors: true)
         let payload = try JSONDecoder().decode(ServerListResponse.self, from: data)
         guard payload.ok else {
             throw GlobalServerAPIError.invalidResponse
@@ -208,14 +210,51 @@ struct GlobalServerAPIClient {
         return payload.servers.filter(\.isAvailable)
     }
 
-    private func performWithRetry(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
-        do {
-            return try await httpClient.data(for: request)
-        } catch let error as URLError where Self.isRetryable(error) {
-            AppLogger.warning("Global server request retrying after \(error.code.rawValue)", category: .app)
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            return try await httpClient.data(for: request)
+    private func execute(
+        _ request: URLRequest,
+        retryingTransientErrors: Bool
+    ) async throws -> (Data, HTTPURLResponse) {
+        var attemptCount = 0
+
+        while true {
+            attemptCount += 1
+
+            let data: Data
+            let response: HTTPURLResponse
+            do {
+                (data, response) = try await httpClient.data(for: request)
+            } catch let error as URLError where retryingTransientErrors && attemptCount == 1 && Self.isRetryable(error) {
+                AppLogger.warning("Global server request retrying after \(error.code.rawValue)", category: .app)
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                continue
+            } catch {
+                await recordNetworkError(error, request: request, statusCode: nil, attemptCount: attemptCount)
+                throw error
+            }
+
+            do {
+                try validate(response)
+            } catch {
+                await recordNetworkError(error, request: request, statusCode: response.statusCode, attemptCount: attemptCount)
+                throw error
+            }
+
+            return (data, response)
         }
+    }
+
+    private func recordNetworkError(
+        _ error: Error,
+        request: URLRequest,
+        statusCode: Int?,
+        attemptCount: Int
+    ) async {
+        let context = NetworkErrorContext(
+            request: request,
+            statusCode: statusCode,
+            attemptCount: attemptCount
+        )
+        await networkErrorReporter.recordNetworkError(error, context: context)
     }
 
     private static func isRetryable(_ error: URLError) -> Bool {
@@ -238,8 +277,7 @@ struct GlobalServerAPIClient {
         let deviceName = await UIDevice.current.model
         request.httpBody = try JSONEncoder().encode(ProfileIssueRequest(deviceName: deviceName))
 
-        let (data, response) = try await httpClient.data(for: request)
-        try validate(response)
+        let (data, _) = try await execute(request, retryingTransientErrors: false)
         let payload = try JSONDecoder().decode(ProfileIssueResponse.self, from: data)
         guard payload.ok, let issue = payload.issue else {
             throw GlobalServerAPIError.invalidIssuedProfile
@@ -258,8 +296,7 @@ struct GlobalServerAPIClient {
         applyMobileHeaders(to: &request)
         try applyDeviceHeaders(to: &request)
 
-        let (data, response) = try await httpClient.data(for: request)
-        try validate(response)
+        let (data, _) = try await execute(request, retryingTransientErrors: false)
         guard let value = String(data: data, encoding: .utf8)?.nilIfBlank else {
             throw GlobalServerAPIError.invalidIssuedProfile
         }
