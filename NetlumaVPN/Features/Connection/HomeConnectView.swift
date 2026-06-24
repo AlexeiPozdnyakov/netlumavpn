@@ -202,7 +202,7 @@ struct HomeConnectView: View {
             )
             .frame(height: 33)
 
-            ForEach(Array(sortedProfiles.prefix(2).enumerated()), id: \.element.id) { index, profile in
+            ForEach(Array(sortedProfiles.enumerated()), id: \.element.id) { index, profile in
                 SwipeableProfileConnectRow(
                     profile: profile,
                     isSelected: profile.id == selectedProfileID,
@@ -229,7 +229,7 @@ struct HomeConnectView: View {
                     }
                 )
 
-                if index < min(sortedProfiles.count, 2) - 1 {
+                if index < sortedProfiles.count - 1 {
                     DividerLine()
                 }
             }

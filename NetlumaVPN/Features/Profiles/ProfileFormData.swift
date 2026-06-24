@@ -190,6 +190,9 @@ struct ProfileFormData {
             wireGuardPersistentKeepAlive: protocolType == .wireguard ? wireGuardPersistentKeepAlive : nil,
             wireGuardMTU: protocolType == .wireguard ? wireGuardMTU : nil,
             wireGuardReserved: protocolType == .wireguard ? wireGuardReserved : nil,
+            // DNS has no editor field; preserve it from the imported profile so editing
+            // a WireGuard profile doesn't strip its resolvers (see VPN_TUNNEL.md).
+            wireGuardDNSServers: protocolType == .wireguard ? existingProfile?.wireGuardDNSServers : nil,
             remarks: remarks,
             createdAt: existingProfile?.createdAt ?? Date(),
             updatedAt: Date()

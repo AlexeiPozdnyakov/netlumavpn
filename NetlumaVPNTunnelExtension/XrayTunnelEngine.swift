@@ -22,11 +22,18 @@ enum XrayTunnelEngineError: LocalizedError {
     }
 }
 
-protocol XrayTunnelEngine: AnyObject {
-    var routesDefaultTraffic: Bool { get }
-
+/// A startable/stoppable tunnel backend. The provider holds one of these regardless
+/// of protocol: `XrayTunnelEngine` (proxy protocols, via SwiftyXrayKit) or the native
+/// `WireGuardTunnelEngine` (WireGuard, via WireGuardKit).
+protocol PacketTunnelEngine: AnyObject {
     func start(with resolvedProfile: ResolvedVPNProfile) async throws
     func stop() async
+}
+
+protocol XrayTunnelEngine: PacketTunnelEngine {
+    /// When true the provider installs a default route + DNS via `TunnelNetworkSettingsBuilder`.
+    /// (The WireGuard engine sets its own network settings, so it is not an `XrayTunnelEngine`.)
+    var routesDefaultTraffic: Bool { get }
 }
 
 enum XrayTunnelEngineFactory {

@@ -259,6 +259,7 @@ struct VPNConfigurationParser {
             wireGuardReserved: try parseWireGuardReserved(
                 wireGuardValue(interface, "reserved") ?? wireGuardValue(peer, "reserved")
             ),
+            wireGuardDNSServers: splitWireGuardList(wireGuardValue(interface, "dns")),
             remarks: wireGuardValue(interface, "name") ?? wireGuardValue(peer, "name") ?? "WireGuard \(endpoint.host)"
         )
 
@@ -328,6 +329,7 @@ struct VPNConfigurationParser {
                 range: 576...9000
             ),
             wireGuardReserved: try parseWireGuardReserved(wireGuardValue(query, "reserved")),
+            wireGuardDNSServers: splitWireGuardList(wireGuardValue(query, "dns")),
             remarks: remarks
         )
 

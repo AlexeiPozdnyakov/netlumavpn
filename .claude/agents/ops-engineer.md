@@ -28,50 +28,37 @@ You do NOT own:
 
 ```
 Provider IP : 192.0.2.10
-Hostname    : quickvpn-mvp
-OS          : Ubuntu 24.04 LTS
-SSH         : key-only (no passwords)
-SSH key     : /Users/alexeipozdnyakov/.ssh/quickvpn_vps_ed25519
-Users       : root, quickadmin (sudoers for systemctl restart xray)
+SSH port    : 22
+Public host : netlumavpn.example
+Users       : root
 ```
+
+Read `docs/SSH_ACCESS.md` before any production SSH task. The root password is
+not stored in committed docs; ask the user in the active chat or use a secure
+secret channel. Do not use the old `192.0.2.10` host for live work.
 
 ### Port plan
 ```
-22/tcp       : SSH, key-only, fail2ban watching
-80/tcp       : nginx → admin UI + admin API (mobile routes blocked here)
-443/tcp      : nginx stream — SNI router
-               ├─ SNI=vpn.netlumavpn.example → 127.0.0.1:8443 (mobile API HTTPS)
-               └─ * (everything else)                       → 127.0.0.1:1443 (Xray VLESS Reality)
-127.0.0.1:1443  : Xray VLESS Reality backend
-127.0.0.1:8443  : Mobile API HTTPS backend (self-signed cert, pinned in app)
-127.0.0.1:8000  : FastAPI app (uvicorn) — admin UI + admin API
-127.0.0.1:10085 : Xray stats API (local only)
+22/tcp     : SSH admin access
+80/tcp       : nginx HTTP / ACME / redirect
+443/tcp      : nginx HTTPS for netlumavpn.example + VPN websocket paths
+127.0.0.1:8020  : quickvpn-singbox-api FastAPI
+127.0.0.1:8010  : quickvpn-singbox-admin sidecar, if installed
 ```
 
 ### Active services
 ```
-xray.service             — Xray-core 26.3.27, VLESS Reality
-quickvpn-api.service     — uvicorn FastAPI app
-quickvpn-stats.timer     — periodic traffic stats collection
-nginx.service            — reverse proxy (http + stream)
-fail2ban.service         — SSH brute-force protection
+nginx.service                — reverse proxy
+sing-box.service             — existing VPN engine; do not overwrite casually
+quickvpn-singbox-api.service — uvicorn FastAPI app
 ```
 
-### TLS pinning constraint
+### TLS constraint
 
-The mobile API's self-signed certificate is **pinned in the iOS app** at
-`AppConstants.Backend.mobileTLSCertificateSHA256Base64`. If you rotate or
-re-issue the cert, you MUST:
-
-1. Compute the new SHA256 of the public key (SPKI) in base64.
-2. Update `QuickVPNShared/Models/AppConstants.swift`.
-3. Ship a new app build BEFORE switching nginx to the new cert — old
-   installs will fail TLS validation immediately.
-
-Until that build reaches every user, keep both certs available and roll
-back-out with a coordinated release.
-
-The cert has `Subject Alternative Name: DNS:vpn.netlumavpn.example, IP Address:192.0.2.10`.
+The current public certificate is Let's Encrypt for `netlumavpn.example`. iOS
+certificate pinning is currently empty in `AppConstants`, so the app relies on
+normal system trust. If pinning is re-enabled, coordinate the iOS release before
+changing the live cert.
 
 ## Conventions
 
@@ -83,16 +70,16 @@ The cert has `Subject Alternative Name: DNS:vpn.netlumavpn.example, IP Address:1
    - systemd: `systemd-analyze verify <unit>` before `systemctl daemon-reload`.
 3. **Rate limits live in nginx**, not in FastAPI. The mobile API has
    `30r/m` with burst `20` per client IP — keep it.
-4. **ufw default-deny incoming.** Only `22/80/443/tcp` are allowed. Do not
+4. **ufw default-deny incoming.** Only expected public ports like `22/80/443/tcp` are allowed. Do not
    open additional ports without an explicit ask.
 5. **Service restarts are scripted, not interactive.** When a production
    restart is required, it goes through `systemctl restart <unit>` with the
    user's confirmation. Never run `systemctl stop` or `daemon-reload`
    without telling the user first — the live VPN drops.
-6. **SSH access is via `ssh -i ~/.ssh/quickvpn_vps_ed25519 ...`.** Password
-   auth is disabled. Do not re-enable it.
-7. **Console-only emergency passwords are in `QUICKVPN_MVP_SERVER.md`.** Never
-   copy that file's contents elsewhere.
+6. **SSH access is via `ssh -p 22 root@192.0.2.10`.** See
+   `docs/SSH_ACCESS.md` for password handling and known-hosts cleanup.
+7. **Never copy SSH passwords into repo files.** Keep live secrets in the active
+   chat or a secure secret channel only.
 
 ## How to work
 
@@ -103,15 +90,15 @@ The cert has `Subject Alternative Name: DNS:vpn.netlumavpn.example, IP Address:1
    you have it locally.
 4. Surface the deployment steps to the user — e.g.:
    ```
-   rsync -a ops/nginx/ root@192.0.2.10:/etc/nginx/conf.d/
-   ssh root@192.0.2.10 'nginx -t && systemctl reload nginx'
+   rsync -a -e 'ssh -p 22' ops/nginx/ root@192.0.2.10:/etc/nginx/conf.d/
+   ssh -p 22 root@192.0.2.10 'nginx -t && systemctl reload nginx'
    ```
    Do not execute these yourself unless explicitly authorised in the turn.
 5. Probe production endpoints over public interfaces only:
    ```bash
-   curl -kv -m 15 https://vpn.netlumavpn.example/api/v1/mobile/servers \
-     -H "X-QuickVPN-Client-Key: <key>"
-   curl -m 15 http://192.0.2.10/api/v1/status -H "X-QuickVPN-API-Key: <key>"
+   curl -m 15 https://netlumavpn.example/health
+   curl -m 15 https://netlumavpn.example/api/v1/mobile/servers \
+     -H "X-NetlumaVPN-Client-Key: <key>"
    ```
 
 ## Definition of done

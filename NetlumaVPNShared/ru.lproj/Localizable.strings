@@ -8,6 +8,7 @@
 "Add or select a VPN profile first." = "Добавьте или выберите профиль VPN.";
 "Add profile" = "Добавьте профиль";
 "Allow camera access in Settings to scan a configuration QR code." = "Разрешите доступ к камере в Настройках, чтобы сканировать QR-код конфигурации.";
+"All" = "Все";
 "Always" = "Всегда";
 "Annual" = "Годовой";
 "ASN" = "ASN";
@@ -35,6 +36,9 @@
 "Connects or disconnects the selected NetlumaVPN profile." = "Подключает или отключает выбранный профиль NetlumaVPN.";
 "Connects the selected NetlumaVPN profile." = "Подключает выбранный профиль NetlumaVPN.";
 "Continue" = "Продолжить";
+"Clear" = "Очистить";
+"Connection logs" = "Журнал подключения";
+"Copy" = "Копировать";
 "Could Not Import" = "Не удалось импортировать";
 "Could Not Save" = "Не удалось сохранить";
 "Could not build Xray JSON configuration." = "Не удалось собрать JSON-конфигурацию Xray.";
@@ -51,6 +55,7 @@
 "Disconnecting" = "Отключение";
 "Disconnecting..." = "Отключение...";
 "Disconnects the active NetlumaVPN tunnel." = "Отключает активный туннель NetlumaVPN.";
+"Diagnostics" = "Диагностика";
 "DNS" = "DNS";
 "Edit" = "Править";
 "Edit Profile" = "Править профиль";
@@ -116,6 +121,7 @@
 "No Profiles" = "Нет профилей";
 "No IP" = "Нет IP";
 "No global servers are available right now." = "Сейчас нет доступных глобальных серверов.";
+"No logs recorded yet." = "Записей пока нет.";
 "No ping" = "Нет пинга";
 "No profile" = "Нет профиля";
 "No profile selected" = "Профиль не выбран";
@@ -127,10 +133,12 @@
 "OK" = "ОК";
 "ON" = "ВКЛ";
 "Online" = "Онлайн";
+"Only http and https links can be downloaded." = "Скачивать можно только ссылки http и https.";
 "Only vless://, vmess://, trojan://, and WireGuard configurations are supported." = "Поддерживаются только конфигурации vless://, vmess://, trojan:// и WireGuard.";
 "On Demand" = "По требованию";
 "Open NetlumaVPN to add one" = "Откройте NetlumaVPN, чтобы добавить профиль";
 "Password" = "Пароль";
+"Paste a config link (vless://, vmess://, trojan://, or WireGuard), or an https:// link to a .json profile." = "Вставьте ссылку конфигурации (vless://, vmess://, trojan:// или WireGuard) либо https://-ссылку на .json-файл профиля.";
 "Path" = "Путь";
 "Peer Public Key" = "Публичный ключ пира";
 "Persistent Keepalive" = "Постоянный keepalive";
@@ -154,6 +162,7 @@
 "Ready to connect" = "Готово к подключению";
 "Reality" = "Reality";
 "Reality public key is missing." = "Не указан публичный ключ Reality.";
+"Refresh" = "Обновить";
 "Region" = "Регион";
 "Required credential is missing for %@." = "Не указаны обязательные учетные данные для %@.";
 "Reserved Bytes" = "Резервные байты";
@@ -183,6 +192,7 @@
 "Session details" = "Детали сессии";
 "Session history and usage snapshots." = "История сессий и снимки использования.";
 "Settings" = "Настройки";
+"Share" = "Поделиться";
 "Share your protected tunnel with nearby devices." = "Делитесь защищенным туннелем с устройствами рядом.";
 "Short ID" = "Короткий ID";
 "Skip" = "Пропустить";
@@ -198,8 +208,12 @@
 "Terms of Use" = "Условия использования";
 "TLS Fingerprint" = "TLS-отпечаток";
 "The annual plan is selected, but the purchase flow is stubbed for now." = "Выбран годовой план, но покупка пока работает как заглушка.";
+"The configuration file could not be read as text." = "Не удалось прочитать файл конфигурации как текст.";
+"The configuration file is too large to import." = "Файл конфигурации слишком большой для импорта.";
+"The configuration link could not be downloaded." = "Не удалось скачать ссылку конфигурации.";
 "The configuration link is missing %@." = "В ссылке конфигурации отсутствует %@.";
 "The configuration link is not valid." = "Ссылка конфигурации недействительна.";
+"The downloaded configuration file was empty." = "Скачанный файл конфигурации оказался пустым.";
 "The generated Xray configuration could not be converted to text." = "Не удалось преобразовать сгенерированную конфигурацию Xray в текст.";
 "The generated Xray configuration is invalid." = "Сгенерированная конфигурация Xray недействительна.";
 "The monthly plan is selected, but the purchase flow is stubbed for now." = "Выбран месячный план, но покупка пока работает как заглушка.";
@@ -211,6 +225,7 @@
 "The NetlumaVPN server URL is not valid." = "URL сервера NetlumaVPN недействителен.";
 "The packet tunnel protocol could not be configured." = "Не удалось настроить протокол пакетного туннеля.";
 "The real Xray engine is not linked into this build." = "Настоящий движок Xray не подключен к этой сборке.";
+"The WireGuard engine is not linked into this build." = "Движок WireGuard не подключен к этой сборке.";
 "The selected VPN profile was not found." = "Выбранный профиль VPN не найден.";
 "The sing-box JSON configuration could not be decoded." = "Не удалось декодировать JSON-конфигурацию sing-box.";
 "The VMess configuration payload could not be decoded." = "Не удалось декодировать содержимое конфигурации VMess.";

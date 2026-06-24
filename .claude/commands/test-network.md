@@ -8,7 +8,7 @@ Run the unit tests with the live-network flag set, which enables
 `RUN_NETWORK_TESTS=1`.
 
 These tests talk to the live mobile API at
-`https://vpn.netlumavpn.example` and validate the TLS pin.
+`https://netlumavpn.example` and validate the public mobile API path.
 
 ```bash
 RUN_NETWORK_TESTS=1 xcodebuild -project QuickVPN.xcodeproj -scheme QuickVPN \

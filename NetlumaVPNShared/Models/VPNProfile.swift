@@ -90,6 +90,7 @@ struct VPNProfile: Identifiable, Codable, Equatable, Hashable {
     var wireGuardPersistentKeepAlive: Int?
     var wireGuardMTU: Int?
     var wireGuardReserved: [Int]?
+    var wireGuardDNSServers: [String]?
     var origin: VPNProfileOrigin?
     var managedServerID: String?
     var remarks: String
@@ -119,6 +120,7 @@ struct VPNProfile: Identifiable, Codable, Equatable, Hashable {
         wireGuardPersistentKeepAlive: Int? = nil,
         wireGuardMTU: Int? = nil,
         wireGuardReserved: [Int]? = nil,
+        wireGuardDNSServers: [String]? = nil,
         origin: VPNProfileOrigin? = nil,
         managedServerID: String? = nil,
         remarks: String,
@@ -150,6 +152,8 @@ struct VPNProfile: Identifiable, Codable, Equatable, Hashable {
         self.wireGuardPersistentKeepAlive = wireGuardPersistentKeepAlive
         self.wireGuardMTU = wireGuardMTU
         self.wireGuardReserved = wireGuardReserved?.isEmpty == false ? wireGuardReserved : nil
+        let normalizedDNSServers = wireGuardDNSServers?.compactMap(\.nilIfBlank)
+        self.wireGuardDNSServers = normalizedDNSServers?.isEmpty == false ? normalizedDNSServers : nil
         self.origin = origin
         self.managedServerID = managedServerID?.nilIfBlank
         self.remarks = remarks.nilIfBlank ?? "\(protocolType.title) \(host)"

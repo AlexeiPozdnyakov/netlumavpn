@@ -46,13 +46,13 @@ struct ContentView: View {
             case .importProfile:
                 NavigationStack {
                     ImportProfileView { value in
-                        try model.importProfile(from: value)
+                        try await model.importProfile(from: value)
                     }
                 }
             case .scanQRCode:
                 NavigationStack {
                     QRCodeImportView { value in
-                        try model.importProfile(from: value)
+                        try await model.importProfile(from: value)
                     }
                 }
             case .premium:

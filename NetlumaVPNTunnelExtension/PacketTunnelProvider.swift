@@ -7,7 +7,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
     private let profileStorage = ProfileStorage()
     private let networkPreferencesStorage = NetworkPreferencesStorage()
     private let sessionStateStorage = SessionStateStorage()
-    private var engine: XrayTunnelEngine?
+    private var activeEngine: (any PacketTunnelEngine)?
 
     override func startTunnel(
         options: [String: NSObject]?,
@@ -19,19 +19,28 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
                 let resolvedProfile = try resolvedProfile(from: options)
                 AppLogger.info("Resolved selected profile \(AppLogger.safeProfileLabel(resolvedProfile.profile))", category: .tunnel)
 
-                let engine = XrayTunnelEngineFactory.make(packetFlow: packetFlow)
-                let networkPreferences = networkPreferencesStorage.load()
-                AppLogger.info("Tunnel engine default-route mode \(engine.routesDefaultTraffic ? "enabled" : "disabled")", category: .tunnel)
+                if resolvedProfile.profile.protocolType == .wireguard {
+                    // Native WireGuard (WireGuardKit) builds and installs its own network
+                    // settings from the config, so we do NOT call setTunnelNetworkSettings here.
+                    let engine = WireGuardTunnelEngineFactory.make(provider: self)
+                    self.activeEngine = engine
+                    try await engine.start(with: resolvedProfile)
+                    AppLogger.info("Tunnel network settings applied by WireGuard adapter", category: .tunnel)
+                } else {
+                    let engine = XrayTunnelEngineFactory.make(packetFlow: packetFlow)
+                    let networkPreferences = networkPreferencesStorage.load()
+                    AppLogger.info("Tunnel engine default-route mode \(engine.routesDefaultTraffic ? "enabled" : "disabled")", category: .tunnel)
 
-                let networkSettings = TunnelNetworkSettingsBuilder().makeSettings(
-                    routesDefaultTraffic: engine.routesDefaultTraffic,
-                    preferences: networkPreferences
-                )
-                try await setTunnelNetworkSettings(networkSettings)
-                AppLogger.info("Tunnel network settings applied", category: .tunnel)
+                    let networkSettings = TunnelNetworkSettingsBuilder().makeSettings(
+                        routesDefaultTraffic: engine.routesDefaultTraffic,
+                        preferences: networkPreferences
+                    )
+                    try await setTunnelNetworkSettings(networkSettings)
+                    AppLogger.info("Tunnel network settings applied", category: .tunnel)
 
-                self.engine = engine
-                try await engine.start(with: resolvedProfile)
+                    self.activeEngine = engine
+                    try await engine.start(with: resolvedProfile)
+                }
                 sessionStateStorage.markConnectionStarted()
                 WidgetCenter.shared.reloadAllTimelines()
 
@@ -52,8 +61,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
     ) {
         Task {
             AppLogger.info("Packet tunnel stop requested reason \(reason.rawValue)", category: .tunnel)
-            await engine?.stop()
-            engine = nil
+            await activeEngine?.stop()
+            activeEngine = nil
             sessionStateStorage.clearConnectionStartedAt()
             WidgetCenter.shared.reloadAllTimelines()
             AppLogger.info("Packet tunnel stopped", category: .tunnel)

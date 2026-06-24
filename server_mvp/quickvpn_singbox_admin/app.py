@@ -20,13 +20,15 @@ from typing import Any, Callable
 from urllib.parse import parse_qs, urlsplit
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 
 UTC = timezone.utc
 USERNAME_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 VLESS_SERVER_ID = "netlumavpn-singbox-vless"
 TROJAN_SERVER_ID = "netlumavpn-singbox-trojan"
+SUPPORT_TOPICS = {"Bug", "Connection issue", "Billing / Premium", "Feature request", "Other"}
+FEEDBACK_STATUSES = {"new", "in_review", "resolved", "archived"}
 
 
 def env(name: str, default: str = "", legacy_name: str | None = None) -> str:
@@ -35,6 +37,9 @@ def env(name: str, default: str = "", legacy_name: str | None = None) -> str:
     if legacy_name and legacy_name in os.environ:
         return os.environ[legacy_name]
     return default
+
+
+APP_STORE_URL = env("APP_STORE_URL", "https://apps.apple.com/search?term=NetlumaVPN")
 
 
 def header_value(request: Request, name: str, legacy_name: str = "") -> str:
@@ -339,6 +344,20 @@ class NetlumaVPNDatabase:
                     details TEXT,
                     created_at TEXT NOT NULL
                 );
+
+                CREATE TABLE IF NOT EXISTS feedback_requests (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT,
+                    email TEXT NOT NULL,
+                    topic TEXT NOT NULL,
+                    message TEXT NOT NULL,
+                    ios_version TEXT,
+                    app_version TEXT,
+                    contact_consent INTEGER NOT NULL DEFAULT 0,
+                    status TEXT NOT NULL DEFAULT 'new',
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
                 """
             )
 
@@ -432,6 +451,105 @@ class NetlumaVPNDatabase:
         with self.connect() as conn:
             conn.execute("UPDATE profiles SET status='deleted', deleted_at=? WHERE id=?", (now_iso(), profile_id))
         return True
+
+    def create_feedback_request(self, data: dict[str, str]) -> tuple[int | None, str]:
+        email = data.get("email", "").strip()
+        message = data.get("message", "").strip()
+        topic = data.get("topic", "Other").strip() or "Other"
+        if topic not in SUPPORT_TOPICS:
+            topic = "Other"
+        if "@" not in email or "." not in email.rsplit("@", 1)[-1]:
+            return None, "Please enter a valid email address."
+        if len(message) < 8:
+            return None, "Please include a short message."
+        timestamp = now_iso()
+        with self.connect() as conn:
+            cursor = conn.execute(
+                """
+                INSERT INTO feedback_requests(
+                    name,
+                    email,
+                    topic,
+                    message,
+                    ios_version,
+                    app_version,
+                    contact_consent,
+                    status,
+                    created_at,
+                    updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, 'new', ?, ?)
+                """,
+                (
+                    data.get("name", "").strip() or None,
+                    email,
+                    topic,
+                    message,
+                    data.get("ios_version", "").strip() or None,
+                    data.get("app_version", "").strip() or None,
+                    1 if data.get("contact_consent") else 0,
+                    timestamp,
+                    timestamp,
+                ),
+            )
+            return int(cursor.lastrowid), ""
+
+    def feedback_summary(self) -> dict[str, int]:
+        with self.connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT status, COUNT(*) AS count
+                FROM feedback_requests
+                GROUP BY status
+                """
+            ).fetchall()
+        summary = {status: 0 for status in FEEDBACK_STATUSES}
+        summary["total"] = 0
+        for row in rows:
+            status = row["status"] if row["status"] in FEEDBACK_STATUSES else "new"
+            summary[status] = int(row["count"])
+            summary["total"] += int(row["count"])
+        return summary
+
+    def feedback_rows(self, status: str = "", topic: str = "", query: str = "") -> list[sqlite3.Row]:
+        clauses: list[str] = []
+        params: list[str] = []
+        if status in FEEDBACK_STATUSES:
+            clauses.append("status=?")
+            params.append(status)
+        if topic in SUPPORT_TOPICS:
+            clauses.append("topic=?")
+            params.append(topic)
+        if query:
+            clauses.append("(email LIKE ? OR name LIKE ? OR message LIKE ?)")
+            term = f"%{query}%"
+            params.extend([term, term, term])
+        where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+        with self.connect() as conn:
+            return conn.execute(
+                f"""
+                SELECT *
+                FROM feedback_requests
+                {where}
+                ORDER BY created_at DESC
+                LIMIT 200
+                """,
+                params,
+            ).fetchall()
+
+    def update_feedback_status(self, feedback_id: int, status: str) -> bool:
+        if status not in FEEDBACK_STATUSES:
+            return False
+        with self.connect() as conn:
+            cursor = conn.execute(
+                """
+                UPDATE feedback_requests
+                SET status=?, updated_at=?
+                WHERE id=?
+                """,
+                (status, now_iso(), feedback_id),
+            )
+            return cursor.rowcount > 0
 
 
 def issue_mobile_profile(
@@ -595,7 +713,31 @@ def esc(value: Any) -> str:
     return html.escape("" if value is None else str(value), quote=True)
 
 
-def page(title: str, body: str) -> str:
+def app_store_link(label: str = "Download on the App Store", class_name: str = "button primary") -> str:
+    return f'<a class="{esc(class_name)}" href="{esc(APP_STORE_URL)}" rel="noopener">{esc(label)}</a>'
+
+
+def brand_mark() -> str:
+    return '<span class="brand-mark">N</span><span><strong>NetlumaVPN</strong><small>Secure iOS VPN client</small></span>'
+
+
+def page(title: str, body: str, *, section: str = "public") -> str:
+    is_admin = section == "admin"
+    nav = (
+        """
+        <a href="/admin">Profiles</a>
+        <a href="/admin/feedback">Feedback</a>
+        <a href="/api/v1/status">API status</a>
+        """
+        if is_admin
+        else """
+        <a href="/#features">Features</a>
+        <a href="/support">Support</a>
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+        """
+    )
+    cta = "" if is_admin else app_store_link("Download on the App Store", "button primary small")
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -603,31 +745,589 @@ def page(title: str, body: str) -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{esc(title)}</title>
   <style>
-    body {{ margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f7fb; color: #152033; }}
-    header {{ padding: 18px 24px; background: #102a63; color: white; }}
-    main {{ max-width: 1120px; margin: 24px auto; padding: 0 18px 40px; }}
-    section {{ background: white; border: 1px solid #dde5f0; border-radius: 8px; padding: 18px; margin-bottom: 16px; }}
-    table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
-    th, td {{ text-align: left; border-bottom: 1px solid #e4e9f2; padding: 10px 8px; vertical-align: top; }}
-    th {{ color: #667085; font-weight: 650; }}
-    input {{ border: 1px solid #cfd8e6; border-radius: 6px; padding: 10px 12px; min-width: 220px; }}
-    button, a.button {{ border: 0; border-radius: 6px; padding: 9px 12px; background: #2457d6; color: white; font-weight: 700; text-decoration: none; cursor: pointer; display: inline-block; }}
-    button.danger {{ background: #b42318; }}
-    .muted {{ color: #667085; }}
-    .actions {{ display: flex; gap: 8px; flex-wrap: wrap; }}
+    :root {{
+      color-scheme: dark;
+      --bg:#0B0F1A;
+      --hero-end:#102A30;
+      --surface:#151B2B;
+      --surface-elevated:#182033;
+      --card:#1C2336;
+      --line:#2A3349;
+      --line-soft:#1F2638;
+      --text:#FFFFFF;
+      --muted:#94A3B8;
+      --quiet:#64748B;
+      --accent:#34D399;
+      --accent-glow:#34D39933;
+      --warning:#FBBF24;
+      --warning-bg:#3A2D12;
+      --danger:#F87171;
+      --danger-bg:#3A1D23;
+      --max:1200px;
+    }}
+    * {{ box-sizing:border-box; }}
+    html {{ scroll-behavior:smooth; }}
+    body {{
+      margin:0;
+      font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:linear-gradient(135deg,var(--bg),var(--hero-end) 56%,var(--bg));
+      color:var(--text);
+    }}
+    a {{ color:inherit; }}
+    .site-header {{
+      min-height:94px;
+      border-bottom:1px solid var(--line-soft);
+      background:rgba(11,15,26,.88);
+      backdrop-filter:blur(18px);
+      position:sticky;
+      top:0;
+      z-index:5;
+    }}
+    .nav-wrap {{
+      max-width:var(--max);
+      margin:0 auto;
+      min-height:94px;
+      padding:0 32px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+    }}
+    .brand {{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--text);
+      text-decoration:none;
+      min-width:max-content;
+    }}
+    .brand-mark {{
+      display:inline-flex;
+      width:28px;
+      height:28px;
+      border-radius:9px;
+      align-items:center;
+      justify-content:center;
+      color:#0B0F1A;
+      background:var(--accent);
+      font-weight:900;
+      font-family:Geist,Inter,sans-serif;
+    }}
+    .brand strong {{ display:block; font-family:Geist,Inter,sans-serif; font-size:15px; line-height:1; }}
+    .brand small {{ display:block; color:var(--quiet); font-size:11px; line-height:1.45; }}
+    nav {{ display:flex; align-items:center; justify-content:center; gap:24px; color:var(--muted); font-size:13px; }}
+    nav a {{ text-decoration:none; }}
+    nav a:hover {{ color:var(--text); }}
+    main {{ max-width:var(--max); margin:0 auto; padding:0 32px 64px; }}
+    .admin main, .legal main, .support main {{ padding-top:42px; }}
+    h1, h2, h3 {{ font-family:Geist,Inter,sans-serif; letter-spacing:0; }}
+    h1 {{ font-size:58px; line-height:.98; margin:0; }}
+    h2 {{ font-size:34px; line-height:1.08; margin:0 0 14px; }}
+    h3 {{ font-size:17px; margin:0 0 10px; }}
+    p {{ color:var(--muted); line-height:1.65; }}
+    .eyebrow {{ color:var(--accent); font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12px; margin:0 0 12px; }}
+    .hero {{
+      min-height:878px;
+      display:grid;
+      grid-template-columns:minmax(0,1.05fr) 430px;
+      align-items:center;
+      gap:86px;
+      position:relative;
+    }}
+    .hero-copy p {{ max-width:610px; font-size:18px; margin:22px 0 28px; }}
+    .hero-actions {{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:26px; }}
+    .button, button {{
+      appearance:none;
+      border:0;
+      border-radius:999px;
+      padding:12px 18px;
+      font-size:13px;
+      font-weight:800;
+      line-height:1;
+      text-decoration:none;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }}
+    .button.small {{ padding:10px 15px; font-size:12px; }}
+    .button.primary, button.primary {{ background:var(--accent); color:#0B0F1A; box-shadow:0 0 0 6px var(--accent-glow); }}
+    .button.secondary, button.secondary {{ background:var(--surface); color:var(--text); border:1px solid var(--line-soft); }}
+    button.danger, .button.danger {{ background:var(--danger-bg); color:var(--danger); border:1px solid rgba(248,113,113,.32); }}
+    .proof-strip {{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); max-width:590px; gap:10px; }}
+    .proof, .panel, .feature-card, .legal-card, .form-card, .metric-card {{
+      background:rgba(28,35,54,.88);
+      border:1px solid var(--line-soft);
+      border-radius:18px;
+      box-shadow:0 22px 70px rgba(0,0,0,.18);
+    }}
+    .proof {{ padding:14px; }}
+    .proof strong {{ display:block; font-size:13px; }}
+    .proof span {{ color:var(--quiet); font-size:12px; }}
+    .phone {{
+      width:310px;
+      margin:0 auto;
+      padding:16px;
+      border-radius:34px;
+      background:#12262C;
+      border:1px solid rgba(52,211,153,.22);
+      box-shadow:0 38px 120px rgba(16,185,129,.16);
+    }}
+    .phone-screen {{
+      min-height:530px;
+      border-radius:26px;
+      background:#0E1422;
+      border:1px solid #22304A;
+      padding:20px;
+    }}
+    .phone-top {{ display:flex; justify-content:space-between; color:var(--quiet); font-size:11px; margin-bottom:28px; }}
+    .status-pill {{ background:rgba(52,211,153,.12); color:var(--accent); border-radius:999px; padding:5px 9px; font-size:10px; font-weight:800; }}
+    .power {{
+      width:96px;
+      height:96px;
+      margin:24px auto 20px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--accent);
+      border:1px solid rgba(52,211,153,.45);
+      background:radial-gradient(circle at 50% 40%, rgba(52,211,153,.18), rgba(21,27,43,.92));
+      font-size:34px;
+    }}
+    .server-row {{ display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--card); border:1px solid var(--line-soft); border-radius:14px; padding:12px; margin-top:10px; }}
+    .server-row span {{ color:var(--muted); font-size:12px; }}
+    .section-band {{ margin:0 -32px; padding:72px 32px; border-top:1px solid var(--line-soft); background:rgba(11,15,26,.38); }}
+    .section-inner {{ max-width:var(--max); margin:0 auto; }}
+    .section-head {{ max-width:720px; margin-bottom:34px; }}
+    .feature-grid {{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }}
+    .feature-card {{ min-height:160px; padding:20px; }}
+    .feature-card .icon {{ width:34px; height:34px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:var(--surface); color:var(--accent); margin-bottom:18px; }}
+    .feature-card p {{ margin:0; font-size:13px; }}
+    .tech-grid {{ display:grid; grid-template-columns:1fr 1.2fr; gap:24px; align-items:start; }}
+    .code-panel {{ background:var(--surface); border:1px solid var(--line-soft); border-radius:18px; padding:20px; font-family:"IBM Plex Mono",ui-monospace,monospace; color:var(--muted); font-size:13px; line-height:1.8; }}
+    .code-panel b {{ color:var(--text); font-weight:700; }}
+    .cta-band {{ margin-top:72px; padding:32px; border-radius:20px; background:linear-gradient(135deg,rgba(52,211,153,.18),rgba(96,165,250,.09)); border:1px solid rgba(52,211,153,.2); display:flex; justify-content:space-between; align-items:center; gap:20px; }}
+    .grid {{ display:grid; gap:14px; grid-template-columns:repeat(4,minmax(0,1fr)); }}
+    .panel {{ padding:20px; margin-bottom:16px; }}
+    .metric {{ font-size:34px; line-height:1; font-weight:900; font-family:Geist,Inter,sans-serif; }}
+    .muted {{ color:var(--muted); }}
+    .quiet {{ color:var(--quiet); }}
+    .row {{ display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:12px; align-items:end; }}
+    table {{ width:100%; border-collapse:separate; border-spacing:0; font-size:13px; }}
+    th, td {{ text-align:left; border-bottom:1px solid var(--line-soft); padding:12px 10px; vertical-align:top; }}
+    th {{ color:var(--quiet); font-weight:800; font-size:11px; text-transform:uppercase; }}
+    tr:hover td {{ background:rgba(34,43,66,.35); }}
+    input, select, textarea {{
+      width:100%;
+      border:1px solid var(--line-soft);
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:14px;
+      background:#151B2B;
+      color:var(--text);
+      outline:none;
+    }}
+    input:focus, select:focus, textarea:focus {{ border-color:rgba(52,211,153,.65); box-shadow:0 0 0 4px var(--accent-glow); }}
+    textarea {{ min-height:130px; font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; resize:vertical; }}
+    label {{ display:block; font-size:12px; color:var(--muted); margin:0 0 7px; font-weight:700; }}
+    .field {{ margin:0 0 14px; }}
+    .badge {{ display:inline-flex; align-items:center; border-radius:999px; padding:4px 9px; font-size:11px; font-weight:800; background:var(--surface); color:var(--muted); border:1px solid var(--line-soft); }}
+    .badge.good {{ background:rgba(52,211,153,.12); color:var(--accent); border-color:rgba(52,211,153,.35); }}
+    .badge.bad {{ background:var(--danger-bg); color:var(--danger); border-color:rgba(248,113,113,.35); }}
+    .badge.warning {{ background:var(--warning-bg); color:var(--warning); border-color:rgba(251,191,36,.35); }}
+    .actions {{ display:flex; gap:8px; flex-wrap:wrap; }}
+    .support-layout {{ display:grid; grid-template-columns:300px minmax(0,1fr); gap:24px; align-items:start; }}
+    .form-card {{ padding:24px; }}
+    .info-card {{ background:var(--card); border:1px solid var(--line-soft); border-radius:16px; padding:18px; margin-bottom:14px; }}
+    .legal-layout {{ display:grid; grid-template-columns:250px minmax(0,1fr); gap:24px; align-items:start; }}
+    .legal-index {{ position:sticky; top:118px; }}
+    .legal-card {{ padding:22px; margin-bottom:14px; }}
+    .legal-card p {{ margin:0; font-size:14px; }}
+    .success-box, .error-box {{ border-radius:16px; padding:16px; margin-bottom:16px; }}
+    .success-box {{ background:rgba(52,211,153,.12); color:var(--accent); border:1px solid rgba(52,211,153,.35); }}
+    .error-box {{ background:var(--danger-bg); color:var(--danger); border:1px solid rgba(248,113,113,.35); }}
+    .admin-title {{ display:flex; justify-content:space-between; gap:20px; align-items:flex-start; margin-bottom:22px; }}
+    .feedback-layout {{ display:grid; grid-template-columns:340px minmax(0,1fr); gap:18px; align-items:start; }}
+    .feedback-message {{ max-width:420px; white-space:pre-wrap; color:var(--muted); line-height:1.45; }}
+    .filter-row {{ display:grid; grid-template-columns:1fr 160px 160px auto; gap:10px; align-items:end; margin:14px 0 18px; }}
+    footer {{ border-top:1px solid var(--line-soft); color:var(--quiet); padding:26px 32px 40px; max-width:var(--max); margin:0 auto; display:flex; justify-content:space-between; gap:16px; font-size:13px; }}
+    footer a {{ color:var(--muted); text-decoration:none; margin-left:16px; }}
+    @media (max-width: 980px) {{
+      h1 {{ font-size:44px; }}
+      .hero {{ grid-template-columns:1fr; padding:64px 0; gap:36px; min-height:auto; }}
+      .feature-grid, .grid {{ grid-template-columns:repeat(2,minmax(0,1fr)); }}
+      .tech-grid, .support-layout, .legal-layout, .feedback-layout {{ grid-template-columns:1fr; }}
+      .legal-index {{ position:static; }}
+      .row, .filter-row {{ grid-template-columns:1fr; }}
+      .cta-band, .admin-title {{ align-items:flex-start; flex-direction:column; }}
+    }}
+    @media (max-width: 720px) {{
+      .nav-wrap {{ padding:16px; min-height:auto; flex-wrap:wrap; }}
+      nav {{ order:3; width:100%; justify-content:flex-start; overflow:auto; gap:18px; padding-bottom:2px; }}
+      main {{ padding:0 18px 48px; }}
+      .admin main, .legal main, .support main {{ padding-top:30px; }}
+      .section-band {{ margin:0 -18px; padding:48px 18px; }}
+      .proof-strip, .feature-grid, .grid {{ grid-template-columns:1fr; }}
+      .phone {{ width:min(310px,100%); }}
+      footer {{ padding:22px 18px 34px; flex-direction:column; }}
+      footer a {{ margin:0 14px 0 0; }}
+      table {{ min-width:760px; }}
+      .table-scroll {{ overflow-x:auto; }}
+    }}
   </style>
 </head>
-<body>
-  <header><strong>NetlumaVPN API/Admin</strong></header>
+<body class="{esc(section)}">
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a class="brand" href="/">{brand_mark()}</a>
+      <nav>{nav}</nav>
+      {cta}
+    </div>
+  </header>
   <main>{body}</main>
+  <footer>
+    <span>NetlumaVPN for iPhone. Use VPN profiles and managed servers responsibly.</span>
+    <span><a href="/support">Support</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></span>
+  </footer>
 </body>
 </html>"""
+
+
+def marketing_home_html() -> str:
+    features = [
+        ("Protocol coverage", "VLESS + Reality, VMess, Trojan TLS and WireGuard profile support."),
+        ("QR and URL import", "Paste a config link or scan a QR code when a provider gives you one."),
+        ("Global servers", "Use NetlumaVPN-managed profiles when Premium access is active."),
+        ("DNS controls", "Choose resolver behavior and tunnel preferences from the app."),
+        ("Session details", "Check public IP, approximate location, status and latency context."),
+        ("Home Screen widget", "Connect or disconnect quickly without opening the app."),
+        ("Keychain storage", "Sensitive profile values are kept in device-protected storage."),
+        ("StoreKit Premium", "Subscriptions are handled by Apple through the App Store."),
+    ]
+    cards = "".join(
+        f"""
+        <article class="feature-card">
+          <div class="icon">{"%02d" % (index + 1)}</div>
+          <h3>{esc(title)}</h3>
+          <p>{esc(text)}</p>
+        </article>
+        """
+        for index, (title, text) in enumerate(features)
+    )
+    body = f"""
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">netlumavpn.example</p>
+        <h1>NetlumaVPN</h1>
+        <p>Multi-protocol VPN client for iPhone. Import your own profiles, use managed NetlumaVPN Global servers, and keep connection controls close at hand.</p>
+        <div class="hero-actions">
+          {app_store_link()}
+          <a class="button secondary" href="/support">Get support</a>
+        </div>
+        <div class="proof-strip">
+          <div class="proof"><strong>4 protocols</strong><span>VLESS, VMess, Trojan, WireGuard</span></div>
+          <div class="proof"><strong>iOS-native</strong><span>Network Extension tunnel</span></div>
+          <div class="proof"><strong>Widget ready</strong><span>Quick connect from Home Screen</span></div>
+        </div>
+      </div>
+      <div class="phone" aria-label="NetlumaVPN app preview">
+        <div class="phone-screen">
+          <div class="phone-top"><span>9:41</span><span class="status-pill">CONNECTED</span></div>
+          <h3>NetlumaVPN Global</h3>
+          <p style="margin:6px 0 0;font-size:13px;">Nuremberg, Germany</p>
+          <div class="power">ON</div>
+          <div class="server-row"><span>VLESS Reality</span><span class="badge good">active</span></div>
+          <div class="server-row"><span>Trojan TLS</span><span class="badge">ready</span></div>
+          <div class="server-row"><span>WireGuard</span><span class="badge">ready</span></div>
+          <div class="server-row"><span>Session</span><span>00:18:42</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="section-band" id="features">
+      <div class="section-inner">
+        <div class="section-head">
+          <p class="eyebrow">Features</p>
+          <h2>Protocol coverage, profile control, and a clear iPhone-native workflow.</h2>
+          <p>NetlumaVPN is built for users who already understand VPN profiles but still want a clean iOS experience for connecting, importing, and checking the current session.</p>
+        </div>
+        <div class="feature-grid">{cards}</div>
+      </div>
+    </section>
+    <section class="section-band">
+      <div class="section-inner tech-grid">
+        <div>
+          <p class="eyebrow">Security model</p>
+          <h2>Built around iOS Network Extension, local storage, and transparent controls.</h2>
+          <p>Profile metadata stays in local app-group storage, sensitive profile values are stored through protected device storage, and the tunnel extension receives only the start payload it needs to connect.</p>
+          <p>When you use third-party profiles or DNS resolvers, those providers may process traffic according to their own policies.</p>
+        </div>
+        <div class="code-panel">
+          <b>Supported inputs</b><br>
+          vless:// + Reality<br>
+          vmess:// profile links<br>
+          trojan:// TLS profiles<br>
+          wireguard:// profile links<br><br>
+          <b>Controls</b><br>
+          Persist tunnel, IP mode, DNS resolver, include-all-networks, on-demand behavior
+        </div>
+      </div>
+      <div class="section-inner cta-band">
+        <div>
+          <h3>Ready to connect from your iPhone?</h3>
+          <p style="margin:6px 0 0;">Download NetlumaVPN, import a profile, or use a managed Global server with Premium.</p>
+        </div>
+        <div class="actions">
+          {app_store_link("Download for iPhone")}
+          <a class="button secondary" href="/support">Contact support</a>
+        </div>
+      </div>
+    </section>
+    """
+    return page("NetlumaVPN", body)
+
+
+def support_form_html(*, sent: bool = False, error: str = "", values: dict[str, str] | None = None) -> str:
+    values = values or {}
+    topic_options = "".join(
+        f'<option value="{esc(topic)}"{" selected" if values.get("topic") == topic else ""}>{esc(topic)}</option>'
+        for topic in ["Bug", "Connection issue", "Billing / Premium", "Feature request", "Other"]
+    )
+    notice = ""
+    if sent:
+        notice = '<div class="success-box">Thanks, your feedback was sent.</div>'
+    elif error:
+        notice = f'<div class="error-box">{esc(error)}</div>'
+    return f"""
+    <div class="support-layout">
+      <aside>
+        <p class="eyebrow">Support</p>
+        <h1 style="font-size:42px;">Get help with setup, connection quality, billing, or product feedback.</h1>
+        <p>Use this form for bugs, connection issues, Premium questions, and feature ideas.</p>
+        <div class="info-card">
+          <h3>Before you submit</h3>
+          <p>Include your iOS version, app version, profile type, and what you expected to happen.</p>
+        </div>
+        <div class="info-card">
+          <h3>Request types</h3>
+          <p>Bug, connection issue, billing, feature request, or general feedback.</p>
+        </div>
+      </aside>
+      <section class="form-card">
+        {notice}
+        <h2 style="font-size:24px;">Contact support</h2>
+        <form method="post" action="/support">
+          <div class="field"><label>Name</label><input name="name" autocomplete="name" value="{esc(values.get("name", ""))}"></div>
+          <div class="field"><label>Email</label><input name="email" type="email" required autocomplete="email" value="{esc(values.get("email", ""))}"></div>
+          <div class="row" style="grid-template-columns:1fr 160px;">
+            <div class="field"><label>Topic</label><select name="topic">{topic_options}</select></div>
+            <div class="field"><label>iOS version</label><input name="ios_version" placeholder="iOS 26" value="{esc(values.get("ios_version", ""))}"></div>
+          </div>
+          <div class="field"><label>App version</label><input name="app_version" placeholder="1.0" value="{esc(values.get("app_version", ""))}"></div>
+          <div class="field"><label>Message</label><textarea name="message" required>{esc(values.get("message", ""))}</textarea></div>
+          <label style="display:flex;gap:10px;align-items:center;margin-bottom:16px;"><input style="width:auto;" type="checkbox" name="contact_consent" {"checked" if values.get("contact_consent") else ""}> I agree to be contacted about this request</label>
+          <button class="primary" type="submit">Send request</button>
+        </form>
+      </section>
+    </div>
+    <section class="section-band" style="margin-top:54px;">
+      <div class="section-inner">
+        <h2 style="font-size:24px;">Form states</h2>
+        <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+          <div class="info-card"><span class="badge">Loading</span><p>Sending your request.</p></div>
+          <div class="info-card"><span class="badge good">Success</span><p>Your message was received.</p></div>
+          <div class="info-card"><span class="badge bad">Error</span><p>Please check the required fields.</p></div>
+        </div>
+      </div>
+    </section>
+    """
+
+
+def support_page_html(request: Request | None = None, *, error: str = "", values: dict[str, str] | None = None) -> str:
+    sent = request is not None and request.query_params.get("sent") == "1"
+    return page("Support", support_form_html(sent=sent, error=error, values=values), section="support")
+
+
+def slugify(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+    return slug or "section"
+
+
+def legal_page_html(kind: str) -> str:
+    is_privacy = kind == "privacy"
+    title = "Privacy Policy" if is_privacy else "Terms of Use"
+    effective = "Effective date: June 24, 2026"
+    sections = (
+        [
+            ("Local app data", "NetlumaVPN stores profile metadata, selected preferences, connection display state, and local diagnostics on your device or in app-group storage so the app, widget, and tunnel extension can work."),
+            ("VPN profiles and secrets", "Sensitive VPN profile values are stored in protected device storage where available. You are responsible for importing profiles only from providers you trust."),
+            ("App Store purchases", "Premium purchases and subscriptions are handled by Apple through StoreKit and the App Store. NetlumaVPN receives only the entitlement status needed to unlock app features."),
+            ("Diagnostics / crash analytics", "The app may use Firebase services for network failure, crash, and purchase lifecycle diagnostics. These events should not include VPN credentials, full URLs, or generated configs."),
+            ("IP / session lookup", "If you open session information features, NetlumaVPN may request public IP and approximate network metadata from an IP information service such as ipapi.co."),
+            ("DNS providers", "If you choose an encrypted DNS resolver or another DNS option, DNS providers may process query data according to their own policies."),
+            ("Third-party services", "VPN providers, DNS resolvers, Apple, and session information services are independent services with their own terms and privacy practices."),
+            ("User controls", "You can delete imported profiles, change DNS and tunnel settings, disconnect the VPN, manage subscriptions in Apple settings, remove VPN configurations, or uninstall the app."),
+            ("Contact / support", "For privacy questions or requests, use the official support page. Because most data is local to your device, remote deletion may not be possible for local app data."),
+        ]
+        if is_privacy
+        else [
+            ("Use of app", "NetlumaVPN is an iOS VPN client for importing profiles, configuring an iOS Network Extension tunnel, selecting managed Global servers, and viewing connection information."),
+            ("VPN profiles", "You are responsible for every VPN profile, QR code, link, hostname, key, user identifier, password, certificate, or other credential that you import or use."),
+            ("Subscriptions via Apple / App Store", "If Premium features are available, purchases are processed by Apple through the App Store. Pricing, trials, renewal, cancellation, refunds, taxes, and payment methods are handled by Apple."),
+            ("Acceptable use", "You agree not to use NetlumaVPN to break the law, harm others, attack networks, send spam, distribute malware, infringe rights, or bypass rules you are required to follow."),
+            ("Third-party services", "Imported VPN providers, DNS resolvers, Apple systems, and IP information services are not controlled by NetlumaVPN and may have separate terms and policies."),
+            ("Availability", "Connection speed, availability, routing, latency, and compatibility depend on your device, local network, internet provider, selected profile, server provider, and iOS behavior."),
+            ("Limitation of liability", "To the maximum extent allowed by law, NetlumaVPN is provided as is and the operator is not liable for indirect damages, lost data, service interruption, or third-party provider actions."),
+            ("Contact / support", "For questions about these terms, use the support page or another official support channel provided for NetlumaVPN."),
+        ]
+    )
+    index_items = "".join(f"<p><a href='#{esc(slugify(heading))}'>{esc(heading)}</a></p>" for heading, _ in sections)
+    cards = "".join(
+        f"""
+        <section class="legal-card" id="{esc(slugify(heading))}">
+          <h3>{esc(heading)}</h3>
+          <p>{esc(text)}</p>
+        </section>
+        """
+        for heading, text in sections
+    )
+    body = f"""
+    <div class="legal-layout">
+      <aside class="legal-index info-card">
+        <h3>Sections</h3>
+        {index_items}
+      </aside>
+      <article>
+        <p class="eyebrow">Legal</p>
+        <h1 style="font-size:44px;">{esc(title)}</h1>
+        <p>{esc(effective)}</p>
+        {cards}
+      </article>
+    </div>
+    """
+    return page(title, body, section="legal")
+
+
+def feedback_badge(status: str) -> str:
+    label = {
+        "new": "New",
+        "in_review": "In review",
+        "resolved": "Resolved",
+        "archived": "Archived",
+    }.get(status, "New")
+    badge_class = "good" if status == "resolved" else "warning" if status == "in_review" else ""
+    return f'<span class="badge {badge_class}">{esc(label)}</span>'
+
+
+def admin_feedback_row(row: sqlite3.Row) -> str:
+    actions = "".join(
+        f"""
+        <form method="post" action="/admin/feedback/{int(row["id"])}/status">
+          <input type="hidden" name="status" value="{esc(status)}">
+          <button class="secondary" type="submit">{esc(label)}</button>
+        </form>
+        """
+        for status, label in [("in_review", "Review"), ("resolved", "Resolve"), ("archived", "Archive")]
+        if row["status"] != status
+    )
+    return f"""
+    <tr>
+      <td>{feedback_badge(str(row["status"]))}<br><span class="quiet">#{int(row["id"])}</span></td>
+      <td><strong>{esc(row["topic"])}</strong><br><span class="quiet">{esc(row["created_at"])}</span></td>
+      <td>{esc(row["email"])}<br><span class="quiet">{esc(row["name"] or "No name")}</span></td>
+      <td><div class="feedback-message">{esc(row["message"])}</div><span class="quiet">iOS: {esc(row["ios_version"] or "-")} · App: {esc(row["app_version"] or "-")}</span></td>
+      <td><div class="actions">{actions}</div></td>
+    </tr>
+    """
+
+
+def admin_feedback_html(status: str = "", topic: str = "", query: str = "") -> str:
+    summary = database.feedback_summary()
+    rows = database.feedback_rows(status=status, topic=topic, query=query.strip())
+    status_options = "".join(
+        f'<option value="{esc(option)}"{" selected" if status == option else ""}>{esc(option.replace("_", " ").title() or "All statuses")}</option>'
+        for option in ["", "new", "in_review", "resolved", "archived"]
+    )
+    topic_options = "".join(
+        f'<option value="{esc(option)}"{" selected" if topic == option else ""}>{esc(option or "All topics")}</option>'
+        for option in ["", "Bug", "Connection issue", "Billing / Premium", "Feature request", "Other"]
+    )
+    table_rows = "".join(admin_feedback_row(row) for row in rows) or """
+    <tr><td colspan="5"><p class="muted">No feedback matches this filter.</p></td></tr>
+    """
+    body = f"""
+    <div class="admin-title">
+      <div>
+        <p class="eyebrow">Admin Feedback</p>
+        <h1 style="font-size:42px;">Support feedback</h1>
+        <p>Review messages submitted from the public support page.</p>
+      </div>
+      <a class="button secondary" href="/admin">Back to profiles</a>
+    </div>
+    <div class="grid">
+      <section class="metric-card panel"><p class="muted">Total</p><div class="metric">{summary["total"]}</div></section>
+      <section class="metric-card panel"><p class="muted">New</p><div class="metric">{summary["new"]}</div></section>
+      <section class="metric-card panel"><p class="muted">In review</p><div class="metric">{summary["in_review"]}</div></section>
+      <section class="metric-card panel"><p class="muted">Resolved</p><div class="metric">{summary["resolved"]}</div></section>
+    </div>
+    <section class="panel">
+      <form class="filter-row" method="get" action="/admin/feedback">
+        <div><label>Search</label><input name="q" value="{esc(query)}" placeholder="Email, name, message"></div>
+        <div><label>Status</label><select name="status">{status_options}</select></div>
+        <div><label>Topic</label><select name="topic">{topic_options}</select></div>
+        <button class="primary" type="submit">Filter</button>
+      </form>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Status</th><th>Topic</th><th>Sender</th><th>Message</th><th>Actions</th></tr></thead>
+          <tbody>{table_rows}</tbody>
+        </table>
+      </div>
+    </section>
+    """
+    return page("Admin Feedback", body, section="admin")
 
 
 @app.on_event("startup")
 def startup() -> None:
     database.init()
     database.sync_existing_users(manager)
+
+
+@app.get("/", response_class=HTMLResponse)
+async def marketing_home():
+    return marketing_home_html()
+
+
+@app.get("/favicon.ico")
+async def favicon():
+    return Response(status_code=204)
+
+
+@app.get("/support", response_class=HTMLResponse)
+async def support(request: Request):
+    return support_page_html(request)
+
+
+@app.post("/support", response_class=HTMLResponse)
+async def support_submit(request: Request):
+    data = await form_data(request)
+    _, error = database.create_feedback_request(data)
+    if error:
+        return HTMLResponse(support_page_html(request, error=error, values=data), status_code=400)
+    return RedirectResponse("/support?sent=1", status_code=303)
+
+
+@app.get("/terms", response_class=HTMLResponse)
+async def terms():
+    return legal_page_html("terms")
+
+
+@app.get("/privacy", response_class=HTMLResponse)
+async def privacy():
+    return legal_page_html("privacy")
 
 
 @app.get("/health")
@@ -640,6 +1340,7 @@ async def admin(request: Request):
     if not check_basic_auth(request):
         return unauthorized()
     database.sync_existing_users(manager)
+    summary = database.feedback_summary()
     rows = []
     for row in database.list_profiles():
         delete_form = ""
@@ -655,22 +1356,53 @@ async def admin(request: Request):
             f"<a href='{esc(row['trojan_config_url'])}'>Trojan JSON</a></td><td>{delete_form}</td></tr>"
         )
     body = f"""
-    <section>
-      <h1>Profiles</h1>
+    <div class="admin-title">
+      <div>
+        <p class="eyebrow">Admin</p>
+        <h1 style="font-size:42px;">Profiles</h1>
+        <p>This admin manages the existing sing-box config and keeps a NetlumaVPN SQLite registry.</p>
+      </div>
+      <a class="button secondary" href="/admin/feedback">Open feedback · {summary["new"]} new</a>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+      <section class="metric-card panel"><p class="muted">Profiles</p><div class="metric">{len(database.list_profiles())}</div></section>
+      <section class="metric-card panel"><p class="muted">Feedback</p><div class="metric">{summary["total"]}</div></section>
+      <section class="metric-card panel"><p class="muted">New feedback</p><div class="metric">{summary["new"]}</div></section>
+    </div>
+    <section class="panel">
+      <h2 style="font-size:24px;">Create profile</h2>
       <p class="muted">This admin manages the existing sing-box config and keeps a NetlumaVPN SQLite registry.</p>
       <form method="post" action="/admin/profiles">
         <input name="username" placeholder="username, SSB-safe">
         <button type="submit">Create Trojan + VLESS</button>
       </form>
     </section>
-    <section>
-      <table>
-        <thead><tr><th>Username</th><th>Source</th><th>Status</th><th>Server</th><th>Configs</th><th>Actions</th></tr></thead>
-        <tbody>{''.join(rows)}</tbody>
-      </table>
+    <section class="panel">
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Username</th><th>Source</th><th>Status</th><th>Server</th><th>Configs</th><th>Actions</th></tr></thead>
+          <tbody>{''.join(rows)}</tbody>
+        </table>
+      </div>
     </section>
     """
-    return page("NetlumaVPN Admin", body)
+    return page("NetlumaVPN Admin", body, section="admin")
+
+
+@app.get("/admin/feedback", response_class=HTMLResponse)
+async def admin_feedback(request: Request, status: str = "", topic: str = "", q: str = ""):
+    if not check_basic_auth(request):
+        return unauthorized()
+    return admin_feedback_html(status=status, topic=topic, query=q)
+
+
+@app.post("/admin/feedback/{feedback_id}/status")
+async def admin_feedback_status(request: Request, feedback_id: int):
+    if not check_basic_auth(request):
+        return unauthorized()
+    data = await form_data(request)
+    database.update_feedback_status(feedback_id, data.get("status", ""))
+    return RedirectResponse("/admin/feedback", status_code=303)
 
 
 @app.post("/admin/profiles")

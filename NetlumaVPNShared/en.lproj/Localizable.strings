@@ -8,6 +8,7 @@
 "Add or select a VPN profile first." = "Add or select a VPN profile first.";
 "Add profile" = "Add profile";
 "Allow camera access in Settings to scan a configuration QR code." = "Allow camera access in Settings to scan a configuration QR code.";
+"All" = "All";
 "Always" = "Always";
 "Annual" = "Annual";
 "ASN" = "ASN";
@@ -35,6 +36,9 @@
 "Connects or disconnects the selected NetlumaVPN profile." = "Connects or disconnects the selected NetlumaVPN profile.";
 "Connects the selected NetlumaVPN profile." = "Connects the selected NetlumaVPN profile.";
 "Continue" = "Continue";
+"Clear" = "Clear";
+"Connection logs" = "Connection logs";
+"Copy" = "Copy";
 "Could Not Import" = "Could Not Import";
 "Could Not Save" = "Could Not Save";
 "Could not build Xray JSON configuration." = "Could not build Xray JSON configuration.";
@@ -51,6 +55,7 @@
 "Disconnecting" = "Disconnecting";
 "Disconnecting..." = "Disconnecting...";
 "Disconnects the active NetlumaVPN tunnel." = "Disconnects the active NetlumaVPN tunnel.";
+"Diagnostics" = "Diagnostics";
 "DNS" = "DNS";
 "Edit" = "Edit";
 "Edit Profile" = "Edit Profile";
@@ -116,6 +121,7 @@
 "No Profiles" = "No Profiles";
 "No IP" = "No IP";
 "No global servers are available right now." = "No global servers are available right now.";
+"No logs recorded yet." = "No logs recorded yet.";
 "No ping" = "No ping";
 "No profile" = "No profile";
 "No profile selected" = "No profile selected";
@@ -127,10 +133,12 @@
 "OK" = "OK";
 "ON" = "ON";
 "Online" = "Online";
+"Only http and https links can be downloaded." = "Only http and https links can be downloaded.";
 "Only vless://, vmess://, trojan://, and WireGuard configurations are supported." = "Only vless://, vmess://, trojan://, and WireGuard configurations are supported.";
 "On Demand" = "On Demand";
 "Open NetlumaVPN to add one" = "Open NetlumaVPN to add one";
 "Password" = "Password";
+"Paste a config link (vless://, vmess://, trojan://, or WireGuard), or an https:// link to a .json profile." = "Paste a config link (vless://, vmess://, trojan://, or WireGuard), or an https:// link to a .json profile.";
 "Path" = "Path";
 "Peer Public Key" = "Peer Public Key";
 "Persistent Keepalive" = "Persistent Keepalive";
@@ -154,6 +162,7 @@
 "Ready to connect" = "Ready to connect";
 "Reality" = "Reality";
 "Reality public key is missing." = "Reality public key is missing.";
+"Refresh" = "Refresh";
 "Region" = "Region";
 "Required credential is missing for %@." = "Required credential is missing for %@.";
 "Reserved Bytes" = "Reserved Bytes";
@@ -183,6 +192,7 @@
 "Session details" = "Session details";
 "Session history and usage snapshots." = "Session history and usage snapshots.";
 "Settings" = "Settings";
+"Share" = "Share";
 "Share your protected tunnel with nearby devices." = "Share your protected tunnel with nearby devices.";
 "Short ID" = "Short ID";
 "Skip" = "Skip";
@@ -198,8 +208,12 @@
 "Terms of Use" = "Terms of Use";
 "TLS Fingerprint" = "TLS Fingerprint";
 "The annual plan is selected, but the purchase flow is stubbed for now." = "The annual plan is selected, but the purchase flow is stubbed for now.";
+"The configuration file could not be read as text." = "The configuration file could not be read as text.";
+"The configuration file is too large to import." = "The configuration file is too large to import.";
+"The configuration link could not be downloaded." = "The configuration link could not be downloaded.";
 "The configuration link is missing %@." = "The configuration link is missing %@.";
 "The configuration link is not valid." = "The configuration link is not valid.";
+"The downloaded configuration file was empty." = "The downloaded configuration file was empty.";
 "The generated Xray configuration could not be converted to text." = "The generated Xray configuration could not be converted to text.";
 "The generated Xray configuration is invalid." = "The generated Xray configuration is invalid.";
 "The monthly plan is selected, but the purchase flow is stubbed for now." = "The monthly plan is selected, but the purchase flow is stubbed for now.";
@@ -211,6 +225,7 @@
 "The NetlumaVPN server URL is not valid." = "The NetlumaVPN server URL is not valid.";
 "The packet tunnel protocol could not be configured." = "The packet tunnel protocol could not be configured.";
 "The real Xray engine is not linked into this build." = "The real Xray engine is not linked into this build.";
+"The WireGuard engine is not linked into this build." = "The WireGuard engine is not linked into this build.";
 "The selected VPN profile was not found." = "The selected VPN profile was not found.";
 "The sing-box JSON configuration could not be decoded." = "The sing-box JSON configuration could not be decoded.";
 "The VMess configuration payload could not be decoded." = "The VMess configuration payload could not be decoded.";

@@ -181,9 +181,9 @@ compile and partially run, but actual VPN routing only works on device.
 - Database is SQLite with WAL + foreign keys; do not silently drop FK enforcement.
 
 ### Ops
-- Legacy production server: `192.0.2.10` (Ubuntu 24.04). It may be destroyed/recreated; do not assume it is reachable.
+- Current production server: `192.0.2.10`, SSH `root@192.0.2.10` on port `22`. See `docs/SSH_ACCESS.md`; do not use the old `192.0.2.10` host for live work.
 - Fresh server redeploy runbook: `docs/REDEPLOY_FRESH_SERVER.md`.
-- SSH is key-only via `/Users/alexeipozdnyakov/.ssh/quickvpn_vps_ed25519`.
+- Do not store SSH passwords in repo docs. Ask the user for the current password in the active chat or use a secure secret channel.
 - New deploy target domain: `netlumavpn.example`; DNS should point `api`, `admin`, `vpn`, and `trojan` subdomains at the new VPS IPv4.
 - nginx `stream` SNI-routes `api.netlumavpn.example` and `admin.netlumavpn.example` → `127.0.0.1:8443` (HTTPS admin/mobile API), `trojan.netlumavpn.example` → `127.0.0.1:2443` (Trojan TLS), and all other 443 traffic → `127.0.0.1:1443` (Xray VLESS Reality).
 

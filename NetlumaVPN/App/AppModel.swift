@@ -59,6 +59,7 @@ final class AppModel {
     @ObservationIgnored private let premiumService: any PremiumSubscriptionServicing
     @ObservationIgnored private var onboardingStore: OnboardingCompletionStoring
     @ObservationIgnored private let parser = VPNConfigurationParser()
+    @ObservationIgnored private let configDownloader: any RemoteConfigDownloading
     @ObservationIgnored private var statusObserver: NSObjectProtocol?
     @ObservationIgnored private var premiumTransactionUpdatesTask: Task<Void, Never>?
 
@@ -70,7 +71,8 @@ final class AppModel {
         displayStateStorage: ConnectionDisplayStateStorage = ConnectionDisplayStateStorage(),
         globalServerService: any GlobalServerServicing = GlobalServerService(),
         premiumService: (any PremiumSubscriptionServicing)? = nil,
-        onboardingStore: OnboardingCompletionStoring = UserDefaultsOnboardingCompletionStore()
+        onboardingStore: OnboardingCompletionStoring = UserDefaultsOnboardingCompletionStore(),
+        configDownloader: any RemoteConfigDownloading = RemoteConfigDownloader()
     ) {
         self.profileStorage = profileStorage
         self.networkPreferencesStorage = networkPreferencesStorage
@@ -81,6 +83,7 @@ final class AppModel {
         self.globalServerService = globalServerService
         self.premiumService = premiumService ?? StoreKitPremiumSubscriptionService()
         self.onboardingStore = onboardingStore
+        self.configDownloader = configDownloader
         self.hasCompletedOnboarding = onboardingStore.hasCompletedOnboarding
         reloadProfiles()
         AppLogger.info("App model initialized with \(profiles.count) profile(s)", category: .app)
@@ -247,9 +250,21 @@ final class AppModel {
         AppLogger.info("Profile selected after save \(AppLogger.safeProfileLabel(profile))", category: .app)
     }
 
-    func importProfile(from value: String) throws {
+    /// Imports a profile from a pasted/scanned value.
+    ///
+    /// When the value is an http(s) link (e.g. a `*-VLESS-CLIENT.json` file), the
+    /// file is downloaded first and its body is parsed. Any other value — a
+    /// vless:// / vmess:// / trojan:// / WireGuard link, or inline JSON — is parsed
+    /// directly, exactly as before.
+    func importProfile(from value: String) async throws {
         AppLogger.info("Import requested", category: .importConfig)
-        let (profile, secret) = try parser.parse(value)
+        let rawConfig: String
+        if let remoteURL = RemoteConfigDownloader.remoteConfigURL(from: value) {
+            rawConfig = try await configDownloader.download(from: remoteURL)
+        } else {
+            rawConfig = value
+        }
+        let (profile, secret) = try parser.parse(rawConfig)
         try saveProfile(profile, secret: secret)
         AppLogger.info("Import completed for \(AppLogger.safeProfileLabel(profile))", category: .importConfig)
     }

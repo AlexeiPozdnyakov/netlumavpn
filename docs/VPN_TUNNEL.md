@@ -10,10 +10,12 @@
 | File | Role |
 |------|------|
 | `NetlumaVPNTunnelExtension/PacketTunnelProvider.swift` | `NEPacketTunnelProvider` subclass — tunnel lifecycle |
-| `NetlumaVPNTunnelExtension/XrayTunnelEngine.swift` | Real (`SwiftyXrayKit`) vs `MockXrayTunnelEngine` |
+| `NetlumaVPNTunnelExtension/XrayTunnelEngine.swift` | `PacketTunnelEngine` protocol; real (`SwiftyXrayKit`) vs `MockXrayTunnelEngine` |
+| `NetlumaVPNTunnelExtension/WireGuardTunnelEngine.swift` | WireGuard engine factory — **dormant**; returns the unavailable-fallback (native WG can't link alongside Xray; see below) |
 | `NetlumaVPNShared/Services/VPNConfigurationParser.swift` | Import URL/config → `(VPNProfile, VPNProfileSecret)` |
 | `NetlumaVPNShared/Services/XrayConfigBuilder.swift` | `ResolvedVPNProfile` → Xray-core outbound JSON |
-| `NetlumaVPNShared/Services/TunnelNetworkSettingsBuilder.swift` | `NEPacketTunnelNetworkSettings` (routes + DNS) |
+| `NetlumaVPNShared/Services/WireGuardQuickConfigBuilder.swift` | `ResolvedVPNProfile` → `wg-quick` string for WireGuardKit |
+| `NetlumaVPNShared/Services/TunnelNetworkSettingsBuilder.swift` | `NEPacketTunnelNetworkSettings` (routes + DNS) — Xray path only |
 
 ## `PacketTunnelProvider`
 
@@ -28,10 +30,15 @@ Holds `ProfileStorage`, `NetworkPreferencesStorage`, `SessionStateStorage`, and 
    then `NSData`, else fall back to `selectedProfileID` (from options →
    `providerConfiguration` → `ProfileStorage`) + `profileStorage.resolvedProfile(id:)`.
    When a payload is present the secret comes from it — **not** re-fetched.
-2. `XrayTunnelEngineFactory.make(packetFlow:)` picks the engine.
-3. Build `NEPacketTunnelNetworkSettings` via `TunnelNetworkSettingsBuilder` —
+2. **Branch by protocol** (the active engine is stored as `any PacketTunnelEngine`):
+   - **WireGuard** → `WireGuardTunnelEngineFactory.make(provider:)`. WireGuardKit is **not linked**
+     (see "WireGuard engine — currently unsupported" below), so this returns
+     `UnavailableWireGuardTunnelEngine` and `engine.start` throws a clear error — steps 3–5 effectively
+     no-op for WG. (Were a native engine linked it would install its own network settings and skip 3–4.)
+   - **everything else** → `XrayTunnelEngineFactory.make(packetFlow:)`, then steps 3–4.
+3. (Xray path) Build `NEPacketTunnelNetworkSettings` via `TunnelNetworkSettingsBuilder` —
    **routing mode is driven by `engine.routesDefaultTraffic`**, not by preferences.
-4. `await setTunnelNetworkSettings(...)` (a `withCheckedThrowingContinuation` wrapper).
+4. (Xray path) `await setTunnelNetworkSettings(...)` (a `withCheckedThrowingContinuation` wrapper).
 5. `await engine.start(with: resolvedProfile)`.
 6. `sessionStateStorage.markConnectionStarted()`, reload widget timelines, succeed.
 
@@ -62,6 +69,36 @@ Selection is compile-time via `#if canImport(SwiftyXrayKit)`:
 
 This is the #1 “connected but no internet” gotcha on simulator/CI builds. The log
 markers are the unambiguous signal of which engine ran.
+
+## WireGuard engine — currently unsupported (fails fast), native path blocked
+
+WireGuard is **not functional today**. Two approaches were tried; both fail:
+
+1. **WireGuard *through Xray*** (its `wireguard` outbound is a userspace gVisor netstack) on top of
+   SwiftyXrayKit's tun2socks (a second gVisor netstack) = **two network stacks** in the packet-tunnel
+   extension → exceeds the NE memory limit (~50 MB): reaches `connected`, then the provider is
+   jetsam-killed → `NEVPNConnectionError.pluginFailed` (code 12), "connects, no internet, disconnects".
+   VLESS/Trojan are unaffected (plain TCP/TLS dialer).
+2. **Native WireGuard via WireGuardKit/wireguard-go** — attempted (vendored `wireguard-apple` with manifest
+   + header patches, an external-build Go-bridge target, programmatic `TunnelConfiguration`) and it
+   **compiled and linked**, but **broke every protocol at runtime** and was **reverted (2026-06-24)**. The
+   extension already statically links **Xray (Go)** via SwiftyXrayKit; wireguard-go is **also Go**, so the
+   binary ended up with **two Go runtimes in one process**. They conflict and crash the extension at launch
+   → `pluginFailed` for **VLESS/Trojan too**, not just WG. (The official WireGuard app ships only
+   wireguard-go — one runtime — which is why it works.)
+
+**Current state.** `PacketTunnelProvider` routes `protocolType == .wireguard` to
+`WireGuardTunnelEngineFactory.make(provider:)`. WireGuardKit is **not linked**, so `canImport(WireGuardKit)`
+is false and it returns `UnavailableWireGuardTunnelEngine`, which throws `engineUnavailable` — WG fails fast
+with "The WireGuard engine is not linked into this build." **VLESS/Trojan work normally** through Xray. The
+real `WireGuardTunnelEngine` + `WireGuardQuickConfigBuilder` remain in-tree (dormant, tested) but **must not
+be activated** by re-adding WireGuardKit — see the ⚠️ banner in `WireGuardTunnelEngine.swift`.
+
+**The only viable path for native WG** is a **single Go engine that serves all protocols** (VLESS / VMess /
+Trojan / WireGuard) instead of Xray — e.g. **sing-box**, which the backend already runs. That replaces the
+SwiftyXrayKit engine wholesale (one Go runtime, native WG included) and is a substantial project, not an
+add-on. WG-related parsing is kept regardless: `VPNConfigurationParser` reads `DNS =` into
+`wireGuardDNSServers`; `wireGuardReserved` (Xray/AmneziaWG obfuscation) isn't supported by native WG.
 
 ## `VPNConfigurationParser`
 
@@ -101,6 +138,10 @@ Notable behaviors:
   produces Reality (`.tls`/`.none` only).
 - **WireGuard** INI takes only the **first** `[Interface]` and **first** `[Peer]`;
   `reserved` must be ≥3 ints each 0–255; MTU 576–9000; endpoint supports `[ipv6]:port`.
+  The `[Interface]` `DNS =` list (and `dns=` on the URL form) is captured into
+  `VPNProfile.wireGuardDNSServers` and becomes the tunnel DNS at connect time (see
+  `TunnelNetworkSettingsBuilder`). It has no editor field, so `ProfileFormData.makeProfile`
+  carries it over from the existing profile on edit.
 
 ## `XrayConfigBuilder`
 
@@ -131,7 +172,7 @@ Outbound by protocol:
 
 ## `TunnelNetworkSettingsBuilder`
 
-`makeSettings(routesDefaultTraffic: Bool, preferences:) -> NEPacketTunnelNetworkSettings`.
+`makeSettings(routesDefaultTraffic: Bool, preferences:, dnsOverrideServers: [String]? = nil) -> NEPacketTunnelNetworkSettings`.
 
 - Tunnel remote `127.0.0.1`, **MTU 1360**.
 - **IPv4**: a dynamically chosen `10.<n>.5.2` address (avoids in-use `10.<n>.` prefixes).
@@ -140,13 +181,22 @@ Outbound by protocol:
     `includeAllNetworks == true`, nothing is excluded (full capture).
   - else (mock) → `includedRoutes = []` (nothing routed).
 - **IPv6**: only when `ipMode == .ipv4AndIPv6` (address `fd00:88::2/128`).
-- **DNS**: set **only** when `routesDefaultTraffic`, from `preferences.selectedDNSResolver`
-  → `NEDNSSettings` (DoU) / `NEDNSOverHTTPSSettings` (DoH) / `NEDNSOverTLSSettings` (DoT),
-  `matchDomains = [""]`.
+- **DNS**: set **only** when `routesDefaultTraffic`.
+  - **`dnsOverrideServers` present** (a WireGuard profile's own `DNS =` servers, passed by
+    `PacketTunnelProvider`) → plain `NEDNSSettings(servers:)` with those IPs, `matchDomains = [""]`,
+    **and** a `/32` (or `/128`) included route is added for each server so it reaches the tunnel
+    even when it sits inside an excluded LAN range (e.g. an internal `172.16.x.x` resolver). This
+    mirrors the official WireGuard client; without it the tunnel connected but resolved nothing.
+  - **otherwise** → `preferences.selectedDNSResolver` → `NEDNSSettings` (DoU) /
+    `NEDNSOverHTTPSSettings` (DoH) / `NEDNSOverTLSSettings` (DoT), `matchDomains = [""]`.
 
 ## Gotchas (read before touching protocol code)
 
 - Mock engine ⇒ no routes/DNS ⇒ "connected but no traffic" (by design).
+- **WireGuard does not work** and fails fast with a clear error (no crash). Native WG can't be added
+  here — wireguard-go + Xray = two Go runtimes → the extension crashes for *all* protocols. See
+  "WireGuard engine — currently unsupported". (`TunnelNetworkSettingsBuilder.dnsOverrideServers` and
+  the `wireGuardDNSServers` parser field remain, tested, for a future single-engine WG.)
 - Reality without `pbk` parses but fails at build time, not import time.
 - Unknown transport `type=` silently degrades to TCP.
 - `XrayTunnelEngineError.engineUnavailable` is defined but never thrown.

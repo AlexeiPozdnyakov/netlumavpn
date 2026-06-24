@@ -22,52 +22,44 @@ You do NOT own:
 - UI flows — `ui-tester`
 - Changes to backend or iOS production code — defer to the matching dev agent
 
-## Critical contract: TLS pin matches live cert
+## TLS check
 
-The iOS app refuses to connect to the mobile API if the live cert's SPKI
-SHA256-base64 does not equal `AppConstants.Backend.mobileTLSCertificateSHA256Base64`.
-
-Re-verify the pin like this:
+Certificate pinning is currently empty in `AppConstants`, so the app relies on
+normal system trust for `https://netlumavpn.example`. Re-check the live certificate
+metadata like this:
 
 ```bash
-# Pull the live cert SPKI hash:
-openssl s_client -connect vpn.netlumavpn.example:443 \
-  -servername vpn.netlumavpn.example </dev/null 2>/dev/null \
-| openssl x509 -pubkey -noout \
-| openssl pkey -pubin -outform DER \
-| openssl dgst -sha256 -binary \
-| openssl enc -base64
+openssl s_client -connect netlumavpn.example:443 \
+  -servername netlumavpn.example </dev/null 2>/dev/null \
+| openssl x509 -noout -issuer -subject -enddate
 ```
 
-Compare the output to `AppConstants.Backend.mobileTLSCertificateSHA256Base64`.
-If they differ, **the iOS app cannot reach the backend** — flag it to the
-user and to `ops-engineer`.
+If pinning is re-enabled later, compare the SPKI hash to
+`AppConstants.Backend.mobileTLSCertificateSHA256Base64` and flag mismatches.
 
 ## Live endpoints to probe
 
 ```bash
-# Status (admin)
-curl -m 15 http://192.0.2.10/api/v1/status \
-  -H "X-QuickVPN-API-Key: <ADMIN_KEY_FROM_QUICKVPN_MVP_SERVER_MD>"
+# Health
+curl -m 15 https://netlumavpn.example/health
 
-# List mobile servers (mobile, with cert validation)
-curl -v -m 15 https://vpn.netlumavpn.example/api/v1/mobile/servers \
-  -H "X-QuickVPN-Client-Key: <MOBILE_KEY_FROM_QUICKVPN_MVP_SERVER_MD>"
+# List mobile servers
+curl -v -m 15 https://netlumavpn.example/api/v1/mobile/servers \
+  -H "X-NetlumaVPN-Client-Key: <MOBILE_KEY>"
 
-# List mobile servers (mobile, ignoring cert — for debugging only, never in code)
-curl -kv -m 15 https://vpn.netlumavpn.example/api/v1/mobile/servers \
-  -H "X-QuickVPN-Client-Key: <MOBILE_KEY>"
+# Admin URL
+curl -I -m 15 https://netlumavpn.example/admin
 
 # Issue / reuse a per-device profile
 curl -v -m 15 -X POST \
-  https://vpn.netlumavpn.example/api/v1/mobile/servers/quickvpn-mvp-eu-1/profile \
+  https://netlumavpn.example/api/v1/mobile/servers/netlumavpn-singbox-vless/profile \
   -H "Content-Type: application/json" \
-  -H "X-QuickVPN-Client-Key: <MOBILE_KEY>" \
-  -H "X-QuickVPN-Device-ID: integration-test-device" \
+  -H "X-NetlumaVPN-Client-Key: <MOBILE_KEY>" \
+  -H "X-NetlumaVPN-Device-ID: integration-test-device" \
   --data '{"device_name":"IntegrationTest"}'
 ```
 
-Secrets are in `QUICKVPN_MVP_SERVER.md` (not in this file; do not echo them
+Secrets are not stored in this file; do not echo them
 out in long-lived logs).
 
 ## In-process integration tests

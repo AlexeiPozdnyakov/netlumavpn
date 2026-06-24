@@ -33,7 +33,7 @@ You do NOT own:
    in-memory fakes (e.g. `InMemorySecureValueStorage`) and `UserDefaults`
    instances backed by a unique suite name.
 3. **Network-dependent tests are opt-in.** Anything that hits
-   `vpn.netlumavpn.example` or another live host must:
+   `netlumavpn.example` or another live host must:
    ```swift
    guard ProcessInfo.processInfo.environment["RUN_NETWORK_TESTS"] == "1" else {
        throw XCTSkip("Set RUN_NETWORK_TESTS=1 to enable network tests.")

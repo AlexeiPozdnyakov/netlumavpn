@@ -31,6 +31,7 @@ check_dns() {
 
 require_command curl
 require_command dig
+require_command openssl
 
 log "Checking DNS"
 check_dns "$QUICKVPN_DOMAIN"
@@ -43,6 +44,12 @@ check_dns "trojan.$QUICKVPN_DOMAIN"
 log "Checking admin HTTPS"
 curl -fsSI "https://admin.$QUICKVPN_DOMAIN/login" | sed -n '1,8p'
 
+log "Checking website pages"
+for path in / /support /privacy /terms; do
+  curl -fsS "https://$QUICKVPN_DOMAIN$path" >/dev/null
+  printf '%-28s OK\n' "https://$QUICKVPN_DOMAIN$path"
+done
+
 log "Checking API status"
 curl -fsS "https://api.$QUICKVPN_DOMAIN/api/v1/status"
 printf '\n'
@@ -50,7 +57,8 @@ printf '\n'
 if [[ -n "${QUICKVPN_MOBILE_API_KEY:-}" ]]; then
   log "Checking mobile API"
   curl -fsS "https://api.$QUICKVPN_DOMAIN/api/v1/mobile/servers" \
-    -H "X-NetlumaVPN-Client-Key: $QUICKVPN_MOBILE_API_KEY"
+    -H "X-NetlumaVPN-Client-Key: $QUICKVPN_MOBILE_API_KEY" \
+    -H "X-QuickVPN-Client-Key: $QUICKVPN_MOBILE_API_KEY"
   printf '\n'
 else
   log "Skipping mobile API auth check because QUICKVPN_MOBILE_API_KEY is not set"

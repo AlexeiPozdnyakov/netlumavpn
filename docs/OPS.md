@@ -10,18 +10,20 @@ The `ops/` directory is infrastructure-as-files: copies of what lives in `/etc`,
 
 ## Domains & DNS
 
-New deploy domain: `netlumavpn.example`. DNS should point `api`, `admin`, `vpn`, and
-`trojan` subdomains at the VPS IPv4. The legacy server `192.0.2.10` may be
-destroyed/recreated — don't assume it's reachable. SSH is key-only via
-`~/.ssh/quickvpn_vps_ed25519`.
+Current live VPS: `192.0.2.10`, SSH on port `22` as `root`. Use
+[`SSH_ACCESS.md`](SSH_ACCESS.md) for exact commands and password-handling rules.
+Do not use the old `192.0.2.10` host for live work.
+
+Deploy domain: `netlumavpn.example`. DNS should point the root/www/API/admin/VPN
+names at the live VPS IPv4.
 
 ## Port map
 
 | Port | Listener | Backend |
 |------|----------|---------|
-| 22/tcp | sshd | key-only, fail2ban |
+| 22/tcp | sshd | live SSH admin access |
 | 80/tcp | nginx http | ACME webroot + 308→HTTPS (404 for `/api/v1/mobile/`) |
-| 443/tcp | nginx **stream** (`ssl_preread`) | SNI router (see below) |
+| 443/tcp | nginx **stream** (`ssl_preread`) | SNI router (root/www/api/admin → backend, see below) |
 | 8443 | nginx https vhost | `api.`/`admin.` → proxies `http://127.0.0.1:8000` |
 | 2443 | Xray Trojan TLS | direct from stream (`trojan.`) |
 | 1443 | Xray VLESS Reality | default stream backend (`vpn.` + everything else) |
@@ -34,11 +36,14 @@ destroyed/recreated — don't assume it's reachable. SSH is key-only via
 ## nginx
 
 - **`ops/nginx/quickvpn-stream.conf`** — `listen 443` with `ssl_preread on`, routes by
-  `$ssl_preread_server_name`: `api.`/`admin.` → `127.0.0.1:8443`; `trojan.` →
-  `127.0.0.1:2443`; default → `127.0.0.1:1443`. Requires `libnginx-mod-stream`.
+  `$ssl_preread_server_name`: root `netlumavpn.example`, `www.`, `api.`, and `admin.` →
+  `127.0.0.1:8443`; `trojan.` → `127.0.0.1:2443`; default → `127.0.0.1:1443`.
+  Requires `libnginx-mod-stream`.
 - **`ops/nginx/quickvpn.conf`** — `:80` (ACME + redirect) and the
-  `127.0.0.1:8443 ssl` vhost for `api`/`admin` that proxies `/` and the rate-limited
-  `/api/v1/mobile/` (`30r/m`, `burst=20`) to **`http://127.0.0.1:8000`** (backend A).
+  `127.0.0.1:8443 ssl` vhost for root/www/api/admin that proxies `/` and the
+  rate-limited `/api/v1/mobile/` (`30r/m`, `burst=20`) to
+  **`http://127.0.0.1:8000`** (backend A). Root paths serve the marketing/support/legal
+  website; `/admin` remains session-protected.
 
 ## systemd (`ops/systemd/`)
 
@@ -70,7 +75,7 @@ Only the three `quickvpn-{api,stats.service,stats.timer}` units are installed by
   **`archive/server_mvp/quickvpn_admin`** → `/opt/quickvpn/app`, builds the venv,
   generates secrets (Reality x25519, WireGuard keypair, `SESSION_SECRET`, `API_KEY`,
   admin PBKDF2 hash), writes `/etc/quickvpn/quickvpn.env` (0640 root:quickvpn), issues a
-  Let's Encrypt cert for `api`/`admin`/`trojan`, installs a renewal deploy-hook (copies
+  Let's Encrypt cert for root/`www`/`api`/`admin`/`trojan`, installs a renewal deploy-hook (copies
   the cert to `/etc/xray/certs/` for Trojan), renders Xray + WireGuard configs, opens
   UFW (22/80/443 tcp, 51820 udp), enables IPv4 forwarding, and starts `xray`,
   `wg-quick@wg0`, `quickvpn-api`, `quickvpn-stats.timer`. **Requires
@@ -78,10 +83,11 @@ Only the three `quickvpn-{api,stats.service,stats.timer}` units are installed by
 - **`deploy-fresh-server.sh`** (run locally) — rsyncs `archive/`, `ops/`, `server_mvp/`
   to `/tmp/quickvpn-deploy` on `NEW_SERVER_IP`, then runs the provisioner remotely.
   Accepts both `NETLUMAVPN_*` and `QUICKVPN_*` env-var spellings.
-- **`verify-fresh-server.sh`** (run locally) — `dig` the 6 subdomains, curl
-  `admin/login`, `api/api/v1/status`, and (with a key) `api/api/v1/mobile/servers` using
-  **`X-NetlumaVPN-Client-Key`** (⚠️ this header is rejected by backend A — see
-  [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md)), then print the TLS cert via `openssl s_client`.
+- **`verify-fresh-server.sh`** (run locally) — `dig` root + the 5 subdomains, curl
+  root website pages (`/`, `/support`, `/privacy`, `/terms`), `admin/login`,
+  `api/api/v1/status`, and (with a key) `api/api/v1/mobile/servers` using both
+  `X-NetlumaVPN-Client-Key` and legacy `X-QuickVPN-Client-Key`, then print the TLS cert
+  via `openssl s_client`.
 
 ## Deploy workflow
 
@@ -95,8 +101,9 @@ full runbook is [`REDEPLOY_FRESH_SERVER.md`](REDEPLOY_FRESH_SERVER.md).
 - The deployed backend is **A** (Xray/WireGuard), not the sing-box one. The
   sing-box/admin units exist but aren't wired up (and run as root). See
   [`BACKEND.md`](BACKEND.md).
-- TLS for Trojan reuses the `api.<domain>` Let's Encrypt cert (shared SANs for
-  `api`/`admin`/`trojan`).
+- TLS for the website/backend and Trojan reuses the `api.<domain>` Let's Encrypt cert
+  path (shared SANs for root/`www`/`api`/`admin`/`trojan`); provision expands that
+  existing cert lineage with `--cert-name api.<domain>`.
 - Cert renewal must re-copy to `/etc/xray/certs/` and reload nginx (the deploy-hook does
   this) — Xray won't pick up a renewed cert otherwise.
 - Naming churn: the `quickvpn` system user, service names, env files, and ops paths are

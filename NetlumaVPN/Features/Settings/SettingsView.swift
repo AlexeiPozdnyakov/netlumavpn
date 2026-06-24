@@ -150,6 +150,19 @@ struct SettingsView: View {
                         subtitle: model.selectedDNSResolver.title
                     )
                 }
+
+                divider
+
+                NavigationLink {
+                    DiagnosticsLogView()
+                } label: {
+                    SettingsNavigationRow(
+                        icon: "stethoscope",
+                        iconColor: NetlumaVPNTheme.warning,
+                        title: "Diagnostics",
+                        subtitle: "Connection logs"
+                    )
+                }
             }
         }
         .buttonStyle(.plain)

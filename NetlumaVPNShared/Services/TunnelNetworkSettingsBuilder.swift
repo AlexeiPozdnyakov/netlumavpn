@@ -8,12 +8,24 @@ import Darwin
 struct TunnelNetworkSettingsBuilder {
     static let dnsServers = DNSResolver.defaultResolver.servers
 
+    /// - Parameter dnsOverrideServers: DNS servers declared by the profile itself
+    ///   (currently a WireGuard config's `DNS =` line). When present, these are used
+    ///   verbatim instead of the app's selected resolver — matching the behaviour of
+    ///   the official WireGuard client — and each server IP is routed **through** the
+    ///   tunnel even if it falls inside a LAN range that is otherwise excluded. Without
+    ///   this, an internal resolver (e.g. `172.16.x.x`) would be both ignored and routed
+    ///   off-tunnel, leaving the tunnel "connected" but unable to resolve anything.
     func makeSettings(
         routesDefaultTraffic: Bool,
-        preferences: NetworkPreferences = NetworkPreferences()
+        preferences: NetworkPreferences = NetworkPreferences(),
+        dnsOverrideServers: [String]? = nil
     ) -> NEPacketTunnelNetworkSettings {
         let settings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: "127.0.0.1")
         settings.mtu = NSNumber(value: 1360)
+
+        let overrideServers = (dnsOverrideServers ?? []).compactMap(\.nilIfBlank)
+        let overrideIPv4Servers = overrideServers.filter(Self.isIPv4Address)
+        let overrideIPv6Servers = overrideServers.filter(Self.isIPv6Address)
 
         let ipv4Settings = NEIPv4Settings(
             addresses: [Self.localTunnelIPv4Address()],
@@ -22,6 +34,7 @@ struct TunnelNetworkSettingsBuilder {
 
         if routesDefaultTraffic {
             ipv4Settings.includedRoutes = [NEIPv4Route.default()]
+                + overrideIPv4Servers.map { NEIPv4Route(destinationAddress: $0, subnetMask: "255.255.255.255") }
             if preferences.tunnel.includeAllNetworks == false {
                 ipv4Settings.excludedRoutes = Self.privateIPv4Routes
             }
@@ -37,6 +50,7 @@ struct TunnelNetworkSettingsBuilder {
             )
             if routesDefaultTraffic {
                 ipv6Settings.includedRoutes = [NEIPv6Route.default()]
+                    + overrideIPv6Servers.map { NEIPv6Route(destinationAddress: $0, networkPrefixLength: 128) }
             } else {
                 ipv6Settings.includedRoutes = []
             }
@@ -44,7 +58,13 @@ struct TunnelNetworkSettingsBuilder {
         }
 
         if routesDefaultTraffic {
-            settings.dnsSettings = makeDNSSettings(for: preferences.selectedDNSResolver)
+            if overrideServers.isEmpty {
+                settings.dnsSettings = makeDNSSettings(for: preferences.selectedDNSResolver)
+            } else {
+                let dnsSettings = NEDNSSettings(servers: overrideServers)
+                dnsSettings.matchDomains = [""]
+                settings.dnsSettings = dnsSettings
+            }
         }
 
         return settings
@@ -67,6 +87,16 @@ struct TunnelNetworkSettingsBuilder {
 
         settings.matchDomains = [""]
         return settings
+    }
+
+    private static func isIPv4Address(_ value: String) -> Bool {
+        var addr = in_addr()
+        return value.withCString { inet_pton(AF_INET, $0, &addr) } == 1
+    }
+
+    private static func isIPv6Address(_ value: String) -> Bool {
+        var addr = in6_addr()
+        return value.withCString { inet_pton(AF_INET6, $0, &addr) } == 1
     }
 
     private static var privateIPv4Routes: [NEIPv4Route] {

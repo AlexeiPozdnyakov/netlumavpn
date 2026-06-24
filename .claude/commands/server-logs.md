@@ -7,22 +7,20 @@ Pull the last few minutes of logs from the production VPS, one service at a
 time, so the user can correlate an incident.
 
 Default window: last 10 minutes. Adjust if the user mentions a longer span.
+Current SSH details are in `docs/SSH_ACCESS.md`: `root@192.0.2.10`, port
+`22`. Do not use the old `192.0.2.10` host.
 
 ```bash
-# quickvpn-api (FastAPI / uvicorn)
-ssh -i ~/.ssh/quickvpn_vps_ed25519 root@192.0.2.10 \
-  'journalctl -u quickvpn-api --since "10 minutes ago" --no-pager' | tail -100
+# sing-box FastAPI / uvicorn
+ssh -p 22 root@192.0.2.10 \
+  'journalctl -u quickvpn-singbox-api --since "10 minutes ago" --no-pager' | tail -100
 
-# xray (VLESS Reality engine)
-ssh -i ~/.ssh/quickvpn_vps_ed25519 root@192.0.2.10 \
-  'journalctl -u xray --since "10 minutes ago" --no-pager' | tail -100
-
-# xray access/error logs
-ssh -i ~/.ssh/quickvpn_vps_ed25519 root@192.0.2.10 \
-  'tail -100 /var/log/xray/error.log'
+# sing-box VPN engine
+ssh -p 22 root@192.0.2.10 \
+  'journalctl -u sing-box --since "10 minutes ago" --no-pager' | tail -100
 
 # nginx
-ssh -i ~/.ssh/quickvpn_vps_ed25519 root@192.0.2.10 \
+ssh -p 22 root@192.0.2.10 \
   'journalctl -u nginx --since "10 minutes ago" --no-pager' | tail -50
 ```
 

@@ -108,13 +108,6 @@ struct PremiumPaywallView: View {
 
             if showsStepDots {
                 PremiumPaywallStepDots()
-            } else {
-                Text("Premium")
-                    .font(.system(size: 12, weight: .heavy))
-                    .foregroundStyle(NetlumaVPNTheme.secondaryText)
-                    .padding(.horizontal, 12)
-                    .frame(height: 28)
-                    .background(NetlumaVPNTheme.card.opacity(0.72), in: Capsule())
             }
 
             Spacer()

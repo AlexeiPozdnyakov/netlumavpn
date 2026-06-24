@@ -162,16 +162,16 @@ local env to skip it).
 ## Production reach
 
 ```bash
-# Admin API over HTTP (admin panel + admin API on port 80)
-curl -m 15 http://192.0.2.10/api/v1/status \
-  -H "X-QuickVPN-API-Key: <ADMIN_KEY>"
+# Health
+curl -m 15 https://netlumavpn.example/health
 
-# Mobile API over HTTPS (port 443 via SNI router → 127.0.0.1:8443)
-curl -kv -m 15 https://vpn.netlumavpn.example/api/v1/mobile/servers \
-  -H "X-QuickVPN-Client-Key: <MOBILE_KEY>"
+# Mobile API over HTTPS
+curl -m 15 https://netlumavpn.example/api/v1/mobile/servers \
+  -H "X-NetlumaVPN-Client-Key: <MOBILE_KEY>"
 ```
 
-Live secrets are in `QUICKVPN_MVP_SERVER.md` — never publish that file.
+Live secrets are not stored in committed docs. Ask the user for them in the
+active chat or use a secure secret channel.
 
 ## Common gotchas
 

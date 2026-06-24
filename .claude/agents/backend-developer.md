@@ -40,9 +40,9 @@ You do NOT own:
 - `GET /api/v1/mobile/servers`
 - `POST /api/v1/mobile/servers/{server_id}/profile`
 
-The mobile API is reachable only via the SNI `vpn.netlumavpn.example`
-on `443/tcp` (nginx `stream` SNI-router → `127.0.0.1:8443`). Mobile routes on
-`80/tcp` are blocked by nginx.
+The current production mobile API is reachable at
+`https://netlumavpn.example/api/v1/mobile/servers`. SSH details for live server
+checks are in `docs/SSH_ACCESS.md`.
 
 ## DB schema (SQLite, WAL, foreign keys on)
 

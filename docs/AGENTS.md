@@ -103,6 +103,7 @@ docs/                           — long-form docs (source of truth; read before
   WIDGET.md                     — widget + App Intents
   BACKEND.md                    — the two FastAPI backends
   OPS.md                        — nginx/systemd/fail2ban, ports, deploy
+  SSH_ACCESS.md                 — current production SSH host/port and safe commands
   TESTING.md                    — test inventory, commands, coverage gaps, the test rule
   KNOWN_ISSUES.md               — live discrepancies & risks
   REDEPLOY_FRESH_SERVER.md      — fresh-server runbook

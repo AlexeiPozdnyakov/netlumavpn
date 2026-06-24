@@ -128,8 +128,102 @@ struct NetlumaVPNTests {
         #expect(profile.wireGuardPersistentKeepAlive == 25)
         #expect(profile.wireGuardMTU == 1280)
         #expect(profile.wireGuardReserved == [1, 2, 3])
+        #expect(profile.wireGuardDNSServers == nil)
         #expect(secret.wireGuardPrivateKey == "private-key")
         #expect(secret.wireGuardPreSharedKey == "pre-shared-key")
+    }
+
+    @Test func parsesWireGuardConfigurationDNSServers() throws {
+        // Mirrors a wg-quick config that pins internal resolvers (fake keys).
+        let config = """
+        [Interface]
+        PrivateKey = AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+        Address = 10.3.61.120/32
+        DNS = 172.16.4.15, 172.16.30.15, 172.16.10.15
+        MTU = 1420
+
+        [Peer]
+        PublicKey = aGVsbG8td29ybGQtZmFrZS1wZWVyLXB1YmtleS0xMjM0NTY=
+        Endpoint = vpn.example.com:51820
+        AllowedIPs = 0.0.0.0/0
+        PresharedKey = AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        PersistentKeepalive = 16
+        """
+
+        let (profile, _) = try VPNConfigurationParser().parse(config)
+
+        #expect(profile.protocolType == .wireguard)
+        #expect(profile.wireGuardDNSServers == ["172.16.4.15", "172.16.30.15", "172.16.10.15"])
+    }
+
+    @Test func buildsWireGuardQuickConfigFromProfile() throws {
+        let profile = VPNProfile(
+            protocolType: .wireguard,
+            host: "vpn.example.com",
+            port: 51820,
+            security: .none,
+            networkType: .tcp,
+            wireGuardPeerPublicKey: "PEERPUBLICKEY=",
+            wireGuardLocalAddresses: ["10.3.61.120/32"],
+            wireGuardAllowedIPs: ["0.0.0.0/0"],
+            wireGuardPersistentKeepAlive: 16,
+            wireGuardMTU: 1420,
+            wireGuardDNSServers: ["172.16.4.15", "172.16.30.15"],
+            remarks: "WG"
+        )
+        let secret = VPNProfileSecret(wireGuardPrivateKey: "PRIVATEKEY=", wireGuardPreSharedKey: "PRESHAREDKEY=")
+
+        let config = try WireGuardQuickConfigBuilder().makeQuickConfig(
+            for: ResolvedVPNProfile(profile: profile, secret: secret)
+        )
+
+        #expect(config.contains("[Interface]"))
+        #expect(config.contains("PrivateKey = PRIVATEKEY="))
+        #expect(config.contains("Address = 10.3.61.120/32"))
+        #expect(config.contains("DNS = 172.16.4.15, 172.16.30.15"))
+        #expect(config.contains("MTU = 1420"))
+        #expect(config.contains("[Peer]"))
+        #expect(config.contains("PublicKey = PEERPUBLICKEY="))
+        #expect(config.contains("PresharedKey = PRESHAREDKEY="))
+        #expect(config.contains("Endpoint = vpn.example.com:51820"))
+        #expect(config.contains("AllowedIPs = 0.0.0.0/0"))
+        #expect(config.contains("PersistentKeepalive = 16"))
+    }
+
+    @Test func wireGuardQuickConfigReparsesToEquivalentProfile() throws {
+        // The wg-quick string we hand to WireGuardKit must be valid and complete. Re-parsing
+        // it through our own parser is a strong round-trip sanity check.
+        let profile = VPNProfile(
+            protocolType: .wireguard,
+            host: "vpn.example.com",
+            port: 51820,
+            security: .none,
+            networkType: .tcp,
+            wireGuardPeerPublicKey: "PEERPUBLICKEY=",
+            wireGuardLocalAddresses: ["10.3.61.120/32"],
+            wireGuardAllowedIPs: ["0.0.0.0/0"],
+            wireGuardPersistentKeepAlive: 16,
+            wireGuardMTU: 1420,
+            wireGuardDNSServers: ["172.16.4.15"],
+            remarks: "WG"
+        )
+        let secret = VPNProfileSecret(wireGuardPrivateKey: "PRIVATEKEY=", wireGuardPreSharedKey: "PRESHAREDKEY=")
+
+        let config = try WireGuardQuickConfigBuilder().makeQuickConfig(
+            for: ResolvedVPNProfile(profile: profile, secret: secret)
+        )
+        let (reparsed, reparsedSecret) = try VPNConfigurationParser().parse(config)
+
+        #expect(reparsed.protocolType == .wireguard)
+        #expect(reparsed.host == "vpn.example.com")
+        #expect(reparsed.port == 51820)
+        #expect(reparsed.wireGuardPeerPublicKey == "PEERPUBLICKEY=")
+        #expect(reparsed.wireGuardLocalAddresses == ["10.3.61.120/32"])
+        #expect(reparsed.wireGuardDNSServers == ["172.16.4.15"])
+        #expect(reparsed.wireGuardMTU == 1420)
+        #expect(reparsed.wireGuardPersistentKeepAlive == 16)
+        #expect(reparsedSecret.wireGuardPrivateKey == "PRIVATEKEY=")
+        #expect(reparsedSecret.wireGuardPreSharedKey == "PRESHAREDKEY=")
     }
 
     @Test func parsesSingBoxVLESSWebSocketJSONConfiguration() throws {
@@ -394,6 +488,44 @@ struct NetlumaVPNTests {
 
         #expect(ipv4Settings.includedRoutes?.isEmpty ?? true)
         #expect(ipv6Settings.includedRoutes?.isEmpty ?? true)
+        #expect(settings.dnsSettings == nil)
+    }
+
+    @Test func wireGuardDNSOverrideUsesConfigResolversAndRoutesThemThroughTunnel() throws {
+        let resolvers = ["172.16.4.15", "172.16.30.15", "172.16.10.15"]
+        let settings = TunnelNetworkSettingsBuilder().makeSettings(
+            routesDefaultTraffic: true,
+            preferences: NetworkPreferences(),
+            dnsOverrideServers: resolvers
+        )
+
+        let dnsSettings = try #require(settings.dnsSettings)
+        #expect(dnsSettings.servers == resolvers)
+        #expect(dnsSettings.matchDomains == [""])
+
+        let ipv4Settings = try #require(settings.ipv4Settings)
+        // The internal resolvers sit inside 172.16/12, which is excluded as LAN. Each one
+        // must have a /32 included route so it overrides the exclude and reaches the tunnel.
+        for resolver in resolvers {
+            let hasHostRoute = ipv4Settings.includedRoutes?.contains { route in
+                route.destinationAddress == resolver && route.destinationSubnetMask == "255.255.255.255"
+            } ?? false
+            #expect(hasHostRoute)
+        }
+        // The default route and the LAN-bypass excludes are still installed.
+        let hasDefaultRoute = ipv4Settings.includedRoutes?.contains { route in
+            route.destinationAddress == "0.0.0.0" && route.destinationSubnetMask == "0.0.0.0"
+        } ?? false
+        #expect(hasDefaultRoute)
+        #expect(ipv4Settings.excludedRoutes?.isEmpty == false)
+    }
+
+    @Test func wireGuardDNSOverrideIsIgnoredWhenNotRoutingDefaultTraffic() throws {
+        let settings = TunnelNetworkSettingsBuilder().makeSettings(
+            routesDefaultTraffic: false,
+            dnsOverrideServers: ["172.16.4.15"]
+        )
+
         #expect(settings.dnsSettings == nil)
     }
 

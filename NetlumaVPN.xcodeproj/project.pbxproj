@@ -10,6 +10,7 @@
 		032849636A0ED743365BE3AE /* VPNConfigurationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8659D808211A50B8FC8ED9 /* VPNConfigurationParser.swift */; };
 		06781F2CBD880742659CBA41 /* NetworkPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2ED52E1AEDF61507E406C60 /* NetworkPreferencesStorage.swift */; };
 		08A3D29EBFE66DBB202090E6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A5B5FCB959F29D44E57E1BA9 /* InfoPlist.strings */; };
+		0D34E9F4E89787F1298D5EB2 /* WireGuardQuickConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFECDD414E12A46A449997E4 /* WireGuardQuickConfigBuilder.swift */; };
 		0D70F814865C39E43534984B /* NetlumaVPNTunnelExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 78C914E3D17529675D388E01 /* NetlumaVPNTunnelExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0F21C131C010F7F919CE7C3B /* ProfileStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BB3E8CC77DDE35E8051974 /* ProfileStorage.swift */; };
 		12F8929A719AE7CEA8CD9268 /* VPNManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027D9CB46EB751E20989AA9C /* VPNManager.swift */; };
@@ -24,7 +25,10 @@
 		25D00A18842B5E3680BE19EB /* TunnelNetworkSettingsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16012BC41445DB65914C74A0 /* TunnelNetworkSettingsBuilder.swift */; };
 		280A1F9959D690C5042DF412 /* NetlumaVPNApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CA97158D87F453ACF9A252 /* NetlumaVPNApp.swift */; };
 		281003572B8D0E8C6F0667E7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8DCC34573D5E5DD99F47BB13 /* Localizable.strings */; };
+		2BC5D75F0C63D23DCB47D2DD /* WireGuardQuickConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFECDD414E12A46A449997E4 /* WireGuardQuickConfigBuilder.swift */; };
+		2BFAFCA30E29EB2D908ABA85 /* DiagnosticsLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD58A47A1381EE0A40EFC67 /* DiagnosticsLogView.swift */; };
 		31230935FF62DC161799BD32 /* FirebaseTelemetryReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FDC0A780BA9322E4CBCD53 /* FirebaseTelemetryReporter.swift */; };
+		3154A302B72B56A697DC1D3B /* RemoteConfigDownloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878C0E0830F79AD82787C193 /* RemoteConfigDownloaderTests.swift */; };
 		33DE00984AFECA4EECE3E995 /* PremiumSubscriptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C671BF30079378C7C970076A /* PremiumSubscriptionTests.swift */; };
 		359C7249A12C7A1480AFFB2D /* LocalizationResourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7475E226A2F2BD4B3525904C /* LocalizationResourceTests.swift */; };
 		36CBCE4E489BA52816A2F216 /* ProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBDC3DD348606995F21675 /* ProfileListView.swift */; };
@@ -60,6 +64,7 @@
 		7EFE50FEB55C60D74B70D664 /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FBDB2D041BC12B492417E7 /* ConnectionDiagnostics.swift */; };
 		86B776DFAF5A3000815F91DD /* NetworkPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2ED52E1AEDF61507E406C60 /* NetworkPreferencesStorage.swift */; };
 		86CA2E88230DAC115C6D476E /* GlobalServerDeviceIdentityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAD2292D04BDACD61477022 /* GlobalServerDeviceIdentityStore.swift */; };
+		87951E1730444A69D240493E /* WireGuardTunnelEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F33FCDB2C3ED7DBAABA2B9D /* WireGuardTunnelEngine.swift */; };
 		8D41BF79A896870722758147 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB30DDB79CBEE10526CE4E9 /* SettingsView.swift */; };
 		8DFB8FBA93C58AF0BB48E5A8 /* FirebaseIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21B31C8A428D459781D941D /* FirebaseIntegrationTests.swift */; };
 		8E56B3A7F3A4C2E74D3D8EFB /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = E6C46B714299C8A89515655A /* FirebaseCore */; };
@@ -70,6 +75,7 @@
 		9B4C7D1703DE1EB7C0F0AB93 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70DFD7E6163E2D77576F4E3 /* AppConstants.swift */; };
 		9BF5A7812CA35A9CB5F31475 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09426F7BE692B0FE5EACF37E /* AppLogger.swift */; };
 		9D8656344ADAF740D150BBC7 /* Terms.html in Resources */ = {isa = PBXBuildFile; fileRef = A1AE1719CCE7C62A851AC2D5 /* Terms.html */; };
+		9FB64F3C83B26E08BE2782EC /* WireGuardQuickConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFECDD414E12A46A449997E4 /* WireGuardQuickConfigBuilder.swift */; };
 		A200BF5A4A18074E455E1B34 /* GlobalServerIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F309BE6393A70CEA92F5E3 /* GlobalServerIntegrationTests.swift */; };
 		A315E69BF921666E17165250 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44E89425FE39DDF74A079AD /* Localization.swift */; };
 		A4A6EE5A61DAD8D6421A76B9 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09426F7BE692B0FE5EACF37E /* AppLogger.swift */; };
@@ -83,6 +89,7 @@
 		B7B5082CFA36B7BF44315253 /* SwiftyXrayKit in Frameworks */ = {isa = PBXBuildFile; productRef = 25C27E6DB764DE23533238BC /* SwiftyXrayKit */; };
 		B7FA28040DD7545942BF1717 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 078295E2C0933A3B9CEA4B1F /* FirebaseAnalytics */; };
 		BA9A2E17987A81CE5E97E21F /* PremiumSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00EC08FABB1DFA4D5A3FAADC /* PremiumSubscriptionService.swift */; };
+		BB1D67FD874850FE73E9245E /* RemoteConfigDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A07459C97B420A37192626 /* RemoteConfigDownloader.swift */; };
 		BBDE9EDC2CC46A9F034B4B58 /* VPNConfigurationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8659D808211A50B8FC8ED9 /* VPNConfigurationParser.swift */; };
 		C089937497A309C2822726E6 /* VPNConnectionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B510E06DE60D6191AC39C17B /* VPNConnectionStatus.swift */; };
 		C12D19A9CF0DBAD5BB51C731 /* GlobalServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCB5CB5B17B12EEA04AB973 /* GlobalServerService.swift */; };
@@ -192,6 +199,7 @@
 		4C6AC3B9D191351F54F88847 /* XrayTunnelEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrayTunnelEngine.swift; sourceTree = "<group>"; };
 		4D5756983BF80650E55C7CA5 /* HomeConnectLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeConnectLogicTests.swift; sourceTree = "<group>"; };
 		50660D51C8843C38F934998D /* TunnelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelSettingsView.swift; sourceTree = "<group>"; };
+		51A07459C97B420A37192626 /* RemoteConfigDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigDownloader.swift; sourceTree = "<group>"; };
 		5A65E603AAEAE51C3D883D4A /* PremiumSubscriptionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumSubscriptionModels.swift; sourceTree = "<group>"; };
 		5CF5ADE64FB85C670A275305 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		647690C3AE8B49BF8423CA9E /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
@@ -210,14 +218,17 @@
 		7CB1D6FE382D66FD762BDBF4 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		7D87CC6539D9B0BC7323CE58 /* ProfileStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStorageTests.swift; sourceTree = "<group>"; };
 		819CB095C885C4B6705E7686 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		878C0E0830F79AD82787C193 /* RemoteConfigDownloaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigDownloaderTests.swift; sourceTree = "<group>"; };
 		8A786596E176DD4AFEF7FC05 /* ProfileEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileEditorView.swift; sourceTree = "<group>"; };
 		8BEDA7A28BECDD4E9B1F670E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		978507ED6EAF2C3C0FE764CB /* NetlumaVPNTunnelExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetlumaVPNTunnelExtension.entitlements; sourceTree = "<group>"; };
 		9A44CDE4CFE59F907671D726 /* GlobalServerAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerAPIClient.swift; sourceTree = "<group>"; };
 		9C3A81CE3B36C755754D44F8 /* Privacy.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Privacy.html; path = ru.lproj/Privacy.html; sourceTree = "<group>"; };
 		9D64D8A8012817059390F8AC /* WidgetVPNController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVPNController.swift; sourceTree = "<group>"; };
+		9F33FCDB2C3ED7DBAABA2B9D /* WireGuardTunnelEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WireGuardTunnelEngine.swift; sourceTree = "<group>"; };
 		A1AE1719CCE7C62A851AC2D5 /* Terms.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Terms.html; path = ru.lproj/Terms.html; sourceTree = "<group>"; };
 		A5217A58089B256C3E2FB0DD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		ABD58A47A1381EE0A40EFC67 /* DiagnosticsLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsLogView.swift; sourceTree = "<group>"; };
 		ADCB5CB5B17B12EEA04AB973 /* GlobalServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerService.swift; sourceTree = "<group>"; };
 		B510E06DE60D6191AC39C17B /* VPNConnectionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNConnectionStatus.swift; sourceTree = "<group>"; };
 		B6FDC0A780BA9322E4CBCD53 /* FirebaseTelemetryReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTelemetryReporter.swift; sourceTree = "<group>"; };
@@ -243,6 +254,7 @@
 		DE37B63CCCDC17C0C1625B33 /* NetlumaVPNUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = NetlumaVPNUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE4EE9D71E095FB53C2A587F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		DFEC7C2CF08C0D6B675999C8 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		DFECDD414E12A46A449997E4 /* WireGuardQuickConfigBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WireGuardQuickConfigBuilder.swift; sourceTree = "<group>"; };
 		EA4A012DDE28445D0CB9656A /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		EFAD2292D04BDACD61477022 /* GlobalServerDeviceIdentityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalServerDeviceIdentityStore.swift; sourceTree = "<group>"; };
 		EFC4EAB5580FD9D18F22A5E4 /* NetlumaVPNTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetlumaVPNTheme.swift; sourceTree = "<group>"; };
@@ -282,6 +294,7 @@
 				5FF55EB3CE67B74073B6F5AB /* InfoPlist.strings */,
 				978507ED6EAF2C3C0FE764CB /* NetlumaVPNTunnelExtension.entitlements */,
 				26A7F25498D0661416D18222 /* PacketTunnelProvider.swift */,
+				9F33FCDB2C3ED7DBAABA2B9D /* WireGuardTunnelEngine.swift */,
 				4C6AC3B9D191351F54F88847 /* XrayTunnelEngine.swift */,
 			);
 			path = NetlumaVPNTunnelExtension;
@@ -320,6 +333,7 @@
 		797093E39EE4D412E06F4649 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				ABD58A47A1381EE0A40EFC67 /* DiagnosticsLogView.swift */,
 				06797F60FC7FFB9112D107B4 /* DNSSettingsView.swift */,
 				49392DE93FA4C527716C1CAC /* SessionInfoService.swift */,
 				735C7BEE827F4D044A16EEDE /* SessionInfoView.swift */,
@@ -397,6 +411,7 @@
 				EFAD2292D04BDACD61477022 /* GlobalServerDeviceIdentityStore.swift */,
 				ADCB5CB5B17B12EEA04AB973 /* GlobalServerService.swift */,
 				00EC08FABB1DFA4D5A3FAADC /* PremiumSubscriptionService.swift */,
+				51A07459C97B420A37192626 /* RemoteConfigDownloader.swift */,
 				027D9CB46EB751E20989AA9C /* VPNManager.swift */,
 			);
 			path = Services;
@@ -422,6 +437,7 @@
 				76BB3E8CC77DDE35E8051974 /* ProfileStorage.swift */,
 				16012BC41445DB65914C74A0 /* TunnelNetworkSettingsBuilder.swift */,
 				3C8659D808211A50B8FC8ED9 /* VPNConfigurationParser.swift */,
+				DFECDD414E12A46A449997E4 /* WireGuardQuickConfigBuilder.swift */,
 				CB3334068028E4830090F325 /* XrayConfigBuilder.swift */,
 			);
 			path = Services;
@@ -439,6 +455,7 @@
 				CB10D7AF159A17B5EF9B7D14 /* NetworkPreferencesTests.swift */,
 				C671BF30079378C7C970076A /* PremiumSubscriptionTests.swift */,
 				7D87CC6539D9B0BC7323CE58 /* ProfileStorageTests.swift */,
+				878C0E0830F79AD82787C193 /* RemoteConfigDownloaderTests.swift */,
 			);
 			path = NetlumaVPNTests;
 			sourceTree = "<group>";
@@ -734,6 +751,7 @@
 				1EEBB825B91BBE766C036D17 /* ConnectionDiagnostics.swift in Sources */,
 				1F72CCC2B0462F7309EA3DA5 /* ContentView.swift in Sources */,
 				5B0D4F57119C5EC9171582FB /* DNSSettingsView.swift in Sources */,
+				2BFAFCA30E29EB2D908ABA85 /* DiagnosticsLogView.swift in Sources */,
 				31230935FF62DC161799BD32 /* FirebaseTelemetryReporter.swift in Sources */,
 				F682A79D16F266D681AC5323 /* GlobalServerAPIClient.swift in Sources */,
 				86CA2E88230DAC115C6D476E /* GlobalServerDeviceIdentityStore.swift in Sources */,
@@ -756,6 +774,7 @@
 				36CBCE4E489BA52816A2F216 /* ProfileListView.swift in Sources */,
 				D4C2FB7D1BA289558C6A1495 /* ProfileStorage.swift in Sources */,
 				E7CFCC696AED0AB3C6FE35C0 /* QRCodeImportView.swift in Sources */,
+				BB1D67FD874850FE73E9245E /* RemoteConfigDownloader.swift in Sources */,
 				CB67B3BA472483CEC91EED90 /* SessionInfoService.swift in Sources */,
 				395C09F3DAC709FC1B93E86C /* SessionInfoView.swift in Sources */,
 				8D41BF79A896870722758147 /* SettingsView.swift in Sources */,
@@ -766,6 +785,7 @@
 				547D7B00A5668D02F3EA6033 /* VPNConnectionStatus.swift in Sources */,
 				12F8929A719AE7CEA8CD9268 /* VPNManager.swift in Sources */,
 				7ACD29D3D8F483525F0DF575 /* VPNProfile.swift in Sources */,
+				2BC5D75F0C63D23DCB47D2DD /* WireGuardQuickConfigBuilder.swift in Sources */,
 				F4E7B387AD5B33A5C9247736 /* XrayConfigBuilder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -783,6 +803,7 @@
 				479BFE74EF67753128EA0601 /* NetworkPreferencesTests.swift in Sources */,
 				33DE00984AFECA4EECE3E995 /* PremiumSubscriptionTests.swift in Sources */,
 				FFC7171E8065FB0418659D6F /* ProfileStorageTests.swift in Sources */,
+				3154A302B72B56A697DC1D3B /* RemoteConfigDownloaderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -809,6 +830,7 @@
 				B00E81E5C6D16185E09DE0EA /* VPNConnectionStatus.swift in Sources */,
 				6020ED54280D9A662AEBA979 /* VPNProfile.swift in Sources */,
 				FC8C58EA4CDABAE8B35A6AE1 /* WidgetVPNController.swift in Sources */,
+				0D34E9F4E89787F1298D5EB2 /* WireGuardQuickConfigBuilder.swift in Sources */,
 				D6F9FD3BF34B9D7DD791C215 /* XrayConfigBuilder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -834,6 +856,8 @@
 				CC76FFDF58C42AD34D621011 /* VPNConfigurationParser.swift in Sources */,
 				C089937497A309C2822726E6 /* VPNConnectionStatus.swift in Sources */,
 				DF056B18DBF8707EBF7FAEAB /* VPNProfile.swift in Sources */,
+				9FB64F3C83B26E08BE2782EC /* WireGuardQuickConfigBuilder.swift in Sources */,
+				87951E1730444A69D240493E /* WireGuardTunnelEngine.swift in Sources */,
 				6713A70AEC6BD8409496CA4F /* XrayConfigBuilder.swift in Sources */,
 				564398028B0E464C5DAEC97A /* XrayTunnelEngine.swift in Sources */,
 			);

@@ -1,7 +1,12 @@
+import base64
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
+
+import app as app_module
+from fastapi.testclient import TestClient
 
 from app import NetlumaVPNDatabase, SingBoxManager, issue_mobile_profile, mobile_config_payload
 
@@ -36,8 +41,22 @@ class NetlumaVPNSingBoxAdminTests(unittest.TestCase):
         )
         self.database = NetlumaVPNDatabase(self.db_path)
         self.database.init()
+        self.original_database = app_module.database
+        self.original_manager = app_module.manager
+        self.original_admin_user = os.environ.get("ADMIN_USER")
+        self.original_admin_password = os.environ.get("ADMIN_PASSWORD")
 
     def tearDown(self):
+        app_module.database = self.original_database
+        app_module.manager = self.original_manager
+        if self.original_admin_user is None:
+            os.environ.pop("ADMIN_USER", None)
+        else:
+            os.environ["ADMIN_USER"] = self.original_admin_user
+        if self.original_admin_password is None:
+            os.environ.pop("ADMIN_PASSWORD", None)
+        else:
+            os.environ["ADMIN_PASSWORD"] = self.original_admin_password
         self.temp.cleanup()
 
     def _write_client_template(self, name, protocol, secret_key, secret, path):
@@ -59,6 +78,17 @@ class NetlumaVPNSingBoxAdminTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+
+    def _client(self):
+        app_module.database = self.database
+        app_module.manager = self.manager
+        os.environ["ADMIN_USER"] = "admin"
+        os.environ["ADMIN_PASSWORD"] = "secret"
+        return TestClient(app_module.app)
+
+    def _auth_headers(self):
+        token = base64.b64encode(b"admin:secret").decode()
+        return {"Authorization": f"Basic {token}"}
 
     def test_create_user_writes_singbox_and_two_client_json_urls(self):
         created = self.manager.create_user("phone_1")
@@ -136,6 +166,68 @@ class NetlumaVPNSingBoxAdminTests(unittest.TestCase):
         self.assertEqual(row["status"], "deleted")
         config = json.loads(self.config_path.read_text(encoding="utf-8"))
         self.assertFalse(any(user["name"] == issued["username"] for inbound in config["inbounds"] for user in inbound["users"]))
+
+    def test_public_website_pages_render(self):
+        with self._client() as client:
+            for path, text in [
+                ("/", "NetlumaVPN"),
+                ("/support", "Contact support"),
+                ("/terms", "Terms of Use"),
+                ("/privacy", "Privacy Policy"),
+            ]:
+                response = client.get(path)
+
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(text, response.text)
+
+    def test_support_submit_stores_feedback_for_admin(self):
+        with self._client() as client:
+            response = client.post(
+                "/support",
+                data={
+                    "name": "QA",
+                    "email": "qa@example.com",
+                    "topic": "Bug",
+                    "message": "Connection button did not respond.",
+                    "ios_version": "iOS 26",
+                    "app_version": "1.0",
+                    "contact_consent": "on",
+                },
+                follow_redirects=False,
+            )
+
+            self.assertEqual(response.status_code, 303)
+            rows = self.database.feedback_rows()
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["email"], "qa@example.com")
+            admin_response = client.get("/admin/feedback", headers=self._auth_headers())
+            self.assertEqual(admin_response.status_code, 200)
+            self.assertIn("Connection button did not respond.", admin_response.text)
+
+    def test_admin_feedback_requires_auth_and_updates_status(self):
+        feedback_id, error = self.database.create_feedback_request(
+            {
+                "email": "status@example.com",
+                "topic": "Feature request",
+                "message": "Please add faster server switching.",
+            }
+        )
+        self.assertEqual(error, "")
+
+        with self._client() as client:
+            unauthorized = client.get("/admin/feedback")
+            self.assertEqual(unauthorized.status_code, 401)
+            response = client.post(
+                f"/admin/feedback/{feedback_id}/status",
+                data={"status": "resolved"},
+                headers=self._auth_headers(),
+                follow_redirects=False,
+            )
+
+            self.assertEqual(response.status_code, 303)
+            rows = self.database.feedback_rows(status="resolved")
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["email"], "status@example.com")
 
 
 if __name__ == "__main__":

@@ -11,23 +11,21 @@
 | Path | `archive/server_mvp/quickvpn_admin/app.py` | `server_mvp/quickvpn_singbox_admin/app.py` |
 | Engine | Xray-core (VLESS Reality + Trojan) + WireGuard | sing-box (VLESS + Trojan) |
 | Port | `127.0.0.1:8000` (`quickvpn-api.service`) | `127.0.0.1:8020` (`quickvpn-singbox-api.service`) |
-| Deployed by provisioner? | **YES** — `provision-fresh-server.sh` sets `APP_SRC=…/archive/server_mvp/quickvpn_admin`; nginx proxies :8000 | **NO** — units exist but the provisioner never installs them, and nginx never routes to :8020 |
+| Deployed by provisioner? | **YES** — `provision-fresh-server.sh` sets `APP_SRC=…/archive/server_mvp/quickvpn_admin`; nginx proxies :8000 | **NO in the fresh-server scripts**, but the current `netlumavpn.example` production endpoint was observed returning `{"backend":"netlumavpn-singbox"}` on 2026-06-24 |
 | Mobile headers accepted | **only** `x-quickvpn-*` | `x-netlumavpn-*` (primary), `x-quickvpn-*` (legacy fallback) |
 | Server IDs | `quickvpn-mvp-eu-1`, `…-trojan`, `…-wireguard` | `netlumavpn-singbox-vless`, `netlumavpn-singbox-trojan` |
 | Admin auth | HMAC session cookie + PBKDF2 passwords + `/login` | HTTP Basic (plaintext env password) |
 | iOS integration tests target it? | no | **yes** (`GlobalServerIntegrationTests` expects `netlumavpn-singbox-*`) |
 
-So: **the provisioning scripts ship backend A, but the iOS client tests and
-`verify-fresh-server.sh` describe backend B.** Before any backend task, confirm which
-app is actually running on the target VPS (e.g. `GET /api/v1/status` returns
-`{"backend":"netlumavpn-singbox"}` for B). The `CLAUDE.md` description of "the
-production backend" historically pointed at the sing-box file — treat that as
-aspirational, not confirmed. Log findings in [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md).
+So: **the provisioning scripts ship backend A, but the current production endpoint,
+iOS client tests, and `verify-fresh-server.sh` describe backend B.** Before any backend
+task, confirm which app is actually running on the target VPS (e.g. `GET /api/v1/status`
+returns `{"backend":"netlumavpn-singbox"}` for B). Log findings in
+[`KNOWN_ISSUES.md`](KNOWN_ISSUES.md).
 
 The iOS app sends **both** header families, so it authenticates against either backend;
 the mismatch that bites is **server IDs** (a client pinned to one set won't see the
-other's servers) and the **verify script** (sends only `x-netlumavpn-*`, which backend
-A rejects → 401).
+other's servers).
 
 Both backends are single-file FastAPI apps (`fastapi==0.115.6`, `uvicorn==0.34.0`),
 SQLite with WAL + foreign keys. Keep them single-file.
@@ -46,9 +44,12 @@ operator UI over the sing-box config (no SQLite, no mobile API).
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| GET | `/` | redirect to `/login` or `/admin` |
+| GET | `/`, `/support`, `/terms`, `/privacy` | Public marketing/support/legal website |
+| POST | `/support` | Store a public support/feedback request |
 | GET/POST | `/login`, `/logout` | sets/clears `quickvpn_session` cookie |
 | GET | `/admin` | dashboard |
+| GET | `/admin/feedback` | feedback triage dashboard |
+| POST | `/admin/feedback/{id}/status` | mark feedback `new` / `in_review` / `resolved` / `archived` |
 | POST | `/admin/profiles`, `/admin/profiles/{id}/revoke|enable|delete` | profile management |
 | GET | `/admin/profiles/{id}` | profile detail |
 | GET | `/health` | health |
@@ -69,8 +70,17 @@ operator UI over the sing-box config (no SQLite, no mobile API).
 
 ### Backend B — `server_mvp/quickvpn_singbox_admin/app.py` (:8020)
 
-**Admin UI** (HTTP Basic): `GET /health`, `GET /admin`, `POST /admin/profiles`,
-`POST /admin/profiles/{id}/delete`.
+**Public website / Admin UI**:
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/`, `/support`, `/terms`, `/privacy` | Public marketing/support/legal website |
+| POST | `/support` | Store a public support/feedback request |
+| GET | `/health` | health |
+| GET | `/admin` | HTTP Basic profile dashboard |
+| GET | `/admin/feedback` | HTTP Basic feedback triage dashboard |
+| POST | `/admin/feedback/{id}/status` | mark feedback `new` / `in_review` / `resolved` / `archived` |
+| POST | `/admin/profiles`, `/admin/profiles/{id}/delete` | profile management |
 
 **Admin API** (`X-NetlumaVPN-API-Key`, legacy `X-QuickVPN-API-Key`):
 `GET /api/v1/status`, `POST /api/v1/profiles`, `DELETE /api/v1/profiles/{id}`.
@@ -113,15 +123,17 @@ QuickVPN fallback.
 
 ## 3. Database schema (SQLite, WAL + `foreign_keys=ON`)
 
-**Backend A** (4 tables):
+**Backend A** (5 tables):
 - `users(id PK, name, status, created_at)`
 - `profiles(id PK, user_id→users, device_name, protocol, credential_uuid UNIQUE, email UNIQUE, status, vless_url, wireguard_private_key, wireguard_public_key, wireguard_preshared_key, wireguard_address, upload_bytes, download_bytes, last_seen_at, created_at, revoked_at)` — note the mobile dedup key is stuffed into `device_name`.
 - `traffic_samples(id, profile_id→profiles, upload_delta, download_delta, upload_total, download_total, sampled_at)` — filled by `collect-stats` from Xray's gRPC stats API.
 - `audit_logs(id, actor, action, target, details, created_at)`.
+- `feedback_requests(id PK, name, email, topic, message, ios_version, app_version, contact_consent, status, created_at, updated_at)` — public `/support` submissions shown in `/admin/feedback`.
 
-**Backend B** (2 tables, no FKs):
+**Backend B** (3 tables, no FKs):
 - `profiles(id PK, username UNIQUE, user_name, device_name, server_id, device_key, status, source, trojan_config_url, vless_config_url, created_at, deleted_at)`.
 - `audit_logs(...)`.
+- `feedback_requests(id PK, name, email, topic, message, ios_version, app_version, contact_consent, status, created_at, updated_at)` — public `/support` submissions shown in `/admin/feedback`.
 - On startup, `sync_existing_users` imports pre-existing sing-box users as
   `source='legacy'`, `server_id='legacy'`.
 
@@ -150,27 +162,32 @@ QuickVPN fallback.
 ## 5. Local development & tests
 
 ```bash
+# Backend A (live Xray/WireGuard backend)
+cd archive/server_mvp/quickvpn_admin
+python -m unittest test_app.py
+
 # Backend B (sing-box)
 cd server_mvp/quickvpn_singbox_admin
-python -m pytest test_app.py            # rootless: check/reload are stubbed
+python test_app.py                      # rootless: check/reload are stubbed
 
 # Sidecar
 cd server_mvp/singbox_admin
 python -m pytest test_singbox_admin.py
 ```
 
-Backend A (`archive/.../quickvpn_admin/`) has no test file in the tree. If you modify
-backend A, add tests alongside it and run them (see [`TESTING.md`](TESTING.md) for the
-"tests are part of the task" rule).
+Backend A has `unittest` coverage for the public website, support feedback storage,
+the admin feedback page, and dashboard degradation when the Xray stats binary is
+unavailable. Backend B has `unittest` coverage for sing-box user/profile behavior, the
+public website, support feedback storage, and the Basic Auth feedback admin page.
 
 ---
 
 ## 6. Gotchas
 
-- **Edit the right `app.py`.** Changes to the sing-box backend do **not** ship via the
-  current provisioner; the live app is the Xray/WireGuard one. Confirm before assuming.
+- **Edit the right `app.py`.** The fresh-server provisioner ships backend A, while the
+  current `netlumavpn.example` endpoint was observed running backend B. Confirm before assuming.
 - **Header acceptance differs** (A = quickvpn-only; B = both). The verify script uses
-  `x-netlumavpn-*` and would 401 against A.
+  both `x-netlumavpn-*` and legacy `x-quickvpn-*`.
 - **Server IDs differ** between backends.
 - **Secrets:** no live keys are committed; the provisioner/bootstrap generate passwords
   at runtime into root-owned 0600 files. The client-JSON web dir name

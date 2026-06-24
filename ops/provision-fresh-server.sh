@@ -156,6 +156,7 @@ prepare_secrets() {
   : "${QUICKVPN_PUBLIC_IP:=$NETLUMAVPN_PUBLIC_IP}"
   : "${NETLUMAVPN_MOBILE_API_KEY:=${QUICKVPN_MOBILE_API_KEY:-${MOBILE_API_KEY:-}}}"
   : "${QUICKVPN_MOBILE_API_KEY:=$NETLUMAVPN_MOBILE_API_KEY}"
+  : "${NETLUMAVPN_APP_STORE_URL:=${APP_STORE_URL:-https://apps.apple.com/search?term=NetlumaVPN}}"
   : "${QUICKVPN_ADMIN_PASSWORD:=${NETLUMAVPN_ADMIN_PASSWORD:-}}"
   : "${QUICKVPN_ADMIN_API_KEY:=${NETLUMAVPN_ADMIN_API_KEY:-}}"
   : "${QUICKVPN_CERTBOT_EMAIL:=${NETLUMAVPN_CERTBOT_EMAIL:-}}"
@@ -175,6 +176,7 @@ prepare_secrets() {
   SESSION_SECRET="${SESSION_SECRET:-$(openssl rand -hex 32)}"
   API_KEY="${QUICKVPN_ADMIN_API_KEY:-${API_KEY:-$(openssl rand -hex 32)}}"
   MOBILE_API_KEY="$QUICKVPN_MOBILE_API_KEY"
+  APP_STORE_URL="$NETLUMAVPN_APP_STORE_URL"
 
   VPN_HOST="${VPN_HOST:-vpn.$QUICKVPN_DOMAIN}"
   VPN_PORT="${VPN_PORT:-443}"
@@ -246,6 +248,7 @@ write_quickvpn_env() {
     write_env_line SESSION_SECRET "$SESSION_SECRET"
     write_env_line API_KEY "$API_KEY"
     write_env_line MOBILE_API_KEY "$MOBILE_API_KEY"
+    write_env_line APP_STORE_URL "$APP_STORE_URL"
     write_env_line WG_BIN "/usr/bin/wg"
     write_env_line WIREGUARD_CONFIG_PATH "$WIREGUARD_CONFIG_PATH"
     write_env_line WIREGUARD_SERVICE "$WIREGUARD_SERVICE"
@@ -348,7 +351,7 @@ issue_letsencrypt_certificate() {
     die "QUICKVPN_SKIP_LETSENCRYPT=1 is not supported for final production provisioning; point DNS first, then run again without the flag"
   fi
 
-  log "Issuing Let's Encrypt certificate for api/admin/trojan"
+  log "Issuing Let's Encrypt certificate for root/www/api/admin/trojan"
   local email_args
   if [[ -n "${QUICKVPN_CERTBOT_EMAIL:-}" ]]; then
     email_args=(--email "$QUICKVPN_CERTBOT_EMAIL")
@@ -359,9 +362,13 @@ issue_letsencrypt_certificate() {
   certbot certonly \
     --webroot \
     -w /var/www/letsencrypt \
+    --cert-name "api.$QUICKVPN_DOMAIN" \
+    --expand \
     --non-interactive \
     --agree-tos \
     "${email_args[@]}" \
+    -d "$QUICKVPN_DOMAIN" \
+    -d "www.$QUICKVPN_DOMAIN" \
     -d "api.$QUICKVPN_DOMAIN" \
     -d "admin.$QUICKVPN_DOMAIN" \
     -d "trojan.$QUICKVPN_DOMAIN"

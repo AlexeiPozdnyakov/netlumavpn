@@ -4,16 +4,22 @@ struct ImportProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var value = ""
     @State private var errorMessage: String?
+    @State private var isImporting = false
 
-    let onImport: (String) throws -> Void
+    let onImport: (String) async throws -> Void
 
     var body: some View {
         Form {
-            Section("Configuration URL") {
+            Section {
                 TextEditor(text: $value)
                     .frame(minHeight: 140)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    .disabled(isImporting)
+            } header: {
+                Text("Configuration URL")
+            } footer: {
+                Text("Paste a config link (vless://, vmess://, trojan://, or WireGuard), or an https:// link to a .json profile.")
             }
         }
         .scrollContentBackground(.hidden)
@@ -27,13 +33,18 @@ struct ImportProfileView: View {
                 Button("Cancel") {
                     dismiss()
                 }
+                .disabled(isImporting)
             }
 
             ToolbarItem(placement: .confirmationAction) {
-                Button("Import") {
-                    importProfile()
+                if isImporting {
+                    ProgressView()
+                } else {
+                    Button("Import") {
+                        importProfile()
+                    }
+                    .disabled(value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
-                .disabled(value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }
         .alert(
@@ -56,11 +67,16 @@ struct ImportProfileView: View {
     }
 
     private func importProfile() {
-        do {
-            try onImport(value)
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
+        let captured = value
+        isImporting = true
+        Task {
+            do {
+                try await onImport(captured)
+                dismiss()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            isImporting = false
         }
     }
 }

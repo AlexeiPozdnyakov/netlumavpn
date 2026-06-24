@@ -8,7 +8,7 @@ struct QRCodeImportView: View {
     @State private var scanErrorMessage: String?
     @State private var scanSessionID = UUID()
 
-    let onImport: (String) throws -> Void
+    let onImport: (String) async throws -> Void
 
     var body: some View {
         ZStack {
@@ -121,11 +121,13 @@ struct QRCodeImportView: View {
     }
 
     private func importProfile(from value: String) {
-        do {
-            try onImport(value)
-            dismiss()
-        } catch {
-            scanErrorMessage = error.localizedDescription
+        Task {
+            do {
+                try await onImport(value)
+                dismiss()
+            } catch {
+                scanErrorMessage = error.localizedDescription
+            }
         }
     }
 }

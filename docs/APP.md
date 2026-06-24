@@ -45,7 +45,8 @@ global-server state (`globalServers`, `isLoadingGlobalServers`, `activeGlobalSer
 `NetworkPreferencesStorage`, `any VPNManaging` (→ `VPNManager`), `SessionStateStorage`,
 `ConnectionDisplayStateStorage`, `any GlobalServerServicing` (→ `GlobalServerService`),
 `any PremiumSubscriptionServicing` (→ `StoreKitPremiumSubscriptionService`),
-`OnboardingCompletionStoring`, a `VPNConfigurationParser`, the NEVPN status observer.
+`OnboardingCompletionStoring`, a `VPNConfigurationParser`,
+`any RemoteConfigDownloading` (→ `RemoteConfigDownloader`), the NEVPN status observer.
 
 **Key methods:**
 
@@ -53,7 +54,7 @@ global-server state (`globalServers`, `isLoadingGlobalServers`, `activeGlobalSer
 |--------|---------|
 | `toggleConnection() async -> PremiumGatedActionResult` | Main connect/disconnect entry; premium-gated |
 | `selectProfile(_:) async` / `selectGlobalServer(_:) async -> PremiumGatedActionResult` | Choose active profile/server |
-| `saveProfile(_:secret:) throws` / `importProfile(from:) throws` / `deleteProfile(_:)` | Profile CRUD (import parses via `VPNConfigurationParser`) |
+| `saveProfile(_:secret:) throws` / `importProfile(from:) async throws` / `deleteProfile(_:)` | Profile CRUD. `importProfile` downloads first when the value is an `http(s)` link (via `RemoteConfigDownloader`), then parses the body — or any other config — via `VPNConfigurationParser` |
 | `loadGlobalServers(force:) async` | Fetch managed servers from the backend |
 | `loadPremiumProducts(force:) async` / `purchasePremium(productID:) async -> Bool` / `restorePremiumPurchases() async -> Bool` / `refreshPremiumEntitlements() async` | StoreKit |
 | `updateTunnelPreferences(_:)` / `selectDNSResolver(_:)` | Network prefs |
@@ -99,9 +100,13 @@ back to `AppModel`.
 
 - **`SettingsView`** — header, a conditional premium banner (`shouldShowPremiumBanner`),
   and rows: **Session** → `SessionInfoView`, **Tunnel** → `TunnelSettingsView`,
-  **DNS** → `DNSSettingsView`, plus **Terms of Use** / **Privacy Policy** →
-  `LegalDocumentView` (a `WKWebView` wrapper; prefers a bundled localized
-  `Terms.html`/`Privacy.html`, else falls back to inline English HTML).
+  **DNS** → `DNSSettingsView`, **Diagnostics** → `DiagnosticsLogView`, plus
+  **Terms of Use** / **Privacy Policy** → `LegalDocumentView` (a `WKWebView` wrapper;
+  prefers a bundled localized `Terms.html`/`Privacy.html`, else falls back to inline English HTML).
+- **`DiagnosticsLogView`**: read-only viewer over `AppLogStore.loadEvents()` (the shared
+  App-Group ring buffer both the app **and the tunnel extension** write to via `AppLogger`).
+  Filter by `AppLogCategory`, Copy/Share/Clear. This is the only in-app way to read the
+  extension's `.tunnel`/`.xray` logs (engine start/stop, failure reasons) without Console.
 - **`TunnelSettingsView`** (binds `TunnelPreferences`): Persist Tunnel, IP Settings
   (`TunnelIPMode`), On Demand (`TunnelOnDemandMode`), Include All Networks.
 - **`DNSSettingsView`**: selectable list from `DNSResolver.catalog`.
@@ -118,9 +123,12 @@ back to `AppModel`.
   `makeProfile(existingProfile:) throws -> (VPNProfile, VPNProfileSecret)` validates and
   splits metadata vs secret. Errors are `ProfileFormError` (port range 1–65535, MTU
   576–9000, reserved bytes 0–255, missing credentials, etc.).
-- **`ImportProfileView`**: paste a config URL → `model.importProfile(from:)`.
+- **`ImportProfileView`**: paste a config link **or an `https://…json` link to a profile
+  file** → `await model.importProfile(from:)`. Shows a `ProgressView` and disables the form
+  while the import (which may download) runs. `onImport` is `(String) async throws -> Void`.
 - **`QRCodeImportView`**: full `AVCaptureSession` QR scanner (camera permission states),
-  scanned string → `onImport`.
+  scanned string → `onImport` (also `async throws`), so a QR code that encodes an `http(s)`
+  link is downloaded and installed too.
 - **`ProfileListView`** appears to be **dead code** (not referenced by `ContentView`,
   uses raw colors instead of the theme) — verify before relying on or deleting it.
 
@@ -166,6 +174,24 @@ Pinned HTTPS client for the mobile API.
   currently disabled** (`.performDefaultHandling`). `GlobalServerAPIError.certificatePinMismatch`
   exists but is never thrown.
 - Failures are reported to `FirebaseTelemetryReporter` (host/path/status only).
+
+### `RemoteConfigDownloader` (`RemoteConfigDownloading`)
+
+Downloads a VPN config file from an arbitrary **user-supplied** `http(s)` link (e.g. a
+`…/qv_xxx-VLESS-CLIENT.json` file) so it can be handed to `VPNConfigurationParser`. Used by
+`AppModel.importProfile(from:)`.
+
+- `static remoteConfigURL(from:) -> URL?` classifies the pasted/scanned value: returns a URL
+  only for `http`/`https` links (with a host); returns `nil` for everything the parser
+  handles directly (`vless://`, `vmess://`, `trojan://`, `wireguard:`/`wg:`, inline JSON,
+  WireGuard INI). This is the seam that decides *download* vs *parse-directly*.
+- `download(from:)`: ephemeral `URLSession` (15s request / 20s resource timeout, cache
+  disabled); rejects non-`http(s)` schemes; requires a 2xx status; caps the body at
+  `maxPayloadBytes` (512 KB); decodes UTF-8. Errors are `RemoteConfigDownloadError`.
+- **Deliberately separate from `GlobalServerAPIClient`**: it talks to an arbitrary host, so it
+  does **not** attach the `X-NetlumaVPN-*` auth headers or the backend certificate pin —
+  standard system TLS trust applies for `https`. It logs the **host only**, never the path
+  (the path can carry a per-device secret token).
 
 ### `GlobalServerService` (`GlobalServerServicing`)
 

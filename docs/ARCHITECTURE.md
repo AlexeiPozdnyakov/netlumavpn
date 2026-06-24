@@ -50,7 +50,7 @@
         │ VPS behind netlumavpn.example                │
         │                                          │
         │  443/tcp ── nginx STREAM (ssl_preread) ──┐
-        │     SNI api./admin.  → 127.0.0.1:8443    │  (HTTPS admin + mobile API)
+        │     SNI root/www/api./admin. → 127.0.0.1:8443 │  (website + admin + mobile API)
         │     SNI trojan.      → 127.0.0.1:2443    │  (Trojan TLS)
         │     default (vpn.)   → 127.0.0.1:1443    │  (Xray VLESS Reality)
         │                                          │
@@ -61,15 +61,17 @@
         │  10085 Xray gRPC stats API (scraped by quickvpn-stats.timer)
         │  51820/udp WireGuard wg0                 │
         │  80/tcp  nginx http (ACME + 308→HTTPS)   │
-        │  22/tcp  SSH key-only, fail2ban          │
+        │  22/tcp SSH admin access (live VPS)    │
         └──────────────────────────────────────────┘
 ```
 
 > **Which backend is on :8000?** The provisioning scripts deploy the
 > **Xray/WireGuard** FastAPI app (`archive/server_mvp/quickvpn_admin/app.py`).
 > A newer **sing-box** app (`server_mvp/quickvpn_singbox_admin/app.py`, :8020) and
-> a stdlib sidecar (:8010) exist in the tree but are **not** wired by the
-> provisioner. See [`BACKEND.md`](BACKEND.md) and [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md).
+> a stdlib sidecar (:8010) exist in the tree but are **not** wired by the fresh-server
+> provisioner. Current `netlumavpn.example/api/v1/status` was observed on 2026-06-24
+> returning `netlumavpn-singbox`, so always confirm the live target before backend work.
+> See [`BACKEND.md`](BACKEND.md) and [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md).
 
 ## Targets and their responsibilities
 
@@ -206,7 +208,7 @@ stored in the shared Keychain (account `netlumavpn-global-device-id.v1`).
 | What JSON does Xray see? | `NetlumaVPNShared/Services/XrayConfigBuilder.swift` |
 | How does the widget toggle the VPN? | `NetlumaVPNWidget/ToggleVPNConnectionIntent.swift` → `WidgetVPNController` |
 | How are global servers fetched / profiles issued? | `NetlumaVPN/Services/GlobalServerService.swift` + `GlobalServerAPIClient.swift` |
-| What does the backend serve? | `archive/server_mvp/quickvpn_admin/app.py` (live) / `server_mvp/quickvpn_singbox_admin/app.py` (newer) |
+| What does the backend serve? | `archive/server_mvp/quickvpn_admin/app.py` (fresh-server provisioner) / `server_mvp/quickvpn_singbox_admin/app.py` (observed on current production 2026-06-24) |
 | How is the VPS configured? | `ops/` (nginx + systemd + fail2ban + provision scripts) |
 
 _Last full analysis: 2026-06-24._
