@@ -125,6 +125,8 @@ Apple states that apps using encryption limited to Apple's operating system do n
 
 Because NetlumaVPN is a VPN/proxy app and can use third-party tunnel encryption outside Apple's operating-system encryption, it is appropriate to keep `ITSAppUsesNonExemptEncryption` set to true and provide encryption documentation when requested by App Store Connect.
 
+After App Store Connect accepts the encryption documentation, use the export compliance code shown there as the archive build setting `APP_STORE_EXPORT_COMPLIANCE_CODE`. For Xcode's Product → Archive flow, put it in the gitignored `Config/AppStoreExportCompliance.local.xcconfig` copied from the `.example` file, or run `ops/set-app-store-export-compliance-code.sh <code from App Store Connect>`. The shipping app and extensions map that setting to `ITSEncryptionExportComplianceCode` in their processed Info.plists; the code should not be committed to source.
+
 For France, ANSSI describes a process for cryptology declarations and indicates that filings may include a completed/signed form, an electronic copy of the completed form, and required documentation in PDF/DOC/XLS format. This document can be used as the technical description portion of that package, but it is not itself an official ANSSI attestation.
 
 ## References

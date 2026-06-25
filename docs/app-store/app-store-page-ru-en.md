@@ -1,6 +1,6 @@
 # NetlumaVPN App Store Page
 
-Prepared: 2026-06-19
+Prepared: 2026-06-24
 
 This file contains ready-to-copy App Store Connect metadata for English and Russian localizations, plus the review, privacy, and submission notes that matter for the current build.
 
@@ -25,6 +25,19 @@ Fix these before sending the build to App Review:
 4. Publish real support, privacy, and terms URLs before submission. App Store Connect requires a privacy policy URL and a support URL with actual contact information.
 5. Confirm the backend hostname and global server provisioning are production-ready. The code currently points to `https://vpn.netlumavpn.example`, while docs mention `api.netlumavpn.example`.
 6. Export compliance is required because `ITSAppUsesNonExemptEncryption` is true.
+   After App Store Connect accepts the encryption documentation, pass
+   `APP_STORE_EXPORT_COMPLIANCE_CODE=<code from App Store Connect>` as an `xcodebuild`
+   archive build setting, or for Xcode's Product → Archive flow copy
+   `Config/AppStoreExportCompliance.local.xcconfig.example` to
+   `Config/AppStoreExportCompliance.local.xcconfig` and put the code there. The helper
+   `ops/set-app-store-export-compliance-code.sh <code from App Store Connect>` writes
+   that gitignored file. This populates `ITSEncryptionExportComplianceCode` in the app
+   and extension plists. The archive build fails locally if this value is missing.
+7. Before upload, confirm the `.xcarchive/dSYMs` directory contains dSYMs for embedded
+   vendor frameworks including `FirebaseAnalytics.framework`,
+   `GoogleAdsOnDeviceConversion.framework`, `GoogleAppMeasurement.framework`,
+   `GoogleAppMeasurementIdentitySupport.framework`, and `SwiftyXrayCore.framework`.
+   The app target now generates these from the embedded framework binaries during archive.
 
 ## App Information
 

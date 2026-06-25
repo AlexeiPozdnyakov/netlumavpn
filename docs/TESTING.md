@@ -77,6 +77,7 @@ live network path was verified.
 | `LocalizationResourceTests.swift` | `Bundle.main.localizations` includes `en`+`ru`, a few localized strings | hermetic (needs the app `.lproj` in the test host) |
 | `GlobalServerIntegrationTests.swift` | `GlobalServerAPIClient` (dual headers, retry-once, error reporting), `GlobalServerService` parsing, `AppModel` flows + premium gating, device-ID persistence | mostly hermetic (mock `NetlumaVPNHTTPClient`); 2 network-gated tests hit the live backend (expect `netlumavpn-singbox-*`) |
 | `FirebaseIntegrationTests.swift` | Firebase wiring verified by **reading source as text** (project.yml deps + dSYM script, `FirebaseApp.configure()` in `AppDelegate`, proxy disabled, purchase logged before `transaction.finish()`) | hermetic (filesystem-coupled) |
+| `AppStoreSubmissionTests.swift` | App Store upload metadata: export-compliance code build-setting placeholders in shipping plists, local xcconfig/helper wiring for GUI archives without committing the code, full iPad orientation list for multitasking validation, and archive-time vendor framework dSYM generation in `project.yml` | hermetic (filesystem-coupled) |
 | `RemoteConfigDownloaderTests.swift` | `RemoteConfigDownloader.remoteConfigURL(from:)` link classification (http(s) vs direct config), `download(from:)` behaviour (2xx/empty/oversized/non-2xx/bad-scheme) via a `URLProtocol` stub, and `AppModel.importProfile(from:)` orchestration (downloads an `https` JSON link, parses a `vless://` link without downloading, surfaces download failures) | hermetic (`.serialized` download suite + throwaway suite + `InMemorySecureValueStorage`) |
 
 ## Backend test inventory
@@ -98,8 +99,9 @@ protocols: `SecureValueStorage`, `NetlumaVPNHTTPClient`, `NetworkErrorReporting`
 
 ## UI tests (`NetlumaVPNUITests/`)
 
-XCTest. `NetlumaVPNUITests.testLaunchShowsVisibleTabs` asserts the tab bar has Home +
-Settings and **not** Servers/Protocols. `testExample` is empty boilerplate.
+XCTest. `NetlumaVPNUITests.testLaunchShowsVisibleTabs` launches in English, skips
+onboarding when needed, and asserts the tab bar has Home + Settings and **not**
+Servers/Protocols. `testExample` is empty boilerplate.
 `NetlumaVPNUITestsLaunchTests` is the standard launch-screenshot template.
 
 ## Coverage gaps — where to add tests

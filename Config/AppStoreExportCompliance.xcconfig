@@ -1,0 +1,2 @@
+APP_STORE_EXPORT_COMPLIANCE_CODE =
+#include? "AppStoreExportCompliance.local.xcconfig"

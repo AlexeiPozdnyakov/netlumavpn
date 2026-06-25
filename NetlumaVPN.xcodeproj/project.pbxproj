@@ -134,6 +134,7 @@
 		E0CA99608C332B6059144409 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647690C3AE8B49BF8423CA9E /* KeychainStorage.swift */; };
 		E37A721C8A1C8F11356C1B27 /* GlobalVPNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9541B03FCE1C93254D26BCD /* GlobalVPNServer.swift */; };
 		E495EBF8D3C5FC5B3B77ACC8 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647690C3AE8B49BF8423CA9E /* KeychainStorage.swift */; };
+		E7B26D93583B9DF519C6D9FF /* AppStoreSubmissionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE7E638E1E3242DC193F631 /* AppStoreSubmissionTests.swift */; };
 		E7CFCC696AED0AB3C6FE35C0 /* QRCodeImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640659CB558B67D2A749512 /* QRCodeImportView.swift */; };
 		ED03B133D41F33E101C32F74 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09426F7BE692B0FE5EACF37E /* AppLogger.swift */; };
 		EF49A022FB0236F2EED5E5E5 /* NetlumaVPNWireGuardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 62181EBD5679752B2D4CA8CE /* NetlumaVPNWireGuardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -263,6 +264,7 @@
 		7AD4186344D918691E974A4E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		7CB1D6FE382D66FD762BDBF4 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		7D87CC6539D9B0BC7323CE58 /* ProfileStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStorageTests.swift; sourceTree = "<group>"; };
+		7DE7E638E1E3242DC193F631 /* AppStoreSubmissionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreSubmissionTests.swift; sourceTree = "<group>"; };
 		819CB095C885C4B6705E7686 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		878C0E0830F79AD82787C193 /* RemoteConfigDownloaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigDownloaderTests.swift; sourceTree = "<group>"; };
 		8A786596E176DD4AFEF7FC05 /* ProfileEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileEditorView.swift; sourceTree = "<group>"; };
@@ -299,6 +301,7 @@
 		D69FF41C5C723D7F6E82E2C0 /* AppLogEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogEvent.swift; sourceTree = "<group>"; };
 		D8D60BBAA6AC6934F5ED8C97 /* NetlumaVPNUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetlumaVPNUITests.swift; sourceTree = "<group>"; };
 		DA0229FC69D156B334391B22 /* AppLogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogStore.swift; sourceTree = "<group>"; };
+		DBEE0284E29E67FF921742EC /* AppStoreExportCompliance.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppStoreExportCompliance.xcconfig; sourceTree = "<group>"; };
 		DE37B63CCCDC17C0C1625B33 /* NetlumaVPNUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = NetlumaVPNUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE4EE9D71E095FB53C2A587F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		DFEC7C2CF08C0D6B675999C8 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
@@ -356,6 +359,14 @@
 			path = NetlumaVPNTunnelExtension;
 			sourceTree = "<group>";
 		};
+		3ECF30E9F95439BC4E465165 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				DBEE0284E29E67FF921742EC /* AppStoreExportCompliance.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		49E4DCDD5D6ADED4111EC938 /* NetlumaVPNShared */ = {
 			isa = PBXGroup;
 			children = (
@@ -402,6 +413,7 @@
 		817F67F64EA2B01E0EA23B88 = {
 			isa = PBXGroup;
 			children = (
+				3ECF30E9F95439BC4E465165 /* Config */,
 				FC7992315C106E1116339F20 /* NetlumaVPN */,
 				49E4DCDD5D6ADED4111EC938 /* NetlumaVPNShared */,
 				D4C2DA2EA72BC1A2A7EF67B1 /* NetlumaVPNTests */,
@@ -514,6 +526,7 @@
 		D4C2DA2EA72BC1A2A7EF67B1 /* NetlumaVPNTests */ = {
 			isa = PBXGroup;
 			children = (
+				7DE7E638E1E3242DC193F631 /* AppStoreSubmissionTests.swift */,
 				F21B31C8A428D459781D941D /* FirebaseIntegrationTests.swift */,
 				46F309BE6393A70CEA92F5E3 /* GlobalServerIntegrationTests.swift */,
 				4D5756983BF80650E55C7CA5 /* HomeConnectLogicTests.swift */,
@@ -657,6 +670,8 @@
 				BB5E3894379846B14075AA61 /* Resources */,
 				103BCAFAC0CD7B160E65BD3A /* Frameworks */,
 				5A13C346ADA348D145DFACFF /* Embed Foundation Extensions */,
+				8E28D09AE4FDC0997A7CAC7D /* Validate App Store export compliance code */,
+				74C71576363EE95F32B548F3 /* Generate vendor framework dSYMs for archive */,
 				D4865119F18DD67787664AF8 /* Upload Firebase Crashlytics dSYMs */,
 			);
 			buildRules = (
@@ -836,6 +851,44 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		74C71576363EE95F32B548F3 /* Generate vendor framework dSYMs for archive */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate vendor framework dSYMs for archive";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${ACTION:-}\" != \"install\" ] || [ \"${SKIP_INSTALL:-}\" = \"YES\" ]; then\n  exit 0\nfi\n\nFRAMEWORKS_DIR=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\nif [ ! -d \"$FRAMEWORKS_DIR\" ]; then\n  exit 0\nfi\n\nmkdir -p \"${DWARF_DSYM_FOLDER_PATH}\"\nfind \"$FRAMEWORKS_DIR\" -maxdepth 1 -type d -name \"*.framework\" | while IFS= read -r framework; do\n  framework_name=\"$(basename \"$framework\" .framework)\"\n  binary=\"$framework/$framework_name\"\n  destination=\"${DWARF_DSYM_FOLDER_PATH}/${framework_name}.framework.dSYM\"\n\n  if [ ! -f \"$binary\" ] || [ -d \"$destination\" ]; then\n    continue\n  fi\n\n  echo \"Generating dSYM for ${framework_name}.framework\"\n  if ! dsymutil \"$binary\" -o \"$destination\"; then\n    echo \"warning: Failed to generate dSYM for ${framework_name}.framework\"\n    rm -rf \"$destination\"\n  fi\ndone\n";
+		};
+		8E28D09AE4FDC0997A7CAC7D /* Validate App Store export compliance code */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Validate App Store export compliance code";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${ACTION:-}\" = \"install\" ] && [ \"${SKIP_INSTALL:-}\" = \"NO\" ]; then\n  if [ -z \"${APP_STORE_EXPORT_COMPLIANCE_CODE:-}\" ] || [ \"${APP_STORE_EXPORT_COMPLIANCE_CODE:-}\" = \"REPLACE_WITH_CODE_FROM_APP_STORE_CONNECT\" ]; then\n    echo \"error: APP_STORE_EXPORT_COMPLIANCE_CODE must match the export compliance code shown in App Store Connect before archiving for upload. Create Config/AppStoreExportCompliance.local.xcconfig from the .example file, or pass APP_STORE_EXPORT_COMPLIANCE_CODE=<code> to xcodebuild archive.\"\n    exit 1\n  fi\nfi\n";
+		};
 		D4865119F18DD67787664AF8 /* Upload Firebase Crashlytics dSYMs */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -931,6 +984,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7B26D93583B9DF519C6D9FF /* AppStoreSubmissionTests.swift in Sources */,
 				8DFB8FBA93C58AF0BB48E5A8 /* FirebaseIntegrationTests.swift in Sources */,
 				A200BF5A4A18074E455E1B34 /* GlobalServerIntegrationTests.swift in Sources */,
 				99C775CD28784B4DE97368B2 /* HomeConnectLogicTests.swift in Sources */,
@@ -1242,6 +1296,7 @@
 		};
 		74FFA5E12952390EDF809AB4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DBEE0284E29E67FF921742EC /* AppStoreExportCompliance.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1302,6 +1357,7 @@
 		};
 		789C0F7F3586CA9E94BFE17F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DBEE0284E29E67FF921742EC /* AppStoreExportCompliance.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

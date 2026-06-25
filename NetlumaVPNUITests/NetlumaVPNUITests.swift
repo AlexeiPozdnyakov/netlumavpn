@@ -25,8 +25,7 @@ final class NetlumaVPNUITests: XCTestCase {
     @MainActor
     func testExample() throws {
         // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-        app.launch()
+        _ = launchApp()
 
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         // XCUIAutomation Documentation
@@ -35,12 +34,31 @@ final class NetlumaVPNUITests: XCTestCase {
 
     @MainActor
     func testLaunchShowsVisibleTabs() throws {
-        let app = XCUIApplication()
-        app.launch()
+        let app = launchApp()
+        completeOnboardingIfNeeded(in: app)
 
         XCTAssertTrue(app.tabBars.buttons["Home"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.tabBars.buttons["Settings"].exists)
         XCTAssertFalse(app.tabBars.buttons["Servers"].exists)
         XCTAssertFalse(app.tabBars.buttons["Protocols"].exists)
+    }
+
+    private func launchApp() -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        return app
+    }
+
+    @MainActor
+    private func completeOnboardingIfNeeded(in app: XCUIApplication) {
+        if app.tabBars.buttons["Home"].waitForExistence(timeout: 2) {
+            return
+        }
+
+        let skipButton = app.buttons["Skip"]
+        if skipButton.waitForExistence(timeout: 2) {
+            skipButton.tap()
+        }
     }
 }

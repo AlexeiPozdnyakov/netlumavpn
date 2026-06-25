@@ -13,6 +13,9 @@ settings:
     SWIFT_VERSION: "5.0"
     DEVELOPMENT_LANGUAGE: en
     CLANG_ENABLE_MODULES: YES
+configFiles:
+  Debug: Config/AppStoreExportCompliance.xcconfig
+  Release: Config/AppStoreExportCompliance.xcconfig
 packages:
   Firebase:
     url: https://github.com/firebase/firebase-ios-sdk.git
@@ -67,6 +70,43 @@ targets:
           - "$(inherited)"
           - "@executable_path/Frameworks"
     postBuildScripts:
+      - name: Validate App Store export compliance code
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ "${ACTION:-}" = "install" ] && [ "${SKIP_INSTALL:-}" = "NO" ]; then
+            if [ -z "${APP_STORE_EXPORT_COMPLIANCE_CODE:-}" ] || [ "${APP_STORE_EXPORT_COMPLIANCE_CODE:-}" = "REPLACE_WITH_CODE_FROM_APP_STORE_CONNECT" ]; then
+              echo "error: APP_STORE_EXPORT_COMPLIANCE_CODE must match the export compliance code shown in App Store Connect before archiving for upload. Create Config/AppStoreExportCompliance.local.xcconfig from the .example file, or pass APP_STORE_EXPORT_COMPLIANCE_CODE=<code> to xcodebuild archive."
+              exit 1
+            fi
+          fi
+      - name: Generate vendor framework dSYMs for archive
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ "${ACTION:-}" != "install" ] || [ "${SKIP_INSTALL:-}" = "YES" ]; then
+            exit 0
+          fi
+
+          FRAMEWORKS_DIR="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+          if [ ! -d "$FRAMEWORKS_DIR" ]; then
+            exit 0
+          fi
+
+          mkdir -p "${DWARF_DSYM_FOLDER_PATH}"
+          find "$FRAMEWORKS_DIR" -maxdepth 1 -type d -name "*.framework" | while IFS= read -r framework; do
+            framework_name="$(basename "$framework" .framework)"
+            binary="$framework/$framework_name"
+            destination="${DWARF_DSYM_FOLDER_PATH}/${framework_name}.framework.dSYM"
+
+            if [ ! -f "$binary" ] || [ -d "$destination" ]; then
+              continue
+            fi
+
+            echo "Generating dSYM for ${framework_name}.framework"
+            if ! dsymutil "$binary" -o "$destination"; then
+              echo "warning: Failed to generate dSYM for ${framework_name}.framework"
+              rm -rf "$destination"
+            fi
+          done
       - name: Upload Firebase Crashlytics dSYMs
         basedOnDependencyAnalysis: false
         script: |

@@ -222,6 +222,27 @@ Crashlytics. **Logs no secrets** — only method/host/path/status/attempt-count/
 product-id/error-domain. No-op stand-ins exist for tests. It talks to Firebase
 directly (not through `AppLogger`).
 
+### App Store archive metadata
+
+- All shipping bundles that declare `ITSAppUsesNonExemptEncryption = true` also set
+  `ITSEncryptionExportComplianceCode = $(APP_STORE_EXPORT_COMPLIANCE_CODE)`. Do **not**
+  commit the App Store Connect code. For Xcode's Product → Archive flow, copy
+  `Config/AppStoreExportCompliance.local.xcconfig.example` to
+  `Config/AppStoreExportCompliance.local.xcconfig` and put the App Store Connect code
+  there. The local file is gitignored and included through
+  `Config/AppStoreExportCompliance.xcconfig`. The helper
+  `ops/set-app-store-export-compliance-code.sh <code from App Store Connect>` writes
+  the local file with `0600` permissions. For command-line archives, pass
+  `xcodebuild ... APP_STORE_EXPORT_COMPLIANCE_CODE=<code from App Store Connect> archive`.
+  The app target's archive script fails the archive when the value is missing.
+- The iPhone orientation remains portrait-only. The iPad orientation key includes
+  portrait, upside-down portrait, landscape left, and landscape right so App Store
+  validation accepts iPad multitasking support.
+- Release archives generate `.dSYM` bundles for embedded vendor frameworks under the
+  archive's `dSYMs/` directory before Crashlytics symbol upload runs. This covers SPM
+  binary frameworks such as Firebase/Google measurement frameworks and SwiftyXrayCore,
+  whose dSYMs are otherwise missing from the `.xcarchive`.
+
 ## Theme & localization
 
 - **`Design/NetlumaVPNTheme.swift`** — dark palette namespace (background, surface,
