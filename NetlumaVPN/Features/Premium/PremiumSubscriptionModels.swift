@@ -203,6 +203,32 @@ enum PremiumAccessGate {
 
         return selectedGlobalServerID != nil || selectedProfile?.isNetlumaVPNManaged == true
     }
+
+    /// Whether an in-flight tunnel must be torn down because the user no longer holds the
+    /// subscription that authorized a premium (Netluma Global / managed) connection.
+    ///
+    /// Only live sessions (`.connected` / `.connecting`) are revoked — a `.disconnecting`
+    /// or already-down session needs no action, and non-premium (user-imported) sessions
+    /// are never gated.
+    static func shouldRevokeActiveSession(
+        status: VPNConnectionStatus,
+        selectedGlobalServerID: String?,
+        selectedProfile: VPNProfile?,
+        hasActiveSubscription: Bool
+    ) -> Bool {
+        switch status {
+        case .connected, .connecting:
+            break
+        case .disconnected, .disconnecting, .failed:
+            return false
+        }
+
+        return requiresPremium(
+            selectedGlobalServerID: selectedGlobalServerID,
+            selectedProfile: selectedProfile,
+            hasActiveSubscription: hasActiveSubscription
+        )
+    }
 }
 
 enum PremiumGatedActionResult: Equatable {

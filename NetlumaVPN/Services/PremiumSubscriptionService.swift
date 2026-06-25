@@ -33,7 +33,7 @@ protocol PremiumSubscriptionServicing: AnyObject {
     func hasActiveSubscription() async -> Bool
     func purchase(productID: String) async throws -> PremiumPurchaseOutcome
     func restorePurchases() async throws -> Bool
-    func observeTransactionUpdates(_ handler: @escaping @MainActor (Bool) -> Void) -> Task<Void, Never>
+    func observeTransactionUpdates(_ handler: @escaping @MainActor (Bool) async -> Void) -> Task<Void, Never>
 }
 
 @MainActor
@@ -135,7 +135,7 @@ final class StoreKitPremiumSubscriptionService: PremiumSubscriptionServicing {
         return await hasActiveSubscription()
     }
 
-    func observeTransactionUpdates(_ handler: @escaping @MainActor (Bool) -> Void) -> Task<Void, Never> {
+    func observeTransactionUpdates(_ handler: @escaping @MainActor (Bool) async -> Void) -> Task<Void, Never> {
         Task { [weak self] in
             for await result in Transaction.updates {
                 guard let self else {
@@ -147,7 +147,7 @@ final class StoreKitPremiumSubscriptionService: PremiumSubscriptionServicing {
                 }
 
                 let isActive = await self.hasActiveSubscription()
-                handler(isActive)
+                await handler(isActive)
             }
         }
     }

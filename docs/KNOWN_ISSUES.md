@@ -153,4 +153,15 @@ via `strings`/`otool`).
 
 (`VPN_TUNNEL.md` → "WireGuard extension (native, process-isolated)".)
 
-_Last full analysis: 2026-06-24._
+## 🟠 15. Main app declares `ITSAppUsesNonExemptEncryption = false`, failing `AppStoreSubmissionTests`
+
+`AppStoreSubmissionTests.shippingBundlesDeclareExportComplianceCodeBuildSetting` expects
+**all four** shipping bundles to set `ITSAppUsesNonExemptEncryption = true`, but
+`NetlumaVPN/Info.plist` (the main app) currently has it `false`. The three extensions
+(`NetlumaVPNTunnelExtension`, `NetlumaVPNWireGuardExtension`, `NetlumaVPNWidget`) already
+have `true`. This is the **only** red test in `NetlumaVPNTests` and is unrelated to the
+subscription logic. **Action:** decide the correct value for the main app (the client
+ships VPN crypto, so `true` is likely right) and make the plist + test agree, or relax the
+test for the main bundle. (`APP.md` → "App Store archive metadata".)
+
+_Last full analysis: 2026-06-24. Subscription-lifecycle fix + finding #15 added 2026-06-25._

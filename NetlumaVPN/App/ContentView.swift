@@ -113,9 +113,18 @@ struct ContentView: View {
             Task {
                 await model.loadGlobalServers()
             }
+            Task {
+                // Sync the tunnel status before refreshing entitlements so a mid-session
+                // revocation is evaluated against the live connection state, mirroring launch.
+                await model.refreshStatus()
+                await model.refreshPremiumEntitlements()
+            }
         }
         .task {
             await model.refreshStatus()
+            Task {
+                await model.bootstrapPremium()
+            }
             Task {
                 await model.loadGlobalServers()
             }

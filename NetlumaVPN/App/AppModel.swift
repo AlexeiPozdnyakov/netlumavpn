@@ -155,9 +155,19 @@ final class AppModel {
         }
     }
 
+    /// Begins premium monitoring for the app session: starts the StoreKit
+    /// `Transaction.updates` observer and performs an authoritative entitlement check so an
+    /// active subscription is pulled in (and the upsell banner suppressed) from launch, while
+    /// a lapsed subscription immediately revokes access. Idempotent — safe to call repeatedly.
+    func bootstrapPremium() async {
+        startPremiumTransactionObserver()
+        await refreshPremiumEntitlements()
+    }
+
     func refreshPremiumEntitlements() async {
         hasActivePremiumSubscription = await premiumService.hasActiveSubscription()
         hasLoadedPremiumEntitlements = true
+        await enforcePremiumAccessIfNeeded()
     }
 
     func purchasePremium(productID: String) async -> Bool {
@@ -206,6 +216,7 @@ final class AppModel {
 
         do {
             hasActivePremiumSubscription = try await premiumService.restorePurchases()
+            hasLoadedPremiumEntitlements = true
             if hasActivePremiumSubscription {
                 return true
             }
@@ -554,9 +565,31 @@ final class AppModel {
         }
 
         premiumTransactionUpdatesTask = premiumService.observeTransactionUpdates { [weak self] isActive in
-            self?.hasActivePremiumSubscription = isActive
-            self?.hasLoadedPremiumEntitlements = true
+            guard let self else {
+                return
+            }
+            self.hasActivePremiumSubscription = isActive
+            self.hasLoadedPremiumEntitlements = true
+            await self.enforcePremiumAccessIfNeeded()
         }
+    }
+
+    /// Tears down a live Netluma Global / managed tunnel the moment the user stops holding an
+    /// active subscription, so a lapsed / refunded / revoked subscription loses access
+    /// mid-session rather than only being blocked at the next connect attempt.
+    private func enforcePremiumAccessIfNeeded() async {
+        guard PremiumAccessGate.shouldRevokeActiveSession(
+            status: status,
+            selectedGlobalServerID: selectedGlobalServerID,
+            selectedProfile: selectedProfile,
+            hasActiveSubscription: hasActivePremiumSubscription
+        ) else {
+            return
+        }
+
+        AppLogger.info("Premium access ended during an active managed session — disconnecting", category: .app)
+        errorMessage = L10n.string("Your Premium subscription has ended. Netluma Global requires an active subscription.")
+        await disconnect()
     }
 
     private func reloadProfiles() {

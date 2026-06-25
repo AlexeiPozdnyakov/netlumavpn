@@ -805,7 +805,7 @@ private final class MockPremiumSubscriptionService: PremiumSubscriptionServicing
         isActive
     }
 
-    func observeTransactionUpdates(_ handler: @escaping @MainActor (Bool) -> Void) -> Task<Void, Never> {
+    func observeTransactionUpdates(_ handler: @escaping @MainActor (Bool) async -> Void) -> Task<Void, Never> {
         Task {}
     }
 }

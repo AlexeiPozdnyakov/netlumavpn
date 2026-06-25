@@ -56,7 +56,7 @@ global-server state (`globalServers`, `isLoadingGlobalServers`, `activeGlobalSer
 | `selectProfile(_:) async` / `selectGlobalServer(_:) async -> PremiumGatedActionResult` | Choose active profile/server |
 | `saveProfile(_:secret:) throws` / `importProfile(from:) async throws` / `deleteProfile(_:)` | Profile CRUD. `importProfile` downloads first when the value is an `http(s)` link (via `RemoteConfigDownloader`), then parses the body — or any other config — via `VPNConfigurationParser` |
 | `loadGlobalServers(force:) async` | Fetch managed servers from the backend |
-| `loadPremiumProducts(force:) async` / `purchasePremium(productID:) async -> Bool` / `restorePremiumPurchases() async -> Bool` / `refreshPremiumEntitlements() async` | StoreKit |
+| `bootstrapPremium() async` / `loadPremiumProducts(force:) async` / `purchasePremium(productID:) async -> Bool` / `restorePremiumPurchases() async -> Bool` / `refreshPremiumEntitlements() async` | StoreKit |
 | `updateTunnelPreferences(_:)` / `selectDNSResolver(_:)` | Network prefs |
 | `completeOnboarding()` / `refreshStatus() async` | Lifecycle |
 
@@ -64,6 +64,17 @@ global-server state (`globalServers`, `isLoadingGlobalServers`, `activeGlobalSer
   for any **NetlumaVPN-managed profile** or **selected global server** unless the user
   has an active subscription. User-imported profiles are **not** gated.
   `ContentView` maps `.requiresPremium` to presenting the `.premium` sheet.
+- **Entitlement lifecycle:** `ContentView` calls `bootstrapPremium()` from its root
+  `.task` (starts the StoreKit `Transaction.updates` observer **once** and runs an
+  authoritative `refreshPremiumEntitlements()` check) and calls
+  `refreshPremiumEntitlements()` again on every `scenePhase == .active` foreground.
+  This is what makes an existing subscriber's entitlement get pulled in at launch (so
+  `shouldShowPremiumBanner` correctly hides the Settings upsell) and keeps state fresh.
+- **Losing access mid-session:** `refreshPremiumEntitlements()` and the transaction
+  observer both run `PremiumAccessGate.shouldRevokeActiveSession(...)` after updating
+  `hasActivePremiumSubscription`; if a **live** managed/global tunnel is no longer
+  covered by an active subscription (expiry / revocation / refund), the tunnel is
+  **disconnected immediately** rather than only being blocked at the next connect.
 - **Widget refresh:** state-changing methods call `WidgetCenter.shared.reloadAllTimelines()`.
 - **Onboarding storage:** `OnboardingCompletionStoring` (default
   `UserDefaultsOnboardingCompletionStore`, key `hasCompletedOnboarding.v1`).
@@ -103,6 +114,11 @@ back to `AppModel`.
   **DNS** → `DNSSettingsView`, **Diagnostics** → `DiagnosticsLogView`, plus
   **Terms of Use** / **Privacy Policy** → `LegalDocumentView` (a `WKWebView` wrapper;
   prefers a bundled localized `Terms.html`/`Privacy.html`, else falls back to inline English HTML).
+  In **Debug builds only** (`#if DEBUG`), a trailing **DEBUG → Manage Subscription** row
+  presents the system subscription-management screen via `.manageSubscriptionsSheet(...)`
+  (StoreKit) so a Sandbox / local-StoreKit tester can cancel or renew a test subscription.
+  This affordance is compiled out of Release so it never ships to App Store users
+  (guarded by `DebugSubscriptionManagementTests`).
 - **`DiagnosticsLogView`**: read-only viewer over `AppLogStore.loadEvents()` (the shared
   App-Group ring buffer both the app **and the tunnel extension** write to via `AppLogger`).
   Filter by `AppLogCategory`, Copy/Share/Clear. This is the only in-app way to read the
@@ -139,7 +155,9 @@ back to `AppModel`.
   yearly with savings badge), CTA, restore, and legal links. Used both in onboarding
   and from Settings.
 - **`PremiumSubscriptionModels`** — `PremiumProductKind`, `PremiumSubscriptionPlan`,
-  intro-offer models, `PremiumAccessGate`, `PremiumGatedActionResult`.
+  intro-offer models, `PremiumAccessGate` (`requiresPremium(...)` for connect-time
+  gating + `shouldRevokeActiveSession(...)` for mid-session teardown),
+  `PremiumGatedActionResult`.
 
 ## App-side services (`NetlumaVPN/Services/`)
 
@@ -211,8 +229,12 @@ Load-or-create a per-device UUID, persisted in the **Keychain** (account
 **Real StoreKit 2**, not a stub: `Product.products(for:)`, `purchase()`,
 `Transaction.currentEntitlements`, `Transaction.updates`, `AppStore.sync()`. Maps
 products to `PremiumSubscriptionPlan`s with intro-offer/trial detection. Reports
-purchase lifecycle to Firebase. ⚠️ StoreKit products only load via Xcode ⌘R with the
-`.storekit` config, **not** headless `xcodebuild` (see [`TESTING.md`](TESTING.md)).
+purchase lifecycle to Firebase. `hasActiveSubscription()` honours `revocationDate`
+and `expirationDate` (so refunded/expired entitlements read as inactive while
+billing-grace-period entitlements stay active). `observeTransactionUpdates` takes an
+**async** `@MainActor (Bool) async -> Void` handler so `AppModel` can `await` a
+disconnect when access is revoked. ⚠️ StoreKit products only load via Xcode ⌘R with
+the `.storekit` config, **not** headless `xcodebuild` (see [`TESTING.md`](TESTING.md)).
 
 ### `FirebaseTelemetryReporter`
 

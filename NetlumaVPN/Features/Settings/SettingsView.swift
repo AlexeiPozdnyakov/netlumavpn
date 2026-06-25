@@ -1,9 +1,14 @@
+import StoreKit
 import SwiftUI
 import WebKit
 
 struct SettingsView: View {
     let model: AppModel
     let onOpenPremium: () -> Void
+
+    #if DEBUG
+    @State private var isShowingManageSubscriptions = false
+    #endif
 
     var body: some View {
         ScrollView {
@@ -14,6 +19,9 @@ struct SettingsView: View {
                 }
                 primarySettings
                 legalSettings
+                #if DEBUG
+                debugSettings
+                #endif
             }
             .padding(.horizontal, 12)
             .padding(.top, 10)
@@ -22,6 +30,9 @@ struct SettingsView: View {
         .scrollIndicators(.hidden)
         .background(NetlumaVPNTheme.backgroundGradient)
         .toolbar(.hidden, for: .navigationBar)
+        #if DEBUG
+        .manageSubscriptionsSheet(isPresented: $isShowingManageSubscriptions)
+        #endif
     }
 
     private var header: some View {
@@ -205,6 +216,35 @@ struct SettingsView: View {
             .frame(height: 1)
             .padding(.leading, 58)
     }
+
+    #if DEBUG
+    /// Developer-only tools. Compiled out of Release builds so the App Store binary never
+    /// ships a "cancel subscription" shortcut. `manageSubscriptionsSheet` presents the
+    /// system subscription-management screen (or the StoreKit-testing one with a local
+    /// `.storekit` config), which is how a Sandbox tester cancels/renews a test subscription.
+    private var debugSettings: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(verbatim: "DEBUG")
+                .font(.system(size: 9, weight: .heavy))
+                .foregroundStyle(NetlumaVPNTheme.secondaryText)
+                .padding(.leading, 6)
+
+            NetlumaVPNCard {
+                Button {
+                    isShowingManageSubscriptions = true
+                } label: {
+                    SettingsNavigationRow(
+                        icon: "creditcard",
+                        iconColor: NetlumaVPNTheme.warning,
+                        title: "Manage Subscription",
+                        subtitle: "Sandbox · cancel test subscriptions"
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+    #endif
 }
 
 struct LegalDocumentView: View {

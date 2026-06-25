@@ -55,6 +55,7 @@
 		52D9B0D43D1BC85EB709D7A1 /* WireGuardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 14655A978B3EC6B0C58FF2F4 /* WireGuardKit */; };
 		547D7B00A5668D02F3EA6033 /* VPNConnectionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B510E06DE60D6191AC39C17B /* VPNConnectionStatus.swift */; };
 		564398028B0E464C5DAEC97A /* XrayTunnelEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6AC3B9D191351F54F88847 /* XrayTunnelEngine.swift */; };
+		5649C1D02E106D888AD6AFC0 /* DebugSubscriptionManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72781D016C1BC89F1B7DA43C /* DebugSubscriptionManagementTests.swift */; };
 		58C25AC4734A88D514E0C179 /* TunnelNetworkSettingsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16012BC41445DB65914C74A0 /* TunnelNetworkSettingsBuilder.swift */; };
 		5B0D4F57119C5EC9171582FB /* DNSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06797F60FC7FFB9112D107B4 /* DNSSettingsView.swift */; };
 		5B40B85FF342BE9DC8845C68 /* XrayConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3334068028E4830090F325 /* XrayConfigBuilder.swift */; };
@@ -127,6 +128,7 @@
 		D47B0091AAA81ED007E7C89C /* Privacy.html in Resources */ = {isa = PBXBuildFile; fileRef = 9C3A81CE3B36C755754D44F8 /* Privacy.html */; };
 		D4C2FB7D1BA289558C6A1495 /* ProfileStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BB3E8CC77DDE35E8051974 /* ProfileStorage.swift */; };
 		D6F9FD3BF34B9D7DD791C215 /* XrayConfigBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3334068028E4830090F325 /* XrayConfigBuilder.swift */; };
+		D7348D422513FE6752204F0D /* PremiumLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E6F9BE2A01F768A9C1FBB6 /* PremiumLifecycleTests.swift */; };
 		DC9E274C0562840D5A5E139B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B4D24454F6469CCBD7525 /* AppDelegate.swift */; };
 		DDD7399F90DE42CB952DF6F1 /* NetlumaVPNUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2126DE1BA4915E024A9C7D /* NetlumaVPNUITestsLaunchTests.swift */; };
 		DF056B18DBF8707EBF7FAEAB /* VPNProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D254311EFCEAF65874CA7E4 /* VPNProfile.swift */; };
@@ -245,6 +247,7 @@
 		4C6AC3B9D191351F54F88847 /* XrayTunnelEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrayTunnelEngine.swift; sourceTree = "<group>"; };
 		4D5756983BF80650E55C7CA5 /* HomeConnectLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeConnectLogicTests.swift; sourceTree = "<group>"; };
 		50660D51C8843C38F934998D /* TunnelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelSettingsView.swift; sourceTree = "<group>"; };
+		50E6F9BE2A01F768A9C1FBB6 /* PremiumLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLifecycleTests.swift; sourceTree = "<group>"; };
 		51A07459C97B420A37192626 /* RemoteConfigDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigDownloader.swift; sourceTree = "<group>"; };
 		5A65E603AAEAE51C3D883D4A /* PremiumSubscriptionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumSubscriptionModels.swift; sourceTree = "<group>"; };
 		5CF5ADE64FB85C670A275305 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -254,6 +257,7 @@
 		689BA3310A8CF50C22988E50 /* AppGroupStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupStorage.swift; sourceTree = "<group>"; };
 		6EDCE7E42B3612495E8166BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6F7793A8E6AF9F60D0D4E4CC /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		72781D016C1BC89F1B7DA43C /* DebugSubscriptionManagementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSubscriptionManagementTests.swift; sourceTree = "<group>"; };
 		735C7BEE827F4D044A16EEDE /* SessionInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionInfoView.swift; sourceTree = "<group>"; };
 		7475E226A2F2BD4B3525904C /* LocalizationResourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationResourceTests.swift; sourceTree = "<group>"; };
 		763A0366E9C75493F91C40BB /* NetlumaVPNWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetlumaVPNWidget.entitlements; sourceTree = "<group>"; };
@@ -527,6 +531,7 @@
 			isa = PBXGroup;
 			children = (
 				7DE7E638E1E3242DC193F631 /* AppStoreSubmissionTests.swift */,
+				72781D016C1BC89F1B7DA43C /* DebugSubscriptionManagementTests.swift */,
 				F21B31C8A428D459781D941D /* FirebaseIntegrationTests.swift */,
 				46F309BE6393A70CEA92F5E3 /* GlobalServerIntegrationTests.swift */,
 				4D5756983BF80650E55C7CA5 /* HomeConnectLogicTests.swift */,
@@ -534,6 +539,7 @@
 				7475E226A2F2BD4B3525904C /* LocalizationResourceTests.swift */,
 				1383CD939B541968D5D8D6DB /* NetlumaVPNTests.swift */,
 				CB10D7AF159A17B5EF9B7D14 /* NetworkPreferencesTests.swift */,
+				50E6F9BE2A01F768A9C1FBB6 /* PremiumLifecycleTests.swift */,
 				C671BF30079378C7C970076A /* PremiumSubscriptionTests.swift */,
 				7D87CC6539D9B0BC7323CE58 /* ProfileStorageTests.swift */,
 				878C0E0830F79AD82787C193 /* RemoteConfigDownloaderTests.swift */,
@@ -985,6 +991,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7B26D93583B9DF519C6D9FF /* AppStoreSubmissionTests.swift in Sources */,
+				5649C1D02E106D888AD6AFC0 /* DebugSubscriptionManagementTests.swift in Sources */,
 				8DFB8FBA93C58AF0BB48E5A8 /* FirebaseIntegrationTests.swift in Sources */,
 				A200BF5A4A18074E455E1B34 /* GlobalServerIntegrationTests.swift in Sources */,
 				99C775CD28784B4DE97368B2 /* HomeConnectLogicTests.swift in Sources */,
@@ -992,6 +999,7 @@
 				359C7249A12C7A1480AFFB2D /* LocalizationResourceTests.swift in Sources */,
 				51302F463FCE3FC1A86B3873 /* NetlumaVPNTests.swift in Sources */,
 				479BFE74EF67753128EA0601 /* NetworkPreferencesTests.swift in Sources */,
+				D7348D422513FE6752204F0D /* PremiumLifecycleTests.swift in Sources */,
 				33DE00984AFECA4EECE3E995 /* PremiumSubscriptionTests.swift in Sources */,
 				FFC7171E8065FB0418659D6F /* ProfileStorageTests.swift in Sources */,
 				3154A302B72B56A697DC1D3B /* RemoteConfigDownloaderTests.swift in Sources */,

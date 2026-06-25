@@ -108,6 +108,7 @@
 "Latitude" = "Широта";
 "Legal agreement" = "Правовое соглашение";
 "Longitude" = "Долгота";
+"Manage Subscription" = "Управление подпиской";
 "Manage subscription and preferences" = "Управление подпиской и настройками";
 "Military-grade encryption shields every connection — Wi-Fi, mobile, anywhere." = "Надежное шифрование защищает каждое подключение — Wi-Fi, мобильную сеть, где угодно.";
 "MODERN" = "СОВРЕМЕННЫЙ";
@@ -172,6 +173,7 @@
 "RETRY" = "ПОВТОР";
 "Route most network traffic through the tunnel, except for traffic related to designated system services." = "Направляет большую часть сетевого трафика через туннель, кроме трафика отдельных системных служб.";
 "Safe on public Wi-Fi" = "Безопасность в публичном Wi-Fi";
+"Sandbox · cancel test subscriptions" = "Песочница · отмена тестовых подписок";
 "Save" = "Сохранить";
 "SAVE 52%" = "ЭКОНОМИЯ 52%";
 "SAVE 58%" = "ЭКОНОМИЯ 58%";
