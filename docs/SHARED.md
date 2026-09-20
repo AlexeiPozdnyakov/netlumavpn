@@ -19,8 +19,10 @@ The single namespace of cross-target constants. Full identifier table in
   `logs.v1`, `connectionSessionState.v1`, `connectionDisplayState.v1`.
 - `TunnelOptions`: `startPayload.v1`.
 - `Keychain`: `service = …NetlumaVPN.profiles`, `globalServerDeviceIDAccount = netlumavpn-global-device-id.v1`.
-- `Backend`: `mobileAPIBaseURL = https://netlumavpn.example`, `mobileClientKey` (real
-  committed 64-hex key), `mobileTLSCertificateSHA256Base64 = ""` (**empty → pinning off**).
+- `Backend`: reads the ignored bundled `Backend.local.plist` using
+  `BackendConfiguration`. Without valid local HTTPS configuration, the endpoint is
+  `https://api.netlumavpn.example` and both the mobile key and certificate pin are
+  empty. See [PUBLIC_REPOSITORY.md](PUBLIC_REPOSITORY.md).
 
 > Header name strings (`X-NetlumaVPN-*`, `X-QuickVPN-*`) are **not** here — they live
 > in `GlobalServerAPIClient.swift` (app target). There are no header constants in Shared.

@@ -38,10 +38,14 @@ enum AppConstants {
     }
 
     enum Backend {
-        static let mobileAPIBaseURL = "https://netlumavpn.example"
-        // Least-privilege mobile key: can list mobile servers and issue/reuse one profile per device.
-        // Never use the admin API key in the app binary.
-        static let mobileClientKey = ""
-        static let mobileTLSCertificateSHA256Base64 = ""
+        private static let configuration = BackendConfiguration(
+            data: Bundle.main.url(forResource: "Backend.local", withExtension: "plist")
+                .flatMap { try? Data(contentsOf: $0) }
+        )
+
+        static let mobileAPIBaseURL = configuration.mobileAPIBaseURL
+        // Only a least-privilege mobile key belongs in the app; never an admin key.
+        static let mobileClientKey = configuration.mobileClientKey
+        static let mobileTLSCertificateSHA256Base64 = configuration.mobileTLSCertificateSHA256Base64
     }
 }

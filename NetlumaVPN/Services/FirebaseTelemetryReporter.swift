@@ -1,5 +1,6 @@
 import FirebaseAnalytics
 import FirebaseCrashlytics
+import FirebaseCore
 import Foundation
 import StoreKit
 
@@ -51,6 +52,7 @@ final class FirebaseTelemetryReporter: NetworkErrorReporting, PremiumPurchaseAna
     private init() {}
 
     func recordNetworkError(_ error: Error, context: NetworkErrorContext) async {
+        guard FirebaseApp.app() != nil else { return }
         let crashlytics = Crashlytics.crashlytics()
         let sanitizedError = Self.networkNSError(from: error, context: context)
 
@@ -77,6 +79,7 @@ final class FirebaseTelemetryReporter: NetworkErrorReporting, PremiumPurchaseAna
 
     @MainActor
     func logPremiumPurchaseFailed(productID: String, error: Error) {
+        guard FirebaseApp.app() != nil else { return }
         var parameters = Self.purchaseAnalyticsParameters(productID: productID)
         let nsError = error as NSError
         parameters["error_domain"] = nsError.domain
@@ -86,12 +89,14 @@ final class FirebaseTelemetryReporter: NetworkErrorReporting, PremiumPurchaseAna
 
     @MainActor
     func logPremiumPurchase(transaction: Transaction) {
+        guard FirebaseApp.app() != nil else { return }
         Analytics.logTransaction(transaction)
         logPurchaseEvent("premium_purchase_completed", productID: transaction.productID)
     }
 
     @MainActor
     private func logPurchaseEvent(_ name: String, productID: String) {
+        guard FirebaseApp.app() != nil else { return }
         Analytics.logEvent(name, parameters: Self.purchaseAnalyticsParameters(productID: productID))
     }
 

@@ -110,6 +110,9 @@ targets:
       - name: Upload Firebase Crashlytics dSYMs
         basedOnDependencyAnalysis: false
         script: |
+          if [ ! -f "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleService-Info.plist" ]; then
+            exit 0
+          fi
           FIREBASE_CRASHLYTICS_RUN_SCRIPT="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
           if [ -f "$FIREBASE_CRASHLYTICS_RUN_SCRIPT" ]; then
             "$FIREBASE_CRASHLYTICS_RUN_SCRIPT"

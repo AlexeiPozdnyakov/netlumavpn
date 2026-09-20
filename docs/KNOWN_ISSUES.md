@@ -32,11 +32,13 @@ generate the pin the same way:
 `GlobalServerAPIError.certificatePinMismatch` is defined but never thrown (the delegate
 cancels the challenge instead). (`APP.md`, `SHARED.md`.)
 
-## 🟠 3. Committed mobile client key
+## Resolved in public copy: committed deployment data
 
-`AppConstants.Backend.mobileClientKey` is a real 64-hex key in source, shipped in the
-binary. Intentionally least-privilege, but treat it as public and rotate it server-side
-if it leaks. Never put the admin key in client code. (`IDENTIFIERS.md`.)
+The public migration removed production connection settings and service configuration
+from every commit, including the hardcoded mobile client key. Runtime backend settings
+now come from an ignored local plist; Firebase is optional without local configuration.
+Historical hashes changed. Private operational records remain only in the original
+checkout. See [PUBLIC_REPOSITORY.md](PUBLIC_REPOSITORY.md).
 
 ## 🟠 4. `AppLogger` does not redact
 

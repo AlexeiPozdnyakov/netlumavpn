@@ -37,6 +37,7 @@ struct FirebaseIntegrationTests {
 
         #expect(appSource.contains("@UIApplicationDelegateAdaptor(AppDelegate.self)"))
         #expect(delegateSource.contains("FirebaseApp.configure()"))
+        #expect(delegateSource.contains("Bundle.main.url(forResource: \"GoogleService-Info\", withExtension: \"plist\") != nil"))
         #expect(appInfoPlist["FirebaseAppDelegateProxyEnabled"] as? Bool == false)
     }
 

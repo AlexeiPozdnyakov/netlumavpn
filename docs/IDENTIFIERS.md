@@ -70,12 +70,12 @@ Because the client sends both, it authenticates against either. **Do not remove
 the `X-QuickVPN-*` headers** without confirming the live backend no longer needs
 them.
 
-### Mobile client key is committed
+### Mobile client key is local
 
-`AppConstants.Backend.mobileClientKey` is a real 64-hex-char key hardcoded in
-source and shipped in the app binary. It is intentionally least-privilege (list
-servers + issue/reuse one profile per device). The admin key is **never** in the
-app. Treat the client key as public; never put the admin key in client code.
+The public history contains no deployment mobile key. `AppConstants.Backend` reads
+an ignored `Backend.local.plist`; the default key is empty. A configured mobile key
+is still embedded in the app binary and must be least-privilege. Never use an admin
+key in client code. See [PUBLIC_REPOSITORY.md](PUBLIC_REPOSITORY.md).
 
 ## Rename status (QuickVPN → NetlumaVPN)
 

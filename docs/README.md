@@ -1,5 +1,8 @@
 # NetlumaVPN — Project Documentation
 
+For this public copy, start with [local configuration and migration notes](PUBLIC_REPOSITORY.md).
+All deployment addresses in the documentation are examples.
+
 > **This folder is the single source of truth for how NetlumaVPN works.**
 > Every agent (Claude Code, Codex, or human) must read the relevant document
 > here **before** starting any task, and **update** it after finishing.
@@ -55,7 +58,7 @@ Read the doc whose area you are touching. When you finish, update that same doc.
 | [`WIDGET.md`](WIDGET.md) | Home Screen widget, App Intents, `WidgetVPNController` | `ios-developer` |
 | [`BACKEND.md`](BACKEND.md) | The two FastAPI backends, endpoints, auth, SQLite schema, sing-box / Xray provisioning | `backend-developer` |
 | [`OPS.md`](OPS.md) | nginx (stream + http), systemd, fail2ban, the port map, deploy / verify scripts | `ops-engineer` |
-| [`SSH_ACCESS.md`](SSH_ACCESS.md) | Current production SSH host, port `22`, safe connection commands, known-hosts and copy recipes | `ops-engineer` |
+| [`SSH_ACCESS.md`](PUBLIC_REPOSITORY.md) | Current production SSH host, port `22`, safe connection commands, known-hosts and copy recipes | `ops-engineer` |
 | [`TESTING.md`](TESTING.md) | Test inventory, how to run tests, coverage gaps, the test workflow | `swift-tester` / `ui-tester` / `integration-tester` |
 | [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) | Live discrepancies & risks found during analysis (read before trusting any single source) | (all) |
 | [`AGENTS.md`](AGENTS.md) | Index of the project's Claude Code subagents, skills, and slash commands | (all) |

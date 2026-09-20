@@ -50,7 +50,7 @@ NETLUMAVPN_CERTBOT_EMAIL='you@example.com' \
 ```
 
 Для текущего live VPS `192.0.2.10` SSH работает на порту `22`, поэтому
-добавляйте `SSH_PORT=22 SSH_USER=root`. Подробности: [`SSH_ACCESS.md`](SSH_ACCESS.md).
+добавляйте `SSH_PORT=22 SSH_USER=root`. Подробности: [`SSH_ACCESS.md`](PUBLIC_REPOSITORY.md).
 
 Если root-доступ сначала только по паролю, скрипт даст SSH ввести пароль интерактивно. Если локальный ключ `~/.ssh/quickvpn_vps_ed25519.pub` существует, он будет добавлен на сервер для `root` и `quickadmin`.
 

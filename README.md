@@ -160,3 +160,8 @@ RUN_NETWORK_TESTS=1 NETLUMAVPN_EXPECTED_EGRESS_IP=<expected-ip> xcodebuild test 
 ```
 
 Full VPN egress validation still needs a physical device because iOS Packet Tunnel permission and routing are device-level behavior.
+# Public source configuration
+
+This checkout contains sanitized history and no production connection settings.
+See [the public repository guide](docs/PUBLIC_REPOSITORY.md) to configure your own
+backend and optional Firebase project before building.

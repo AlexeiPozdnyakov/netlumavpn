@@ -12,8 +12,9 @@ UI-state types are `@MainActor`.
 
 - **`NetlumaVPNApp.swift`** — `@main`, attaches `@UIApplicationDelegateAdaptor(AppDelegate.self)`,
   single `WindowGroup { ContentView() }`. No state injected here.
-- **`AppDelegate.swift`** — its only job is `FirebaseApp.configure()` in
-  `didFinishLaunchingWithOptions`. Firebase delegate swizzling is disabled via
+- **`AppDelegate.swift`** — calls `FirebaseApp.configure()` in
+  `didFinishLaunchingWithOptions` only when the ignored local `GoogleService-Info.plist`
+  exists in the bundle. Firebase delegate swizzling is disabled via
   `FirebaseAppDelegateProxyEnabled = false` in `Info.plist`.
 - **`ContentView.swift`** — owns the root `@State private var model = AppModel()`,
   `selectedTab`, a `RootSheet?` enum, and `showsSplash`. Body: background gradient →
@@ -253,6 +254,7 @@ the real StoreKit implementation for when subscriptions are switched back on.
 ### `FirebaseTelemetryReporter`
 
 Singleton conforming to `NetworkErrorReporting` + `PremiumPurchaseAnalyticsReporting`.
+All reporting methods return without calling Firebase when it has not been configured.
 Logs `network_request_failed` and `premium_purchase_*` events to Analytics +
 Crashlytics. **Logs no secrets** — only method/host/path/status/attempt-count/
 product-id/error-domain. No-op stand-ins exist for tests. It talks to Firebase

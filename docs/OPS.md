@@ -1,5 +1,9 @@
 # Ops & Infrastructure
 
+**Public copy:** all hosts and connection examples below are placeholders. Supply
+your own deployment values; see [PUBLIC_REPOSITORY.md](PUBLIC_REPOSITORY.md).
+Private server runbooks and access details were removed from the entire history.
+
 > Owner agent: `ops-engineer`. See also the `vps-ops` skill and
 > [`REDEPLOY_FRESH_SERVER.md`](REDEPLOY_FRESH_SERVER.md). **Treat the production VPS
 > as live** — never run destructive commands (`systemctl stop xray`, `ufw disable`,
@@ -11,7 +15,7 @@ The `ops/` directory is infrastructure-as-files: copies of what lives in `/etc`,
 ## Domains & DNS
 
 Current live VPS: `192.0.2.10`, SSH on port `22` as `root`. Use
-[`SSH_ACCESS.md`](SSH_ACCESS.md) for exact commands and password-handling rules.
+[`SSH_ACCESS.md`](PUBLIC_REPOSITORY.md) for exact commands and password-handling rules.
 Do not use the old `192.0.2.10` host for live work.
 
 Deploy domain: `netlumavpn.example`. DNS should point the root/www/API/admin/VPN

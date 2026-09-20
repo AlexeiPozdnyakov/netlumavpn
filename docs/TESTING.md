@@ -1,5 +1,11 @@
 # Testing
 
+Public configuration regression coverage is in `Models/BackendConfigurationTests.swift`:
+missing/malformed local plists, valid local HTTPS settings, and rejection of
+plaintext or credential-bearing URLs. Run these with the full hermetic suite.
+The public checkout intentionally has no live service configuration; keep network
+tests disabled until you have supplied your own ignored local settings.
+
 > Owner agents: `swift-tester` (unit), `ui-tester` (XCUITest), `integration-tester`
 > (iOS↔backend). **Every task must add/extend tests and leave the whole suite green.**
 
