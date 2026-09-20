@@ -171,6 +171,7 @@ class NetlumaVPNSingBoxAdminTests(unittest.TestCase):
         with self._client() as client:
             for path, text in [
                 ("/", "NetlumaVPN"),
+                ("/setup", "Настройте VPN на любом устройстве"),
                 ("/support", "Contact support"),
                 ("/terms", "Terms of Use"),
                 ("/privacy", "Privacy Policy"),
@@ -179,6 +180,30 @@ class NetlumaVPNSingBoxAdminTests(unittest.TestCase):
 
                 self.assertEqual(response.status_code, 200)
                 self.assertIn(text, response.text)
+
+    def test_setup_page_covers_platforms_downloads_and_dns_recovery(self):
+        with self._client() as client:
+            response = client.get("/setup")
+
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('<html lang="ru">', response.text)
+            for section_id in ["ios", "macos", "windows", "android", "appletv", "linux", "dns-help"]:
+                with self.subTest(section_id=section_id):
+                    self.assertIn(f'id="{section_id}"', response.text)
+            for expected in [
+                "Trojan / TRJ",
+                "TUN mode",
+                "8.8.8.8",
+                "8.8.4.4",
+                "https://karing.app/en/download/",
+                "https://youtube.com/shorts/2XbnHMIMmwM",
+                "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-Android-universal.apk",
+            ]:
+                with self.subTest(expected=expected):
+                    self.assertIn(expected, response.text)
+
+            home = client.get("/")
+            self.assertIn('href="/setup"', home.text)
 
     def test_support_submit_stores_feedback_for_admin(self):
         with self._client() as client:

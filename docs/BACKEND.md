@@ -44,7 +44,7 @@ operator UI over the sing-box config (no SQLite, no mobile API).
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| GET | `/`, `/support`, `/terms`, `/privacy` | Public marketing/support/legal website |
+| GET | `/`, `/setup`, `/support`, `/terms`, `/privacy` | Public marketing/setup/support/legal website |
 | POST | `/support` | Store a public support/feedback request |
 | GET/POST | `/login`, `/logout` | sets/clears `quickvpn_session` cookie |
 | GET | `/admin` | dashboard |
@@ -74,7 +74,7 @@ operator UI over the sing-box config (no SQLite, no mobile API).
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| GET | `/`, `/support`, `/terms`, `/privacy` | Public marketing/support/legal website |
+| GET | `/`, `/setup`, `/support`, `/terms`, `/privacy` | Public marketing/setup/support/legal website |
 | POST | `/support` | Store a public support/feedback request |
 | GET | `/health` | health |
 | GET | `/admin` | HTTP Basic profile dashboard |
@@ -179,6 +179,13 @@ Backend A has `unittest` coverage for the public website, support feedback stora
 the admin feedback page, and dashboard degradation when the Xray stats binary is
 unavailable. Backend B has `unittest` coverage for sing-box user/profile behavior, the
 public website, support feedback storage, and the Basic Auth feedback admin page.
+
+Both public websites expose the same Russian-language `/setup` guide and link to it
+from the shared header/footer. The guide covers Karing, Hiddify, and sing-box downloads
+and setup for iOS, macOS, Windows, Android, Apple TV, and Linux, plus iPhone DNS
+troubleshooting. Keep the route and user-facing content synchronized across both
+single-file backends because production and provisioning still disagree about which
+backend is authoritative.
 
 ---
 

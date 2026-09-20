@@ -388,8 +388,8 @@ private struct GlobalServersHeader: View {
                     .controlSize(.small)
             } else {
                 GlobalServerBadge(
-                    title: hasError ? L10n.string("FAILED") : "PRO",
-                    systemImage: hasError ? "exclamationmark.triangle.fill" : "crown.fill",
+                    title: hasError ? L10n.string("FAILED") : PremiumAccessGate.globalServerBadgeTitle,
+                    systemImage: hasError ? "exclamationmark.triangle.fill" : PremiumAccessGate.globalServerBadgeSystemImage,
                     tint: hasError ? NetlumaVPNTheme.warning : NetlumaVPNTheme.accent
                 )
             }
@@ -695,7 +695,7 @@ private struct GlobalServerRow: View {
                     .frame(width: 44, height: 28)
             } else {
                 GlobalServerBadge(
-                    title: state == .unavailable ? L10n.string("OFF") : "PRO",
+                    title: state == .unavailable ? L10n.string("OFF") : PremiumAccessGate.globalServerBadgeTitle,
                     systemImage: nil,
                     tint: state == .unavailable ? NetlumaVPNTheme.mutedText : NetlumaVPNTheme.accent
                 )

@@ -721,7 +721,7 @@ def brand_mark() -> str:
     return '<span class="brand-mark">N</span><span><strong>NetlumaVPN</strong><small>Secure iOS VPN client</small></span>'
 
 
-def page(title: str, body: str, *, section: str = "public") -> str:
+def page(title: str, body: str, *, section: str = "public", language: str = "en") -> str:
     is_admin = section == "admin"
     nav = (
         """
@@ -732,6 +732,7 @@ def page(title: str, body: str, *, section: str = "public") -> str:
         if is_admin
         else """
         <a href="/#features">Features</a>
+        <a href="/setup">Setup</a>
         <a href="/support">Support</a>
         <a href="/terms">Terms</a>
         <a href="/privacy">Privacy</a>
@@ -739,7 +740,7 @@ def page(title: str, body: str, *, section: str = "public") -> str:
     )
     cta = "" if is_admin else app_store_link("Download on the App Store", "button primary small")
     return f"""<!doctype html>
-<html lang="en">
+<html lang="{esc(language)}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -953,13 +954,180 @@ def page(title: str, body: str, *, section: str = "public") -> str:
     .feedback-layout {{ display:grid; grid-template-columns:340px minmax(0,1fr); gap:18px; align-items:start; }}
     .feedback-message {{ max-width:420px; white-space:pre-wrap; color:var(--muted); line-height:1.45; }}
     .filter-row {{ display:grid; grid-template-columns:1fr 160px 160px auto; gap:10px; align-items:end; margin:14px 0 18px; }}
+    .setup-hero {{
+      min-height:510px;
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);
+      align-items:center;
+      gap:64px;
+      padding:72px 0 54px;
+    }}
+    .setup-hero h1 {{ max-width:720px; }}
+    .setup-hero-copy > p:not(.eyebrow) {{ max-width:680px; font-size:18px; margin:22px 0 28px; }}
+    .setup-hero-actions {{ display:flex; flex-wrap:wrap; gap:12px; }}
+    .setup-highlight {{
+      position:relative;
+      overflow:hidden;
+      padding:28px;
+      border-radius:24px;
+      background:linear-gradient(145deg,rgba(28,35,54,.96),rgba(18,38,44,.94));
+      border:1px solid rgba(52,211,153,.24);
+      box-shadow:0 34px 100px rgba(16,185,129,.12);
+    }}
+    .setup-highlight::after {{
+      content:"TRJ";
+      position:absolute;
+      right:-10px;
+      bottom:-24px;
+      color:rgba(52,211,153,.07);
+      font:900 96px/1 Geist,Inter,sans-serif;
+    }}
+    .setup-highlight p {{ position:relative; z-index:1; }}
+    .setup-highlight .badge {{ margin-bottom:14px; }}
+    .platform-nav {{
+      display:flex;
+      gap:10px;
+      overflow-x:auto;
+      padding:0 0 18px;
+      margin-bottom:46px;
+      scrollbar-width:thin;
+    }}
+    .platform-nav a {{
+      flex:0 0 auto;
+      padding:9px 13px;
+      border:1px solid var(--line-soft);
+      border-radius:999px;
+      color:var(--muted);
+      background:rgba(21,27,43,.72);
+      text-decoration:none;
+      font-size:12px;
+      font-weight:800;
+    }}
+    .platform-nav a:hover {{ color:var(--text); border-color:rgba(52,211,153,.4); }}
+    .setup-section {{ padding:62px 0; border-top:1px solid var(--line-soft); scroll-margin-top:112px; }}
+    .setup-section-head {{ max-width:760px; margin-bottom:28px; }}
+    .setup-section-head p {{ margin-bottom:0; }}
+    .quick-steps {{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; counter-reset:steps; }}
+    .quick-step {{
+      counter-increment:steps;
+      min-height:190px;
+      padding:20px;
+      border:1px solid var(--line-soft);
+      border-radius:18px;
+      background:rgba(28,35,54,.84);
+    }}
+    .quick-step::before {{
+      content:counter(steps,decimal-leading-zero);
+      display:flex;
+      width:34px;
+      height:34px;
+      align-items:center;
+      justify-content:center;
+      margin-bottom:26px;
+      border-radius:11px;
+      color:var(--accent);
+      background:var(--surface);
+      font:800 12px/1 "IBM Plex Mono",ui-monospace,monospace;
+    }}
+    .quick-step p {{ margin:0; font-size:13px; }}
+    .platform-grid {{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }}
+    .platform-card {{
+      padding:24px;
+      border:1px solid var(--line-soft);
+      border-radius:20px;
+      background:rgba(28,35,54,.86);
+      box-shadow:0 22px 70px rgba(0,0,0,.14);
+      scroll-margin-top:112px;
+    }}
+    .platform-card.wide {{ grid-column:1/-1; }}
+    .platform-title {{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:18px; }}
+    .platform-title p {{ margin:4px 0 0; font-size:13px; }}
+    .platform-code {{ color:var(--accent); font:800 11px/1 "IBM Plex Mono",ui-monospace,monospace; text-transform:uppercase; letter-spacing:.08em; }}
+    .resource-list {{ display:grid; gap:10px; margin:18px 0 22px; }}
+    .resource-link {{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:13px 14px;
+      border:1px solid var(--line-soft);
+      border-radius:13px;
+      background:rgba(21,27,43,.84);
+      text-decoration:none;
+    }}
+    .resource-link:hover {{ border-color:rgba(52,211,153,.4); background:var(--card-hover); }}
+    .resource-link strong {{ display:block; font-size:13px; }}
+    .resource-link small {{ display:block; margin-top:3px; color:var(--quiet); font-size:11px; }}
+    .resource-link span:last-child {{ color:var(--accent); font-size:18px; }}
+    .instruction-list {{ margin:16px 0 0; padding:0; list-style:none; counter-reset:instruction; }}
+    .instruction-list li {{
+      counter-increment:instruction;
+      position:relative;
+      min-height:30px;
+      padding:0 0 13px 36px;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:13px;
+    }}
+    .instruction-list li::before {{
+      content:counter(instruction);
+      position:absolute;
+      left:0;
+      top:0;
+      display:flex;
+      width:24px;
+      height:24px;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      background:rgba(52,211,153,.12);
+      color:var(--accent);
+      font-size:11px;
+      font-weight:900;
+    }}
+    .video-row {{ display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }}
+    .video-link {{
+      padding:8px 11px;
+      border-radius:999px;
+      border:1px solid var(--line-soft);
+      color:var(--muted);
+      text-decoration:none;
+      font-size:11px;
+      font-weight:800;
+    }}
+    .video-link:hover {{ color:var(--text); border-color:rgba(96,165,250,.45); }}
+    .tip-box {{
+      padding:18px;
+      margin-top:18px;
+      border-radius:16px;
+      border:1px solid rgba(96,165,250,.24);
+      background:rgba(96,165,250,.08);
+    }}
+    .tip-box p {{ margin:5px 0 0; font-size:13px; }}
+    .dns-layout {{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:18px; }}
+    .dns-addresses {{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:18px;
+    }}
+    .dns-address {{
+      padding:14px;
+      border-radius:14px;
+      background:#0E1422;
+      border:1px solid var(--line-soft);
+      color:var(--text);
+      font:700 14px/1 "IBM Plex Mono",ui-monospace,monospace;
+    }}
+    .safety-note {{ margin-top:16px; color:var(--quiet); font-size:12px; }}
     footer {{ border-top:1px solid var(--line-soft); color:var(--quiet); padding:26px 32px 40px; max-width:var(--max); margin:0 auto; display:flex; justify-content:space-between; gap:16px; font-size:13px; }}
     footer a {{ color:var(--muted); text-decoration:none; margin-left:16px; }}
     @media (max-width: 980px) {{
       h1 {{ font-size:44px; }}
       .hero {{ grid-template-columns:1fr; padding:64px 0; gap:36px; min-height:auto; }}
       .feature-grid, .grid {{ grid-template-columns:repeat(2,minmax(0,1fr)); }}
-      .tech-grid, .support-layout, .legal-layout, .feedback-layout {{ grid-template-columns:1fr; }}
+      .tech-grid, .support-layout, .legal-layout, .feedback-layout, .setup-hero, .dns-layout {{ grid-template-columns:1fr; }}
+      .quick-steps {{ grid-template-columns:repeat(2,minmax(0,1fr)); }}
       .legal-index {{ position:static; }}
       .row, .filter-row {{ grid-template-columns:1fr; }}
       .cta-band, .admin-title {{ align-items:flex-start; flex-direction:column; }}
@@ -969,8 +1137,12 @@ def page(title: str, body: str, *, section: str = "public") -> str:
       nav {{ order:3; width:100%; justify-content:flex-start; overflow:auto; gap:18px; padding-bottom:2px; }}
       main {{ padding:0 18px 48px; }}
       .admin main, .legal main, .support main {{ padding-top:30px; }}
+      .setup-hero {{ padding:48px 0 40px; gap:28px; }}
       .section-band {{ margin:0 -18px; padding:48px 18px; }}
-      .proof-strip, .feature-grid, .grid {{ grid-template-columns:1fr; }}
+      .proof-strip, .feature-grid, .grid, .quick-steps, .platform-grid {{ grid-template-columns:1fr; }}
+      .platform-card.wide {{ grid-column:auto; }}
+      .setup-section {{ padding:48px 0; }}
+      .dns-addresses {{ grid-template-columns:1fr; }}
       .phone {{ width:min(310px,100%); }}
       footer {{ padding:22px 18px 34px; flex-direction:column; }}
       footer a {{ margin:0 14px 0 0; }}
@@ -990,7 +1162,7 @@ def page(title: str, body: str, *, section: str = "public") -> str:
   <main>{body}</main>
   <footer>
     <span>NetlumaVPN for iPhone. Use VPN profiles and managed servers responsibly.</span>
-    <span><a href="/support">Support</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></span>
+    <span><a href="/setup">Setup</a><a href="/support">Support</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></span>
   </footer>
 </body>
 </html>"""
@@ -1087,6 +1259,254 @@ def marketing_home_html() -> str:
     </section>
     """
     return page("NetlumaVPN", body)
+
+
+def setup_resource_link(title: str, note: str, url: str) -> str:
+    return f"""
+    <a class="resource-link" href="{esc(url)}" target="_blank" rel="noopener noreferrer">
+      <span><strong>{esc(title)}</strong><small>{esc(note)}</small></span>
+      <span aria-hidden="true">↗</span>
+    </a>
+    """
+
+
+def setup_video_link(title: str, url: str) -> str:
+    return f'<a class="video-link" href="{esc(url)}" target="_blank" rel="noopener noreferrer">{esc(title)} ↗</a>'
+
+
+def setup_page_html() -> str:
+    ios_resources = "".join(
+        setup_resource_link(*resource)
+        for resource in [
+            ("Karing", "Рекомендуем · App Store", "https://apps.apple.com/ru/app/karing/id6472431552"),
+            ("Hiddify", "App Store", "https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532?platform=iphone"),
+            ("Hiddify iOS", "IPA · версия 2.1.1", "https://github.com/hiddify/hiddify-next/releases/download/v2.1.1/Hiddify-iOS.ipa"),
+            ("sing-box VT", "App Store", "https://apps.apple.com/ru/app/sing-box-vt/id6673731168?l=ru&platform=iphone"),
+        ]
+    )
+    mac_resources = "".join(
+        setup_resource_link(*resource)
+        for resource in [
+            ("Karing", "Рекомендуем · Mac App Store", "https://apps.apple.com/ru/app/karing/id6472431552"),
+            ("sing-box VT", "Mac App Store", "https://apps.apple.com/ru/app/sing-box-vt/id6673731168?l=ru&platform=mac"),
+            ("Hiddify для macOS", "DMG · версия 2.5.7", "https://github.com/hiddify/hiddify-next/releases/download/v2.5.7/Hiddify-MacOS.dmg"),
+            ("Hiddify Installer", "PKG · версия 2.5.7", "https://github.com/hiddify/hiddify-next/releases/download/v2.5.7/Hiddify-MacOS-Installer.pkg"),
+        ]
+    )
+    windows_resources = "".join(
+        setup_resource_link(*resource)
+        for resource in [
+            ("Karing", "Официальная страница загрузки", "https://karing.app/en/download/"),
+            ("Karing Stable", "Установщик для Windows", "https://dot.karing.app/client.html?tag=windows-installer-stable"),
+            ("Karing 1.2.17.2006", "Прямая ссылка · Windows x64 EXE", "https://github.com/KaringX/karing/releases/download/v1.2.17.2006/karing_1.2.17.2006_windows_x64.exe"),
+            ("Hiddify 2.5.7", "Прямая ссылка · Windows x64 EXE", "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-Windows-Setup-x64.exe"),
+            ("Hiddify Next 2.5.7", "Альтернативная прямая ссылка · Windows x64 EXE", "https://github.com/hiddify/hiddify-next/releases/download/v2.5.7/Hiddify-Windows-Setup-x64.exe"),
+            ("Hiddify Next", "Страница прямых загрузок на GitHub", "https://github.com/hiddify/hiddify-next?tab=readme-ov-file#-direct-download"),
+        ]
+    )
+    android_resources = "".join(
+        setup_resource_link(*resource)
+        for resource in [
+            ("Karing", "APK · ARM · версия 1.2.17.2006", "https://gh-proxy.org/https://github.com/KaringX/karing/releases/download/v1.2.17.2006/karing_1.2.17.2006_android_arm.apk"),
+            ("Hiddify", "Google Play", "https://play.google.com/store/apps/details?id=app.hiddify.com&hl=ru"),
+            ("Hiddify 2.5.7", "Универсальный APK", "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-Android-universal.apk"),
+            ("sing-box", "Google Play", "https://play.google.com/store/apps/details?id=io.nekohasekai.sfa&hl=ru"),
+        ]
+    )
+    apple_tv_resources = setup_resource_link(
+        "sing-box VT",
+        "App Store для Apple TV",
+        "https://apps.apple.com/ru/app/sing-box-vt/id6673731168?l=ru&platform=appleTV",
+    )
+    linux_resources = setup_resource_link(
+        "Hiddify 2.5.7",
+        "Linux x64 AppImage",
+        "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-Linux-x64.AppImage",
+    )
+    dns_resources = "".join(
+        setup_resource_link(*resource)
+        for resource in [
+            ("DNS Optimizer: Server Changer", "App Store", "https://apps.apple.com/us/app/dns-optimizer-server-changer/id6741016224?l=ru"),
+            ("DNS Secure", "App Store", "https://apps.apple.com/ru/app/dnsecure/id1533413232"),
+            ("DNS Configurator", "App Store", "https://apps.apple.com/ru/app/dns-configurator/id1532682460"),
+        ]
+    )
+    ios_videos = "".join(
+        [
+            setup_video_link("Karing на iPhone", "https://youtube.com/shorts/2XbnHMIMmwM"),
+            setup_video_link("Hiddify на iPhone", "https://youtube.com/shorts/tFOt2aRkiIk"),
+            setup_video_link("sing-box на iPhone", "https://youtube.com/shorts/2p6ZxNq39gM"),
+        ]
+    )
+    body = f"""
+    <section class="setup-hero">
+      <div class="setup-hero-copy">
+        <p class="eyebrow">Пошаговая инструкция</p>
+        <h1>Настройте VPN на любом устройстве.</h1>
+        <p>Выберите платформу, установите подходящее приложение и импортируйте выданный профиль одной строкой. Для самого простого сценария используйте Karing.</p>
+        <div class="setup-hero-actions">
+          <a class="button primary" href="#quick-start">Быстрый старт</a>
+          <a class="button secondary" href="https://karing.app/en/download/" target="_blank" rel="noopener noreferrer">Скачать Karing ↗</a>
+        </div>
+      </div>
+      <aside class="setup-highlight">
+        <span class="badge good">Рекомендуемый профиль</span>
+        <h2 style="font-size:28px;">Используйте Trojan / TRJ</h2>
+        <p>Выбирайте конфиги с меткой <strong style="color:var(--text);">TRJ</strong> или <strong style="color:var(--text);">Trojan</strong>. Они поддерживают UDP-трафик; VLESS может быть недоступен в некоторых мобильных сетях.</p>
+        <p class="safety-note">Используйте только доверенные профили и соблюдайте правила вашей сети и местное законодательство.</p>
+      </aside>
+    </section>
+
+    <nav class="platform-nav" aria-label="Платформы">
+      <a href="#ios">iPhone / iPad</a>
+      <a href="#macos">macOS</a>
+      <a href="#windows">Windows</a>
+      <a href="#android">Android</a>
+      <a href="#appletv">Apple TV</a>
+      <a href="#linux">Linux</a>
+      <a href="#dns-help">Ошибка DNS</a>
+    </nav>
+
+    <section class="setup-section" id="quick-start">
+      <div class="setup-section-head">
+        <p class="eyebrow">Быстрый старт</p>
+        <h2>Подключение за четыре шага</h2>
+        <p>Названия пунктов могут немного отличаться в разных версиях приложения.</p>
+      </div>
+      <div class="quick-steps">
+        <article class="quick-step"><h3>Получите профиль</h3><p>Скопируйте выданную строку конфигурации. Для мобильных сетей выбирайте профиль Trojan / TRJ.</p></article>
+        <article class="quick-step"><h3>Установите клиент</h3><p>Рекомендуем Karing. Ниже также есть Hiddify и sing-box для совместимых платформ.</p></article>
+        <article class="quick-step"><h3>Импортируйте</h3><p>Добавьте профиль из буфера обмена. В sing-box используйте Remote → URL и вставьте одну строку.</p></article>
+        <article class="quick-step"><h3>Проверьте маршрут</h3><p>В Karing откройте Правила → Страна / Регион и выберите РФ. На Windows включите TUN.</p></article>
+      </div>
+    </section>
+
+    <section class="setup-section" id="platforms">
+      <div class="setup-section-head">
+        <p class="eyebrow">Приложения и инструкции</p>
+        <h2>Выберите вашу платформу</h2>
+        <p>Магазины приложений предпочтительнее прямых установочных файлов. Для IPA, APK, EXE, DMG, PKG и AppImage проверяйте источник и подпись файла.</p>
+      </div>
+      <div class="platform-grid">
+        <article class="platform-card" id="ios">
+          <div class="platform-title"><div><span class="platform-code">iOS</span><h2 style="font-size:26px;">iPhone / iPad</h2><p>Karing — основной рекомендуемый клиент.</p></div><span class="badge good">Karing</span></div>
+          <div class="resource-list">{ios_resources}</div>
+          <ol class="instruction-list">
+            <li>Скопируйте строку профиля Trojan / TRJ.</li>
+            <li>В Karing импортируйте профиль из буфера обмена и включите VPN.</li>
+            <li>Откройте Правила → Страна / Регион и выберите РФ.</li>
+            <li>В sing-box: Профили → Добавить профиль → Remote → URL, затем вставьте одну строку.</li>
+          </ol>
+          <div class="video-row">{ios_videos}</div>
+        </article>
+
+        <article class="platform-card" id="macos">
+          <div class="platform-title"><div><span class="platform-code">macOS</span><h2 style="font-size:26px;">Mac</h2><p>Доступны Karing, sing-box VT и Hiddify.</p></div><span class="badge good">Karing</span></div>
+          <div class="resource-list">{mac_resources}</div>
+          <ol class="instruction-list">
+            <li>Установите Karing из Mac App Store.</li>
+            <li>Импортируйте профиль одной строкой из буфера обмена.</li>
+            <li>В Правила → Страна / Регион выберите РФ и запустите VPN.</li>
+          </ol>
+          <div class="video-row">{setup_video_link("Karing на macOS", "https://youtu.be/M3gKOxOqN0k")}</div>
+        </article>
+
+        <article class="platform-card wide" id="windows">
+          <div class="platform-title"><div><span class="platform-code">Windows</span><h2 style="font-size:26px;">Windows 10 / 11</h2><p>Для полноценного туннеля приложение нужно запускать с правами администратора.</p></div><span class="badge good">TUN mode</span></div>
+          <div class="resource-list">{windows_resources}</div>
+          <ol class="instruction-list">
+            <li>Запустите Karing или Hiddify от имени администратора.</li>
+            <li>В Karing включите TUN, импортируйте одну строку профиля из буфера обмена и запустите VPN.</li>
+            <li>В Karing откройте Правила → Страна / Регион и выберите РФ.</li>
+            <li>В Hiddify смените режим прокси на «VPN сервис (экспериментальный)».</li>
+            <li>В Hiddify откройте Параметры конфигурации → Варианты маршрутизации → Регион и выберите «Другой».</li>
+          </ol>
+          <div class="video-row">
+            {setup_video_link("Видео: Karing + Hiddify", "https://youtu.be/bqVj3vat6II")}
+            {setup_video_link("Инструкция Hiddify Next", "https://checkvpn.net/wiki/Hiddify_Next_-_клиент_под_Windows_для_подключения_через_VLESS")}
+            {setup_video_link("Где включить VPN-режим", "https://docs.netlumavpn.example/setup-image.png")}
+          </div>
+        </article>
+
+        <article class="platform-card" id="android">
+          <div class="platform-title"><div><span class="platform-code">Android</span><h2 style="font-size:26px;">Android</h2><p>Karing, Hiddify или официальный sing-box.</p></div><span class="badge good">Karing</span></div>
+          <div class="resource-list">{android_resources}</div>
+          <ol class="instruction-list">
+            <li>Установите приложение из Google Play либо подходящий APK.</li>
+            <li>Импортируйте профиль Trojan / TRJ из буфера обмена.</li>
+            <li>В Karing выберите Правила → Страна / Регион → РФ и включите VPN.</li>
+          </ol>
+        </article>
+
+        <article class="platform-card" id="appletv">
+          <div class="platform-title"><div><span class="platform-code">tvOS</span><h2 style="font-size:26px;">Apple TV</h2><p>Используйте sing-box VT из App Store.</p></div><span class="badge">sing-box</span></div>
+          <div class="resource-list">{apple_tv_resources}</div>
+          <ol class="instruction-list">
+            <li>Установите sing-box VT на Apple TV.</li>
+            <li>Добавьте удалённый профиль по URL и вставьте выданную строку.</li>
+            <li>Активируйте профиль и разрешите создание VPN-конфигурации.</li>
+          </ol>
+        </article>
+
+        <article class="platform-card" id="linux">
+          <div class="platform-title"><div><span class="platform-code">Linux</span><h2 style="font-size:26px;">Linux x64</h2><p>Готовая сборка Hiddify в формате AppImage.</p></div><span class="badge">AppImage</span></div>
+          <div class="resource-list">{linux_resources}</div>
+          <ol class="instruction-list">
+            <li>Скачайте AppImage и разрешите выполнение файла.</li>
+            <li>Импортируйте профиль одной строкой.</li>
+            <li>Включите VPN-режим и проверьте доступность сайтов.</li>
+          </ol>
+        </article>
+
+        <article class="platform-card">
+          <div class="platform-title"><div><span class="platform-code">Материалы</span><h2 style="font-size:26px;">Полная памятка</h2><p>Дополнительная версия инструкции в Google Docs.</p></div></div>
+          <div class="resource-list">
+            {setup_resource_link("Открыть Google Docs", "Расширенная памятка по подключению", "https://docs.netlumavpn.example/setup")}
+          </div>
+          <p class="safety-note">Если ссылки или названия пунктов изменились, используйте последнюю стабильную версию клиента с официальной страницы проекта.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="setup-section" id="dns-help">
+      <div class="setup-section-head">
+        <p class="eyebrow">Диагностика iPhone</p>
+        <h2>Профиль не импортируется: dial tcp / lookup / no such host</h2>
+        <p>Такая ошибка обычно означает, что устройство не может разрешить имя сервера через текущий DNS.</p>
+      </div>
+      <div class="dns-layout">
+        <article class="platform-card">
+          <div class="platform-title"><div><span class="platform-code">Шаг 1</span><h3>Установите одно DNS-приложение</h3></div></div>
+          <div class="resource-list">{dns_resources}</div>
+          <div class="video-row">
+            {setup_video_link("Пример ошибки", "https://docs.netlumavpn.example/setup-image.png")}
+            {setup_video_link("DNS-параметры Hiddify", "https://docs.netlumavpn.example/setup-image.png")}
+          </div>
+        </article>
+        <article class="platform-card">
+          <div class="platform-title"><div><span class="platform-code">Шаг 2</span><h3>Выберите Google DNS</h3><p>Выберите провайдера Google или введите IPv4-адреса вручную.</p></div></div>
+          <div class="dns-addresses">
+            <div class="dns-address">8.8.8.8</div>
+            <div class="dns-address">8.8.4.4</div>
+          </div>
+          <ol class="instruction-list">
+            <li>Активируйте DNS-конфигурацию в выбранном приложении.</li>
+            <li>Вернитесь в VPN-клиент и повторите импорт профиля.</li>
+            <li>После успешного импорта подключитесь и проверьте работу сайтов.</li>
+          </ol>
+          <div class="video-row">
+            {setup_video_link("Видео: DNS Optimizer", "https://youtube.com/shorts/7hx2MOuExEk")}
+            {setup_video_link("Инструкция по DNS на iPhone", "https://wiki.iphoster.net/wiki/Как_изменить_ДНС_сервера_для_Вашего_интернет_подключения_на_ios_-_IPHONE")}
+          </div>
+        </article>
+      </div>
+      <div class="tip-box">
+        <strong>Не помогло?</strong>
+        <p>Переключитесь между Wi‑Fi и мобильной сетью, перезапустите VPN-клиент и убедитесь, что строка профиля скопирована полностью. Затем обратитесь в <a href="/support">поддержку NetlumaVPN</a>.</p>
+      </div>
+    </section>
+    """
+    return page("Настройка VPN — NetlumaVPN", body, section="setup", language="ru")
 
 
 def support_form_html(*, sent: bool = False, error: str = "", values: dict[str, str] | None = None) -> str:
@@ -1304,6 +1724,11 @@ async def marketing_home():
 @app.get("/favicon.ico")
 async def favicon():
     return Response(status_code=204)
+
+
+@app.get("/setup", response_class=HTMLResponse)
+async def setup() -> str:
+    return setup_page_html()
 
 
 @app.get("/support", response_class=HTMLResponse)

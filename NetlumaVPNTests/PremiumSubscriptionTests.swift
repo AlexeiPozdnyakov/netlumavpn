@@ -100,7 +100,14 @@ struct PremiumSubscriptionTests {
         #expect(PremiumPaywallPresentation.primaryButtonTitle(for: plan) == "Continue")
     }
 
-    @Test func netlumaGlobalGateRequiresPremiumOnlyForManagedConnections() {
+    @Test func freeAccessModeHidesPaywallsAndPremiumBadges() {
+        #expect(PremiumAccessGate.isFreeAccessEnabled)
+        #expect(PremiumAccessGate.shouldDisplayPaywalls == false)
+        #expect(PremiumAccessGate.globalServerBadgeTitle == "FREE")
+        #expect(PremiumAccessGate.globalServerBadgeSystemImage == "globe")
+    }
+
+    @Test func freeAccessGateAllowsManagedConnectionsWithoutSubscription() {
         let localProfile = VPNProfile(
             protocolType: .vless,
             host: "local.example.com",
@@ -129,12 +136,12 @@ struct PremiumSubscriptionTests {
             selectedGlobalServerID: "netlumavpn-mvp-eu-1",
             selectedProfile: nil,
             hasActiveSubscription: false
-        ))
+        ) == false)
         #expect(PremiumAccessGate.requiresPremium(
             selectedGlobalServerID: nil,
             selectedProfile: managedProfile,
             hasActiveSubscription: false
-        ))
+        ) == false)
         #expect(PremiumAccessGate.requiresPremium(
             selectedGlobalServerID: "netlumavpn-mvp-eu-1",
             selectedProfile: managedProfile,

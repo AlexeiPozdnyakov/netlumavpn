@@ -11,7 +11,7 @@ Severity: 🔴 likely production-affecting · 🟠 correctness/security risk · 
 
 - Provisioning deploys **backend A** (`archive/server_mvp/quickvpn_admin/app.py`,
   Xray/WireGuard, server IDs `quickvpn-mvp-eu-1*`, reads only `x-quickvpn-*`).
-- The current `netlumavpn.example` production endpoint was observed on 2026-06-24 returning
+- The current `netlumavpn.example` production endpoint was observed again on 2026-07-29 returning
   `{"backend":"netlumavpn-singbox"}`, and the iOS `GlobalServerIntegrationTests` plus
   `verify-fresh-server.sh` also target **backend B** (`server_mvp/quickvpn_singbox_admin/app.py`,
   sing-box, IDs `netlumavpn-singbox-*`).
@@ -164,4 +164,17 @@ subscription logic. **Action:** decide the correct value for the main app (the c
 ships VPN crypto, so `true` is likely right) and make the plist + test agree, or relax the
 test for the main bundle. (`APP.md` → "App Store archive metadata".)
 
-_Last full analysis: 2026-06-24. Subscription-lifecycle fix + finding #15 added 2026-06-25._
+## 🔴 16. Public subdomain DNS / TLS verification is incomplete
+
+The production website root and `/setup` respond successfully over HTTPS, but the
+full `ops/verify-fresh-server.sh` check found two infrastructure gaps on 2026-07-29:
+
+- `vpn.netlumavpn.example` and `trojan.netlumavpn.example` currently return no A record.
+- `admin.netlumavpn.example` resolves to the live VPS, but the certificate presented there
+  does not include `admin.netlumavpn.example`, so strict TLS verification fails.
+
+This is separate from the public root website and sing-box API deployment. Restore the
+missing DNS records and reissue/attach a certificate with the expected SANs before
+claiming that the full production verification script is green. (`OPS.md`.)
+
+_Last full analysis: 2026-06-24. Findings #15–16 updated through 2026-07-29._

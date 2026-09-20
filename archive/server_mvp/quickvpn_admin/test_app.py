@@ -34,6 +34,7 @@ class QuickVPNMarketingAndFeedbackTests(unittest.TestCase):
     def test_public_website_pages_render_from_root_routes(self):
         pages = [
             ("/", "NetlumaVPN", "Download on the App Store"),
+            ("/setup", "Настройте VPN на любом устройстве", "Ошибка DNS"),
             ("/support", "Contact support", "Send request"),
             ("/terms", "Terms of Use", "Subscriptions via Apple"),
             ("/privacy", "Privacy Policy", "Local app data"),
@@ -45,6 +46,29 @@ class QuickVPNMarketingAndFeedbackTests(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertIn(heading, response.text)
                 self.assertIn(expected, response.text)
+
+    def test_setup_page_covers_platforms_downloads_and_dns_recovery(self):
+        response = self.client.get("/setup")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('<html lang="ru">', response.text)
+        for section_id in ["ios", "macos", "windows", "android", "appletv", "linux", "dns-help"]:
+            with self.subTest(section_id=section_id):
+                self.assertIn(f'id="{section_id}"', response.text)
+        for expected in [
+            "Trojan / TRJ",
+            "TUN mode",
+            "8.8.8.8",
+            "8.8.4.4",
+            "https://karing.app/en/download/",
+            "https://youtube.com/shorts/2XbnHMIMmwM",
+            "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-Android-universal.apk",
+        ]:
+            with self.subTest(expected=expected):
+                self.assertIn(expected, response.text)
+
+        home = self.client.get("/")
+        self.assertIn('href="/setup"', home.text)
 
     def test_support_submission_is_stored_and_visible_in_admin_feedback(self):
         response = self.client.post(

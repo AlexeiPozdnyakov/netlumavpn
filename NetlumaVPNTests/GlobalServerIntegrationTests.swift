@@ -460,7 +460,7 @@ struct GlobalServerIntegrationTests {
         #expect(provisionCallCount == 0)
     }
 
-    @Test @MainActor func selectingGlobalServerWithoutPremiumRequiresSubscription() async {
+    @Test @MainActor func selectingGlobalServerWithoutPremiumProceedsWhileFreeAccessIsEnabled() async {
         let service = MockGlobalServerService(servers: [Self.server])
         let model = Self.makeAppModel(
             globalServerService: service,
@@ -470,8 +470,8 @@ struct GlobalServerIntegrationTests {
 
         let selectionResult = await model.selectGlobalServer(Self.server)
 
-        #expect(selectionResult == .requiresPremium)
-        #expect(model.selectedGlobalServerID == nil)
+        #expect(selectionResult == .proceeded)
+        #expect(model.selectedGlobalServerID == Self.server.id)
         #expect(model.selectedProfileID == nil)
         let provisionCallCount = await service.provisionCallCount
         #expect(provisionCallCount == 0)
@@ -632,7 +632,7 @@ struct GlobalServerIntegrationTests {
         #expect(storedSecret.userId == "22222222-2222-2222-2222-222222222222")
     }
 
-    @Test @MainActor func connectingSelectedGlobalServerWithoutPremiumRequiresSubscription() async {
+    @Test @MainActor func connectingSelectedGlobalServerWithoutPremiumProceedsWhileFreeAccessIsEnabled() async throws {
         let service = MockGlobalServerService(servers: [Self.server])
         let vpnManager = MockVPNManager()
         let model = Self.makeAppModel(
@@ -645,10 +645,11 @@ struct GlobalServerIntegrationTests {
 
         let connectionResult = await model.toggleConnection()
 
-        #expect(connectionResult == .requiresPremium)
+        #expect(connectionResult == .proceeded)
         let provisionCallCount = await service.provisionCallCount
-        #expect(provisionCallCount == 0)
-        #expect(vpnManager.connectedProfiles.isEmpty)
+        #expect(provisionCallCount == 1)
+        let connectedProfile = try #require(vpnManager.connectedProfiles.first)
+        #expect(connectedProfile.managedServerID == Self.server.id)
     }
 
     @Test @MainActor func loadGlobalServersCachesSuccessfulListUntilForcedReload() async {

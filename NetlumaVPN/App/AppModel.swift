@@ -117,7 +117,10 @@ final class AppModel {
     }
 
     var shouldShowPremiumBanner: Bool {
-        hasLoadedPremiumEntitlements && !hasActivePremiumSubscription
+        guard PremiumAccessGate.shouldDisplayPaywalls else {
+            return false
+        }
+        return hasLoadedPremiumEntitlements && !hasActivePremiumSubscription
     }
 
     var premiumBannerPriceText: String {
@@ -133,6 +136,12 @@ final class AppModel {
     }
 
     func loadPremiumProducts(force: Bool = false) async {
+        guard PremiumAccessGate.shouldDisplayPaywalls else {
+            premiumPlans = []
+            premiumProductsErrorMessage = nil
+            isLoadingPremiumProducts = false
+            return
+        }
         guard !isLoadingPremiumProducts else {
             return
         }
@@ -160,17 +169,29 @@ final class AppModel {
     /// active subscription is pulled in (and the upsell banner suppressed) from launch, while
     /// a lapsed subscription immediately revokes access. Idempotent — safe to call repeatedly.
     func bootstrapPremium() async {
+        guard PremiumAccessGate.shouldDisplayPaywalls else {
+            grantTemporaryFreeAccess()
+            return
+        }
         startPremiumTransactionObserver()
         await refreshPremiumEntitlements()
     }
 
     func refreshPremiumEntitlements() async {
+        guard PremiumAccessGate.shouldDisplayPaywalls else {
+            grantTemporaryFreeAccess()
+            return
+        }
         hasActivePremiumSubscription = await premiumService.hasActiveSubscription()
         hasLoadedPremiumEntitlements = true
         await enforcePremiumAccessIfNeeded()
     }
 
     func purchasePremium(productID: String) async -> Bool {
+        guard PremiumAccessGate.shouldDisplayPaywalls else {
+            grantTemporaryFreeAccess()
+            return true
+        }
         startPremiumTransactionObserver()
         guard !isPurchasingPremium else {
             return false
@@ -204,6 +225,10 @@ final class AppModel {
     }
 
     func restorePremiumPurchases() async -> Bool {
+        guard PremiumAccessGate.shouldDisplayPaywalls else {
+            grantTemporaryFreeAccess()
+            return true
+        }
         startPremiumTransactionObserver()
         guard !isPurchasingPremium else {
             return false
@@ -557,6 +582,12 @@ final class AppModel {
 
     private func reloadWidgets() {
         WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    private func grantTemporaryFreeAccess() {
+        hasActivePremiumSubscription = true
+        hasLoadedPremiumEntitlements = true
+        premiumProductsErrorMessage = nil
     }
 
     private func startPremiumTransactionObserver() {

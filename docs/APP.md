@@ -25,9 +25,11 @@ UI-state types are `@MainActor`.
   - `.onChange(of: scenePhase)` reloads global servers when the scene becomes active.
   - Presents 5 sheets via `RootSheet`: `.addProfile`, `.editProfile`, `.importProfile`,
     `.scanQRCode`, `.premium`.
-- **Onboarding** (private types in `ContentView.swift`): a 3-page `TabView`
-  (protocols pitch → security pitch → `PremiumPaywallView`). "Skip"/purchase/restore
-  all call `model.completeOnboarding()`.
+- **Onboarding** (private types in `ContentView.swift`): normally a 3-page `TabView`
+  (protocols pitch → security pitch → `PremiumPaywallView`). While temporary
+  free-access mode is enabled (`PremiumAccessGate.isFreeAccessEnabled == true`), only
+  the first two pages are visible and continuing from the security pitch completes
+  onboarding; the paywall page remains in code for re-enabling subscriptions later.
 
 ## `AppModel` — the root state holder
 
@@ -60,21 +62,28 @@ global-server state (`globalServers`, `isLoadingGlobalServers`, `activeGlobalSer
 | `updateTunnelPreferences(_:)` / `selectDNSResolver(_:)` | Network prefs |
 | `completeOnboarding()` / `refreshStatus() async` | Lifecycle |
 
-- **Premium gating:** `PremiumAccessGate.requiresPremium(...)` returns `.requiresPremium`
-  for any **NetlumaVPN-managed profile** or **selected global server** unless the user
-  has an active subscription. User-imported profiles are **not** gated.
-  `ContentView` maps `.requiresPremium` to presenting the `.premium` sheet.
+- **Premium gating:** `PremiumAccessGate.requiresPremium(...)` is the central gate for
+  **NetlumaVPN-managed profiles** and **selected global servers**. Subscriptions are
+  temporarily bypassed through `PremiumAccessGate.isFreeAccessEnabled = true`: this makes
+  every managed/global connection proceed without an active subscription, hides all
+  paywall entry points, shows `FREE` global-server badges, and lets `AppModel` mark
+  premium access as active without loading StoreKit products or starting the transaction
+  observer. The paywall and StoreKit code remains present so the mode can be reverted by
+  switching the flag off and restoring the previous tests/docs expectations. User-imported
+  profiles are never gated.
 - **Entitlement lifecycle:** `ContentView` calls `bootstrapPremium()` from its root
   `.task` (starts the StoreKit `Transaction.updates` observer **once** and runs an
   authoritative `refreshPremiumEntitlements()` check) and calls
   `refreshPremiumEntitlements()` again on every `scenePhase == .active` foreground.
   This is what makes an existing subscriber's entitlement get pulled in at launch (so
   `shouldShowPremiumBanner` correctly hides the Settings upsell) and keeps state fresh.
-- **Losing access mid-session:** `refreshPremiumEntitlements()` and the transaction
-  observer both run `PremiumAccessGate.shouldRevokeActiveSession(...)` after updating
+- **Losing access mid-session:** when free-access mode is disabled,
+  `refreshPremiumEntitlements()` and the transaction observer both run
+  `PremiumAccessGate.shouldRevokeActiveSession(...)` after updating
   `hasActivePremiumSubscription`; if a **live** managed/global tunnel is no longer
   covered by an active subscription (expiry / revocation / refund), the tunnel is
-  **disconnected immediately** rather than only being blocked at the next connect.
+  **disconnected immediately** rather than only being blocked at the next connect. While
+  free-access mode is enabled, revocation is intentionally suppressed.
 - **Widget refresh:** state-changing methods call `WidgetCenter.shared.reloadAllTimelines()`.
 - **Onboarding storage:** `OnboardingCompletionStoring` (default
   `UserDefaultsOnboardingCompletionStore`, key `hasCompletedOnboarding.v1`).
@@ -102,7 +111,9 @@ back to `AppModel`.
   `.disconnecting`), and a "Session details" link → `SessionInfoView`.
 - **LOCAL PROFILES** section: filters out managed profiles, shows only `prefix(2)`,
   custom `SwipeableProfileConnectRow` (swipe to Edit/Delete).
-- **GLOBAL SERVERS** section: `PRO`/`FAILED` badge, loading/retry rows, country flags.
+- **GLOBAL SERVERS** section: `FREE` badge while temporary free-access mode is enabled
+  (`PRO` when subscriptions are re-enabled), `FAILED` badge, loading/retry rows, country
+  flags.
 - The file also holds the testable presentation types `ProfileSwipeState`,
   `GlobalServerRowState`, and the `VPNConnectionStatus` styling extension — these are
   what `HomeConnectLogicTests` exercises (there is **no** `HomeConnectLogic` type).
@@ -153,11 +164,11 @@ back to `AppModel`.
 - **`PremiumPaywallView`** — presentational only; driven by injected
   `plans`/flags/closures. Shows hero, feature checklist, plan picker (weekly/monthly/
   yearly with savings badge), CTA, restore, and legal links. Used both in onboarding
-  and from Settings.
+  and from Settings when `PremiumAccessGate.shouldDisplayPaywalls` is true.
 - **`PremiumSubscriptionModels`** — `PremiumProductKind`, `PremiumSubscriptionPlan`,
   intro-offer models, `PremiumAccessGate` (`requiresPremium(...)` for connect-time
-  gating + `shouldRevokeActiveSession(...)` for mid-session teardown),
-  `PremiumGatedActionResult`.
+  gating, `shouldDisplayPaywalls`, free-access badge copy, and
+  `shouldRevokeActiveSession(...)` for mid-session teardown), `PremiumGatedActionResult`.
 
 ## App-side services (`NetlumaVPN/Services/`)
 
@@ -235,6 +246,9 @@ billing-grace-period entitlements stay active). `observeTransactionUpdates` take
 **async** `@MainActor (Bool) async -> Void` handler so `AppModel` can `await` a
 disconnect when access is revoked. ⚠️ StoreKit products only load via Xcode ⌘R with
 the `.storekit` config, **not** headless `xcodebuild` (see [`TESTING.md`](TESTING.md)).
+Temporary free-access mode bypasses this service from `AppModel` for bootstrap, product
+loading, purchase, restore, and foreground entitlement refresh, but the service remains
+the real StoreKit implementation for when subscriptions are switched back on.
 
 ### `FirebaseTelemetryReporter`
 

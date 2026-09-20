@@ -56,35 +56,39 @@ struct ContentView: View {
                     }
                 }
             case .premium:
-                NavigationStack {
-                    PremiumPaywallView(
-                        plans: model.premiumPlans,
-                        isLoadingProducts: model.isLoadingPremiumProducts,
-                        isPurchasing: model.isPurchasingPremium,
-                        productsErrorMessage: model.premiumProductsErrorMessage,
-                        onPurchase: { productID in
-                            Task { @MainActor in
-                                if await model.purchasePremium(productID: productID) {
-                                    sheet = nil
+                if PremiumAccessGate.shouldDisplayPaywalls {
+                    NavigationStack {
+                        PremiumPaywallView(
+                            plans: model.premiumPlans,
+                            isLoadingProducts: model.isLoadingPremiumProducts,
+                            isPurchasing: model.isPurchasingPremium,
+                            productsErrorMessage: model.premiumProductsErrorMessage,
+                            onPurchase: { productID in
+                                Task { @MainActor in
+                                    if await model.purchasePremium(productID: productID) {
+                                        sheet = nil
+                                    }
+                                }
+                            },
+                            onRestore: {
+                                Task { @MainActor in
+                                    if await model.restorePremiumPurchases() {
+                                        sheet = nil
+                                    }
+                                }
+                            },
+                            onRetry: {
+                                Task { @MainActor in
+                                    await model.loadPremiumProducts(force: true)
                                 }
                             }
-                        },
-                        onRestore: {
-                            Task { @MainActor in
-                                if await model.restorePremiumPurchases() {
-                                    sheet = nil
-                                }
-                            }
-                        },
-                        onRetry: {
-                            Task { @MainActor in
-                                await model.loadPremiumProducts(force: true)
-                            }
+                        )
+                        .task {
+                            await model.loadPremiumProducts(force: model.premiumProductsErrorMessage != nil)
                         }
-                    )
-                    .task {
-                        await model.loadPremiumProducts(force: model.premiumProductsErrorMessage != nil)
                     }
+                } else {
+                    EmptyView()
                 }
             }
         }
@@ -182,7 +186,7 @@ struct ContentView: View {
                     onToggleConnection: {
                         Task { @MainActor in
                             if await model.toggleConnection() == .requiresPremium {
-                                sheet = .premium
+                                openPremiumSheet()
                             }
                         }
                     },
@@ -212,22 +216,29 @@ struct ContentView: View {
                     onSelectGlobalServer: { server in
                         Task { @MainActor in
                             if await model.selectGlobalServer(server) == .requiresPremium {
-                                sheet = .premium
+                                openPremiumSheet()
                             }
                         }
                     },
                     onOpenPremium: {
-                        sheet = .premium
+                        openPremiumSheet()
                     }
                 )
             }
         case .settings:
             NavigationStack {
                 SettingsView(model: model) {
-                    sheet = .premium
+                    openPremiumSheet()
                 }
             }
         }
+    }
+
+    private func openPremiumSheet() {
+        guard PremiumAccessGate.shouldDisplayPaywalls else {
+            return
+        }
+        sheet = .premium
     }
 }
 
@@ -270,40 +281,50 @@ private struct OnboardingView: View {
                     OnboardingProtocolsScreen(step: $step, onSkip: onComplete)
                         .tag(OnboardingStep.protocols)
 
-                    OnboardingSecureScreen(step: $step, onSkip: onComplete)
+                    OnboardingSecureScreen(onSkip: onComplete) {
+                        if PremiumAccessGate.shouldDisplayPaywalls {
+                            withAnimation(.easeInOut(duration: 0.22)) {
+                                step = .paywall
+                            }
+                        } else {
+                            onComplete()
+                        }
+                    }
                         .tag(OnboardingStep.secure)
 
-                    PremiumPaywallView(
-                        plans: model.premiumPlans,
-                        isLoadingProducts: model.isLoadingPremiumProducts,
-                        isPurchasing: model.isPurchasingPremium,
-                        productsErrorMessage: model.premiumProductsErrorMessage,
-                        showsStepDots: true,
-                        onClose: onComplete,
-                        onPurchase: { productID in
-                            Task { @MainActor in
-                                if await model.purchasePremium(productID: productID) {
-                                    onComplete()
+                    if PremiumAccessGate.shouldDisplayPaywalls {
+                        PremiumPaywallView(
+                            plans: model.premiumPlans,
+                            isLoadingProducts: model.isLoadingPremiumProducts,
+                            isPurchasing: model.isPurchasingPremium,
+                            productsErrorMessage: model.premiumProductsErrorMessage,
+                            showsStepDots: true,
+                            onClose: onComplete,
+                            onPurchase: { productID in
+                                Task { @MainActor in
+                                    if await model.purchasePremium(productID: productID) {
+                                        onComplete()
+                                    }
+                                }
+                            },
+                            onRestore: {
+                                Task { @MainActor in
+                                    if await model.restorePremiumPurchases() {
+                                        onComplete()
+                                    }
+                                }
+                            },
+                            onRetry: {
+                                Task { @MainActor in
+                                    await model.loadPremiumProducts(force: true)
                                 }
                             }
-                        },
-                        onRestore: {
-                            Task { @MainActor in
-                                if await model.restorePremiumPurchases() {
-                                    onComplete()
-                                }
-                            }
-                        },
-                        onRetry: {
-                            Task { @MainActor in
-                                await model.loadPremiumProducts(force: true)
-                            }
+                        )
+                        .task {
+                            await model.loadPremiumProducts(force: model.premiumProductsErrorMessage != nil)
                         }
-                    )
-                    .task {
-                        await model.loadPremiumProducts(force: model.premiumProductsErrorMessage != nil)
+                        .tag(OnboardingStep.paywall)
                     }
-                    .tag(OnboardingStep.paywall)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
@@ -395,18 +416,14 @@ private struct OnboardingProtocolsScreen: View {
 }
 
 private struct OnboardingSecureScreen: View {
-    @Binding var step: OnboardingStep
     let onSkip: () -> Void
+    let onContinue: () -> Void
 
     var body: some View {
         OnboardingScreenScaffold {
             OnboardingTopBar(currentStep: .secure, trailingTitle: "Skip", trailingAction: onSkip)
         } footer: {
-            OnboardingBottomButton(title: "Continue") {
-                withAnimation(.easeInOut(duration: 0.22)) {
-                    step = .paywall
-                }
-            }
+            OnboardingBottomButton(title: "Continue", action: onContinue)
         } content: {
             VStack(spacing: 18) {
                 SecureOrbitHero()
@@ -523,7 +540,7 @@ private struct OnboardingStepDots: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            ForEach(OnboardingStep.allCases) { step in
+            ForEach(OnboardingStep.visibleSteps) { step in
                 Capsule()
                     .fill(step == currentStep ? NetlumaVPNTheme.accent : NetlumaVPNTheme.border)
                     .frame(width: step == currentStep ? 18 : 6, height: 6)
@@ -743,6 +760,10 @@ private enum OnboardingStep: Int, CaseIterable, Identifiable {
     case paywall
 
     var id: Int { rawValue }
+
+    static var visibleSteps: [OnboardingStep] {
+        PremiumAccessGate.shouldDisplayPaywalls ? allCases : [.protocols, .secure]
+    }
 }
 
 #Preview {

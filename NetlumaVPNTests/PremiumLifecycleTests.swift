@@ -2,17 +2,18 @@ import Foundation
 import Testing
 @testable import NetlumaVPN
 
-/// Covers the subscription *lifecycle* wiring in `AppModel` (launch/foreground checks,
-/// the StoreKit transaction observer, and mid-session revocation) plus the pure
-/// `PremiumAccessGate.shouldRevokeActiveSession` decision. The StoreKit `Product`/
-/// `Transaction` plumbing itself lives in `StoreKitPremiumSubscriptionService` and is
-/// exercised only through the injected `ControllablePremiumService` fake here.
+/// Covers the subscription *lifecycle* wiring in `AppModel` while temporary free-access
+/// mode is enabled: launch/foreground checks grant access without StoreKit, the
+/// transaction observer is skipped, and mid-session revocation is suppressed. The
+/// StoreKit `Product`/`Transaction` plumbing itself lives in
+/// `StoreKitPremiumSubscriptionService` and is exercised only through the injected
+/// `ControllablePremiumService` fake here.
 struct PremiumLifecycleTests {
     private static let managedServerID = "netlumavpn-mvp-eu-1"
 
     // MARK: - Pure gate logic
 
-    @Test func revokesLiveManagedSessionOnlyWhenSubscriptionIsInactive() {
+    @Test func freeAccessDoesNotRevokeLiveManagedSessions() {
         let local = VPNProfile(
             protocolType: .vless,
             host: "local.example.com",
@@ -22,19 +23,19 @@ struct PremiumLifecycleTests {
             remarks: "Local"
         )
 
-        // Live global session without a subscription must be torn down.
+        // Temporary free access keeps live global sessions up even without a subscription.
         #expect(PremiumAccessGate.shouldRevokeActiveSession(
             status: .connected,
             selectedGlobalServerID: Self.managedServerID,
             selectedProfile: nil,
             hasActiveSubscription: false
-        ))
+        ) == false)
         #expect(PremiumAccessGate.shouldRevokeActiveSession(
             status: .connecting,
             selectedGlobalServerID: Self.managedServerID,
             selectedProfile: nil,
             hasActiveSubscription: false
-        ))
+        ) == false)
 
         // A valid subscription, a user-imported profile, or an inactive session must not.
         #expect(PremiumAccessGate.shouldRevokeActiveSession(
@@ -62,8 +63,8 @@ struct PremiumLifecycleTests {
     // MARK: - Launch / foreground entitlement check
 
     @MainActor
-    @Test func bootstrapPullsInActiveSubscriptionAndHidesBanner() async {
-        let premium = ControllablePremiumService(active: true)
+    @Test func bootstrapMarksFreeAccessActiveAndHidesBannerWithoutStoreKitObserver() async {
+        let premium = ControllablePremiumService(active: false)
         let model = Self.makeModel(premium: premium)
 
         await model.bootstrapPremium()
@@ -71,36 +72,36 @@ struct PremiumLifecycleTests {
         #expect(model.hasActivePremiumSubscription)
         #expect(model.hasLoadedPremiumEntitlements)
         #expect(model.shouldShowPremiumBanner == false)
-        #expect(premium.observeCallCount == 1)
+        #expect(premium.observeCallCount == 0)
     }
 
     @MainActor
-    @Test func bootstrapShowsBannerForNonSubscriber() async {
+    @Test func bootstrapHidesBannerForNonSubscriberWhileFreeAccessIsEnabled() async {
         let premium = ControllablePremiumService(active: false)
         let model = Self.makeModel(premium: premium)
 
         await model.bootstrapPremium()
 
-        #expect(model.hasActivePremiumSubscription == false)
+        #expect(model.hasActivePremiumSubscription)
         #expect(model.hasLoadedPremiumEntitlements)
-        #expect(model.shouldShowPremiumBanner)
+        #expect(model.shouldShowPremiumBanner == false)
     }
 
     @MainActor
-    @Test func bootstrapStartsTransactionObserverOnce() async {
+    @Test func bootstrapSkipsTransactionObserverWhileFreeAccessIsEnabled() async {
         let premium = ControllablePremiumService(active: true)
         let model = Self.makeModel(premium: premium)
 
         await model.bootstrapPremium()
         await model.bootstrapPremium()
 
-        #expect(premium.observeCallCount == 1)
+        #expect(premium.observeCallCount == 0)
     }
 
-    // MARK: - Losing access when the subscription ends
+    // MARK: - Free access entitlement refresh
 
     @MainActor
-    @Test func foregroundRefreshDisconnectsManagedSessionWhenSubscriptionLapses() async {
+    @Test func foregroundRefreshKeepsManagedSessionWhenSubscriptionLapsesDuringFreeAccess() async {
         let premium = ControllablePremiumService(active: true)
         let vpn = RecordingVPNManager()
         let model = Self.makeModel(premium: premium, vpn: vpn)
@@ -112,10 +113,10 @@ struct PremiumLifecycleTests {
         premium.active = false
         await model.refreshPremiumEntitlements()
 
-        #expect(model.hasActivePremiumSubscription == false)
-        #expect(model.shouldShowPremiumBanner)
-        #expect(vpn.disconnectCallCount == 1)
-        #expect(model.status == .disconnected)
+        #expect(model.hasActivePremiumSubscription)
+        #expect(model.shouldShowPremiumBanner == false)
+        #expect(vpn.disconnectCallCount == 0)
+        #expect(model.status == .connected)
     }
 
     @MainActor
@@ -136,7 +137,7 @@ struct PremiumLifecycleTests {
     }
 
     @MainActor
-    @Test func transactionObserverDisconnectsManagedSessionOnRevocation() async {
+    @Test func transactionObserverRevocationIsIgnoredWhileFreeAccessIsEnabled() async {
         let premium = ControllablePremiumService(active: true)
         let vpn = RecordingVPNManager()
         let model = Self.makeModel(premium: premium, vpn: vpn)
@@ -147,22 +148,23 @@ struct PremiumLifecycleTests {
 
         await premium.emit(isActive: false)
 
-        #expect(model.hasActivePremiumSubscription == false)
-        #expect(vpn.disconnectCallCount == 1)
-        #expect(model.status == .disconnected)
-        #expect(model.shouldShowPremiumBanner)
+        #expect(model.hasActivePremiumSubscription)
+        #expect(vpn.disconnectCallCount == 0)
+        #expect(model.status == .connected)
+        #expect(model.shouldShowPremiumBanner == false)
     }
 
     @MainActor
-    @Test func restoreWithoutSubscriptionMarksEntitlementsLoadedSoBannerReturns() async {
+    @Test func restoreWithoutSubscriptionSucceedsWhileFreeAccessIsEnabled() async {
         let premium = ControllablePremiumService(active: false)
         let model = Self.makeModel(premium: premium)
 
         let restored = await model.restorePremiumPurchases()
 
-        #expect(restored == false)
+        #expect(restored)
+        #expect(model.hasActivePremiumSubscription)
         #expect(model.hasLoadedPremiumEntitlements)
-        #expect(model.shouldShowPremiumBanner)
+        #expect(model.shouldShowPremiumBanner == false)
     }
 
     // MARK: - Builder

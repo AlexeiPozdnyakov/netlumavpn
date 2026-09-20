@@ -84,7 +84,7 @@ Only the three `quickvpn-{api,stats.service,stats.timer}` units are installed by
   to `/tmp/quickvpn-deploy` on `NEW_SERVER_IP`, then runs the provisioner remotely.
   Accepts both `NETLUMAVPN_*` and `QUICKVPN_*` env-var spellings.
 - **`verify-fresh-server.sh`** (run locally) — `dig` root + the 5 subdomains, curl
-  root website pages (`/`, `/support`, `/privacy`, `/terms`), `admin/login`,
+  root website pages (`/`, `/setup`, `/support`, `/privacy`, `/terms`), `admin/login`,
   `api/api/v1/status`, and (with a key) `api/api/v1/mobile/servers` using both
   `X-NetlumaVPN-Client-Key` and legacy `X-QuickVPN-Client-Key`, then print the TLS cert
   via `openssl s_client`.

@@ -40,7 +40,7 @@ struct SettingsView: View {
             Text("Settings")
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(NetlumaVPNTheme.primaryText)
-            Text("Manage subscription and preferences")
+            Text(PremiumAccessGate.shouldDisplayPaywalls ? "Manage subscription and preferences" : "Manage preferences")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(NetlumaVPNTheme.secondaryText)
         }
@@ -581,7 +581,7 @@ private struct SettingsNavigationRow: View {
 
             Spacer()
 
-            if isPremiumLocked {
+            if isPremiumLocked && PremiumAccessGate.shouldDisplayPaywalls {
                 HStack(spacing: 5) {
                     Image(systemName: "lock.fill")
                         .font(.system(size: 9, weight: .heavy))

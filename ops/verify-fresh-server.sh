@@ -45,7 +45,7 @@ log "Checking admin HTTPS"
 curl -fsSI "https://admin.$QUICKVPN_DOMAIN/login" | sed -n '1,8p'
 
 log "Checking website pages"
-for path in / /support /privacy /terms; do
+for path in / /setup /support /privacy /terms; do
   curl -fsS "https://$QUICKVPN_DOMAIN$path" >/dev/null
   printf '%-28s OK\n' "https://$QUICKVPN_DOMAIN$path"
 done

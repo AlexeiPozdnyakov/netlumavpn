@@ -192,11 +192,28 @@ enum PremiumPaywallPresentation {
 }
 
 enum PremiumAccessGate {
+    static let isFreeAccessEnabled = true
+
+    static var shouldDisplayPaywalls: Bool {
+        !isFreeAccessEnabled
+    }
+
+    static var globalServerBadgeTitle: String {
+        isFreeAccessEnabled ? "FREE" : "PRO"
+    }
+
+    static var globalServerBadgeSystemImage: String {
+        isFreeAccessEnabled ? "globe" : "crown.fill"
+    }
+
     static func requiresPremium(
         selectedGlobalServerID: String?,
         selectedProfile: VPNProfile?,
         hasActiveSubscription: Bool
     ) -> Bool {
+        guard !isFreeAccessEnabled else {
+            return false
+        }
         guard !hasActiveSubscription else {
             return false
         }
